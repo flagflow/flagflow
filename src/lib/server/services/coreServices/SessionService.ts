@@ -16,7 +16,7 @@ export const SessionService = ({ etcdService, logService }: SessionServiceParame
 	const debounceTouchSession = pDebounce(
 		async (sessionId: string) => {
 			try {
-				await etcdService.touch('session', sessionId);
+				await etcdService.touch('session', sessionId, 60);
 				log.debug('Touch');
 			} catch {
 				log.warn(`Touch unknown ${sessionId}`);
@@ -32,6 +32,7 @@ export const SessionService = ({ etcdService, logService }: SessionServiceParame
 			log.warn(`Not found ${sessionId}`);
 			return;
 		}
+		await debounceTouchSession(sessionId);
 		log.debug({ sessionId: sessionId }, 'Get');
 		return session;
 	};

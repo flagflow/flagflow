@@ -22,12 +22,12 @@
 	import DropdownIconItem from '$components/DropdownIconItem.svelte';
 	import { Icons } from '$components/Icons';
 	import { apiClient } from '$lib/api/client';
+	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
 	import { generateBrowserId } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
 	import { isMobileView } from '$lib/stores/mediaQueryStore';
 	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
-	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
 
@@ -37,13 +37,16 @@
 	const { data, children }: LayoutProperties = $props();
 
 	const logout = async () => {
-		//await apiClient.login.logout.mutate();
-		deleteTokensCookies();
-		window.location.href = data.logoutUrl;
+		if (data.authentication.type === 'JWT') deleteTokensCookies();
+		if (data.logoutUrl) window.location.href = data.logoutUrl;
 	};
 
-	let accessTokenExpiredAt = data.authentication.expiredAt;
+	let accessTokenExpiredAt =
+		data.authentication.type === 'JWT' && data.authentication.authentication
+			? data.authentication.authentication.expiredAt
+			: new Date();
 	const refreshTokenIfNeeded = async () => {
+		if (data.authentication.type !== 'JWT' || !data.authentication.authentication) return;
 		if (accessTokenExpiredAt.getTime() - Date.now() < 23 * 1000)
 			try {
 				const tokens = await apiClient.login.refreshKeycloakToken.mutate();
@@ -74,9 +77,9 @@
 
 <svelte:window onscroll={() => (scrollPos = window.scrollY)} />
 
-{data.authentication.name}
+{data.authentication.authentication?.name}
 
-{data.authentication.roles.join(', ')}
+{data.authentication.authentication?.roles.join(', ')}
 
 <Button onclick={logout}>Logout</Button>
 

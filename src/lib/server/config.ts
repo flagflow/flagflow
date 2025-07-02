@@ -12,7 +12,8 @@ export const config = {
 	etcd: {
 		server: envVar.get('ETCD_SERVER').required().asString(),
 		username: envVar.get('ETCD_USERNAME').asString(),
-		password: envVar.get('ETCD_PASSWORD').asString()
+		password: envVar.get('ETCD_PASSWORD').asString(),
+		prefix: envVar.get('ETCD_PREFIX').default('default').asString()
 	},
 	keycloak: {
 		host: envVar.get('KEYCLOAK_HOST').asString(),

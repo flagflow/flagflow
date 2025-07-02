@@ -1,6 +1,6 @@
 import type { ApiLocalCaller } from '$lib/api/init';
 import type { Container } from '$lib/server/container';
-import type { JwtTokens } from '$types/Wwt';
+import type { Authentication } from '$types/Auth';
 
 declare global {
 	namespace App {
@@ -8,7 +8,7 @@ declare global {
 		interface Locals {
 			apiCaller: ApiLocalCaller;
 			container: Container;
-			jwtTokens: JwtTokens;
+			authentication: Authentication;
 		}
 		// interface PageData {}
 		// interface PageState {}

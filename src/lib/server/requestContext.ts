@@ -1,8 +1,9 @@
+/* eslint-disable unicorn/no-useless-undefined */
 import { parse as parseCookie } from 'cookie';
 
 import { JWT_COOKIE_NAMES, SESSION_COOKIE_NAME } from '$lib/cookies';
 import { generateTraceId } from '$lib/genId';
-import { type JwtTokens } from '$types/Jwt';
+import type { Authentication } from '$types/Auth';
 
 import { config } from './config';
 import { asValue, container } from './container';
@@ -32,31 +33,67 @@ export const createRequestContext = async (request: Request) => {
 			sessionId = undefined;
 		}
 
-	const jwtTokens: JwtTokens = {
-		access_token,
-		refresh_token,
-		id_token
+	let authentication: Authentication = {
+		type: 'NONE'
 	};
 	if (access_token)
 		try {
 			const accessTokenAuth = await verifyKeycloakAccessToken(access_token);
-			jwtTokens.authentication = {
-				name: accessTokenAuth.name,
-				email: accessTokenAuth.email,
-				roles: accessTokenAuth.resource_access[config.keycloak.client]?.roles || [],
-				expiredAt: new Date(accessTokenAuth.exp * 1000)
+			authentication = {
+				type: 'JWT',
+				tokens: {
+					access_token,
+					refresh_token,
+					id_token
+				},
+				authentication: {
+					name: accessTokenAuth.name,
+					email: accessTokenAuth.email,
+					roles: accessTokenAuth.resource_access[config.keycloak.client]?.roles || [],
+					expiredAt: new Date(accessTokenAuth.exp * 1000)
+				}
 			};
+			scope.register({ userName: asValue(accessTokenAuth.name) });
 		} catch {
-			jwtTokens.authentication = undefined;
+			authentication = {
+				type: 'JWT',
+				tokens: {
+					access_token,
+					refresh_token,
+					id_token
+				}
+			};
+			scope.register({ userName: asValue(undefined) });
 		}
-
-	scope.register({
-		userName: asValue(jwtTokens.authentication?.name || undefined)
-	});
+	else if (sessionId) {
+		try {
+			const scopeAuth = scope.createScope();
+			scopeAuth.register({ userName: asValue(undefined) });
+			const sessionService = scopeAuth.resolve('sessionService');
+			const session = await sessionService.getSession(sessionId);
+			authentication = {
+				type: 'SESSION',
+				sessionId: sessionId,
+				authentication: session
+					? {
+							name: session.name,
+							roles: session.roles
+						}
+					: undefined
+			};
+			scope.register({ userName: asValue(session ? session.name : undefined) });
+		} catch {
+			authentication = {
+				type: 'SESSION',
+				sessionId: sessionId
+			};
+			scope.register({ userName: asValue(undefined) });
+		}
+	} else scope.register({ userName: asValue(undefined) });
 
 	return {
 		container: scope,
-		jwtTokens
+		authentication
 	};
 };
 export type CreateRequestContext = Awaited<ReturnType<typeof createRequestContext>>;

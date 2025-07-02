@@ -4,14 +4,19 @@ import { keycloakUrls } from '$lib/server/keycloak';
 
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ request, locals: { jwtTokens } }) => {
-	if (!jwtTokens.authentication) throw redirect(302, '/login');
+export const load: LayoutServerLoad = async ({ request, locals: { authentication } }) => {
+	if (!authentication.authentication) throw redirect(302, '/login');
 
 	const url = new URL(request.url);
 	const host = `${url.protocol}//${url.host}`;
 
 	return {
-		authentication: jwtTokens.authentication,
-		logoutUrl: keycloakUrls.logoutUrl(host, jwtTokens.id_token)
+		authentication,
+		logoutUrl:
+			authentication.type === 'SESSION'
+				? '/logout'
+				: authentication.type === 'JWT'
+					? keycloakUrls.logoutUrl(host, authentication.tokens.id_token)
+					: ''
 	};
 };

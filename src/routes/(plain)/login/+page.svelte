@@ -15,10 +15,10 @@
 	import { Icons } from '$components/Icons';
 	import WaveFullBackground from '$components/WaveFullBackground.svelte';
 	import { apiClient } from '$lib/api/client';
+	import { setSessionCookie } from '$lib/cookies';
 	import { focusFirstEmptyInputById, focusInputById, FormLogic } from '$lib/form.svelte';
 
 	import type { PageProps as PageProperties } from './$types';
-	import { setSessionCookie } from '$lib/cookies';
 
 	let { data }: PageProperties = $props();
 

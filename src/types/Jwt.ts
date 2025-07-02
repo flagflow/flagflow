@@ -3,21 +3,11 @@ import { z } from 'zod';
 export const KeycloakJwtString = z.string().jwt();
 export type KeycloakJwtString = z.infer<typeof KeycloakJwtString>;
 
-export const JwtAuthenticationInfo = z.object({
-	name: z.string(),
-	email: z.string().email(),
-	roles: z.array(z.string()),
-	expiredAt: z.date()
-});
-export type JwtAuthenticationInfo = z.infer<typeof JwtAuthenticationInfo>;
-
-export const JwtTokens = z.object({
-	authentication: JwtAuthenticationInfo.optional(),
-	access_token: KeycloakJwtString.optional(),
-	refresh_token: KeycloakJwtString.optional(),
-	id_token: KeycloakJwtString.optional()
-});
-export type JwtTokens = z.infer<typeof JwtTokens>;
+export type JwtTokens = {
+	access_token: string;
+	refresh_token: string | undefined;
+	id_token: string | undefined;
+};
 
 export const JwtAccessToken = z.object({
 	typ: z.literal('Bearer'),

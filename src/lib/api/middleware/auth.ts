@@ -10,9 +10,31 @@ export const authMiddleware: MiddlewareFunction<Context, Meta, any, any, any> = 
 	next,
 	meta
 }) => {
-	if (!ctx.jwtTokens.authentication)
+	if (!ctx.authentication.authentication)
 		throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication error' });
-	if (meta?.permission && !ctx.jwtTokens.authentication.roles.includes(meta.permission))
-		throw new TRPCError({ code: 'FORBIDDEN', message: `Permission error (${meta.permission})` });
+	if (meta?.permission)
+		switch (ctx.authentication.type) {
+			case 'JWT':
+				if (!ctx.authentication.authentication.roles.includes(meta.permission))
+					throw new TRPCError({
+						code: 'FORBIDDEN',
+						message: `Permission error (${meta.permission})`
+					});
+				break;
+			case 'SESSION':
+				if (!ctx.authentication.authentication.roles.includes(meta.permission))
+					throw new TRPCError({
+						code: 'FORBIDDEN',
+						message: `Permission error (${meta.permission})`
+					});
+				break;
+			case 'NONE':
+				throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication error' });
+			default:
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Unknown authentication type'
+				});
+		}
 	return await next();
 };

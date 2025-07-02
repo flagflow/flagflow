@@ -6,8 +6,8 @@
 
 	import { goto } from '$app/navigation';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
-	import { dateAddSeconds } from '$lib/dateEx';
 	import { setTokensCookies } from '$lib/cookies';
+	import { dateAddSeconds } from '$lib/dateEx';
 
 	import type { PageProps as PageProperties } from './$types';
 

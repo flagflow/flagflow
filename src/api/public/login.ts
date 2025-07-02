@@ -29,8 +29,9 @@ export const loginApi = createApiRouter({
 		return {};
 	}),
 
-	refreshKeycloakToken: publicApiProcedure.mutation(async ({ ctx }) => {
-		if (!ctx.jwtTokens.refresh_token) throw new Error('No refresh token provided');
-		return await refreshKeycloakTokens(ctx.jwtTokens.refresh_token);
+	refreshKeycloakToken: publicApiProcedure.mutation(async ({ ctx: { authentication } }) => {
+		if (authentication.type !== 'JWT') throw new Error('Not authenticated with JWT');
+		if (!authentication.tokens.refresh_token) throw new Error('No refresh token provided');
+		return await refreshKeycloakTokens(authentication.tokens.refresh_token);
 	})
 });
