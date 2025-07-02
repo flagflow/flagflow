@@ -1,0 +1,4 @@
+{
+	"typescript.tsserver.experimental.enableProjectDiagnostics": true,
+	"workbench.tree.indent": 12
+}

@@ -1,0 +1,144 @@
+<script lang="ts">
+	/* eslint-disable no-undef */
+	import Icon from '@iconify/svelte';
+	import { serialize as serializeCookie, type SerializeOptions } from 'cookie';
+	import { Button, Card } from 'flowbite-svelte';
+	import { sineIn } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
+	import { persisted } from 'svelte-persisted-store';
+	import { z } from 'zod';
+
+	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import FormInput from '$components/form/FormInput.svelte';
+	import HtmlTitle from '$components/HtmlTitle.svelte';
+	import { Icons } from '$components/Icons';
+	import WaveFullBackground from '$components/WaveFullBackground.svelte';
+	import { apiClient } from '$lib/api/client';
+	import { focusFirstEmptyInputById, focusInputById, FormLogic } from '$lib/form.svelte';
+
+	import type { PageProps as PageProperties } from './$types';
+	import { setSessionCookie } from '$lib/cookies';
+
+	let { data }: PageProperties = $props();
+
+	type LoginLocalConfig = {
+		rememberMe: boolean;
+		lastLoginUsername: string | undefined;
+	};
+	const loginStore = persisted<LoginLocalConfig>('login', {
+		rememberMe: false,
+		lastLoginUsername: undefined
+	});
+
+	const input = dev
+		? {
+				username: 'csaba@balazs-magyar.hu',
+				password: '12345678',
+				rememberMe: $loginStore.rememberMe
+			}
+		: {
+				username: $loginStore.lastLoginUsername ?? '',
+				password: '',
+				rememberMe: $loginStore.rememberMe
+			};
+
+	const {
+		formData,
+		formExecute,
+		formState: { stateError, stateInProgress, stateIsValid, stateAllValid }
+	} = new FormLogic(
+		input,
+		async () => {
+			const { sessionId } = await apiClient.login.login.mutate(formData);
+			setSessionCookie(sessionId, formData.rememberMe ? 7 : 0);
+			await goto('/');
+		},
+		{
+			validator: (data) => ({
+				username: data.username.length === 0 ? { message: '', isError: true } : { isError: false },
+				password:
+					data.password.length === 0
+						? { message: '', isError: true }
+						: data.password.length < 8
+							? { message: '', isError: true }
+							: { isError: false }
+			}),
+			changed: (target, property) => {
+				if (property === 'email') target.password = '';
+				if (property === 'rememberMe') $loginStore.rememberMe = target.rememberMe;
+			},
+			submitted: (error) => {
+				if (error) {
+					formData.password = '';
+					focusInputById('Password');
+				} else if (formData.rememberMe) $loginStore.lastLoginUsername = formData.username;
+			}
+		}
+	);
+
+	let visible = $state(dev);
+	if (!dev)
+		setTimeout(() => {
+			visible = true;
+			focusFirstEmptyInputById(['Email'], 'Password');
+		}, 1000);
+</script>
+
+<HtmlTitle title="Login" />
+<WaveFullBackground>
+	{#if visible}
+		<div class="m-auto" transition:fade={{ duration: 750, easing: sineIn }}>
+			<h1 class="mb-4 text-center text-xl font-semibold text-gray-200 sm:text-2xl">
+				<img class="inline-flex" alt="logo" src="/favicon.png" width="48" />
+				FlagFlow frontend
+			</h1>
+			<form onsubmit={formExecute}>
+				<Card class="w-80 p-6 sm:w-96">
+					<h1 class="text-center text-lg text-neutral-500">Login</h1>
+					<span class="text-md my-2 min-h-[24px] text-center font-semibold text-red-700"
+						>{$stateError ? $stateError.message : ''}</span
+					>
+					<div class="grid grid-cols-1 gap-4">
+						<FormInput
+							class="unfocused"
+							icon={Icons.email}
+							inProgress={$stateInProgress}
+							mandatory
+							title="Username"
+							validity={$stateIsValid?.username}
+							bind:value={formData.username}
+						/>
+						<FormInput
+							class="unfocused"
+							inProgress={$stateInProgress}
+							mandatory
+							title="Password"
+							type="password"
+							validity={$stateIsValid?.password}
+							bind:value={formData.password}
+						/>
+						<Button class="w-full" disabled={!$stateAllValid || $stateInProgress} type="submit">
+							<Icon class="mr-2" icon={Icons.login} width="24" />
+							Login
+						</Button>
+					</div>
+				</Card>
+			</form>
+			{#if data.keycloak.enabled}
+				<Button class="mt-6 w-full" href={data.keycloak.loginUrl}>
+					<Icon class="mr-2" icon="simple-icons:keycloak" width="24" />
+					Keycloak login
+				</Button>
+			{/if}
+			<h6 class="mt-2 text-center text-xs text-gray-700">
+				v{__APP_VERSION__}
+			</h6>
+		</div>
+	{:else}
+		<div class="text-primary-700 m-auto flex flex-row">
+			<Icon icon={Icons.logo} width="48" />
+			<div class="m-auto font-semibold">Connecting...</div>
+		</div>
+	{/if}
+</WaveFullBackground>

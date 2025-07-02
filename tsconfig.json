@@ -1,0 +1,31 @@
+{
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"allowJs": false,
+		"checkJs": false,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": false,
+		"exactOptionalPropertyTypes": true,
+		"noPropertyAccessFromIndexSignature": true
+	},
+	"include": [
+		"ambient.d.ts",
+		"non-ambient.d.ts",
+		"./.svelte-kit/types/**/$types.d.ts",
+		"./vite.config.js",
+		"./vite.config.ts",
+		"./src/**/*.js",
+		"./src/**/*.ts",
+		"./src/**/*.d.ts",
+		"./src/**/*.svelte",
+		"./tests/**/*.js",
+		"./tests/**/*.ts",
+		"./tests/**/*.svelte",
+		"./tests/**/*.ts"
+	]
+}
