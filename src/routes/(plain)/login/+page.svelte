@@ -89,7 +89,7 @@
 		<div class="m-auto" transition:fade={{ duration: 750, easing: sineIn }}>
 			<h1 class="mb-4 text-center text-xl font-semibold text-gray-200 sm:text-2xl">
 				<img class="inline-flex" alt="logo" src="/favicon.png" width="48" />
-				FlagFlow frontend
+				FlagFlow admin
 			</h1>
 			<form onsubmit={formExecute}>
 				<Card class="w-80 p-6 sm:w-96">

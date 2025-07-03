@@ -24,7 +24,7 @@ export const config = {
 		enabled: envVar.get('SESSION_ENABLED').default('true').asBool(),
 		timeoutSecs: envVar
 			.get('SESSION_TIMEOUT_SEC')
-			.default(1 * 60)
+			.default(30 * 60)
 			.asIntPositive()
 	},
 	metrics: {

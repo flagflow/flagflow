@@ -23,9 +23,6 @@
 		padding: 0px;
 		text-align: center;
 	}
-	:global(body) {
-		background-color: #d4d9ed;
-	}
 	.cont_principal {
 		position: absolute;
 		width: 100%;
