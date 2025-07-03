@@ -19,6 +19,10 @@
 {@render children()}
 
 <style>
+	:global(body) {
+		background-color: white;
+	}
+
 	:global(button) {
 		cursor: pointer;
 		box-shadow: none;
