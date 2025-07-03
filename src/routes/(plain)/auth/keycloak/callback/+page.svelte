@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { serialize as serializeCookie, type SerializeOptions } from 'cookie';
-	import dayjs from 'dayjs';
 	import { Button } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import { setTokensCookies } from '$lib/cookies';
-	import { dateAddSeconds } from '$lib/dateEx';
 
 	import type { PageProps as PageProperties } from './$types';
 

@@ -46,7 +46,7 @@ export const createRequestContext = async (request: Request) => {
 					refresh_token,
 					id_token
 				},
-				authentication: {
+				success: {
 					name: accessTokenAuth.name,
 					email: accessTokenAuth.email,
 					roles: accessTokenAuth.resource_access[config.keycloak.client]?.roles || [],
@@ -74,7 +74,7 @@ export const createRequestContext = async (request: Request) => {
 			authentication = {
 				type: 'SESSION',
 				sessionId: sessionId,
-				authentication: session
+				success: session
 					? {
 							name: session.name,
 							roles: session.roles

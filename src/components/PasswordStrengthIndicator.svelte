@@ -9,10 +9,7 @@
 
 	let { password }: Properties = $props();
 
-	let strength = $state(passwordStrength(password));
-	$effect(() => {
-		strength = passwordStrength(password);
-	});
+	let strength = $derived(passwordStrength(password));
 </script>
 
 <div class="flex gap-4">

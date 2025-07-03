@@ -1,12 +1,10 @@
 <script lang="ts">
 	/* eslint-disable no-undef */
 	import Icon from '@iconify/svelte';
-	import { serialize as serializeCookie, type SerializeOptions } from 'cookie';
 	import { Button, Card } from 'flowbite-svelte';
 	import { sineIn } from 'svelte/easing';
 	import { fade } from 'svelte/transition';
 	import { persisted } from 'svelte-persisted-store';
-	import { z } from 'zod';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';

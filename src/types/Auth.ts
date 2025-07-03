@@ -4,7 +4,7 @@ export type Authentication =
 	| {
 			type: 'JWT';
 			tokens: JwtTokens;
-			authentication?:
+			success?:
 				| {
 						name: string;
 						email: string;
@@ -16,7 +16,7 @@ export type Authentication =
 	| {
 			type: 'SESSION';
 			sessionId: string;
-			authentication?:
+			success?:
 				| {
 						name: string;
 						roles: string[];
@@ -25,5 +25,5 @@ export type Authentication =
 	  }
 	| {
 			type: 'NONE';
-			authentication?: undefined;
+			success?: undefined;
 	  };

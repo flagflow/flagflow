@@ -5,7 +5,7 @@ import { keycloakUrls } from '$lib/server/keycloak';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ request, locals: { authentication } }) => {
-	if (!authentication.authentication) throw redirect(302, '/login');
+	if (!authentication.success) throw redirect(302, '/login');
 
 	const url = new URL(request.url);
 	const host = `${url.protocol}//${url.host}`;

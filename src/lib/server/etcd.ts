@@ -37,7 +37,6 @@ const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	const client = getEtcdClient(config, logger);
 
-	 
 	const genEtcdPrefix = (store: EtcdStore) => `flagflow/${config.prefix}/${store}/`;
 	const genEtcdKey = (store: EtcdStore, name: string) => genEtcdPrefix(store) + name;
 
