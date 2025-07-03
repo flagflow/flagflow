@@ -38,7 +38,7 @@ export const container = createContainer<_Container>({ strict: true }).register(
 });
 export type Container = AwilixContainer<_Container>;
 
-// Maintenance service runs every 60 seconds
+// Maintenance service runs every 113 seconds
 const maintenanceTimer = setInterval(async () => {
 	const scope = container.createScope();
 	scope.register({
@@ -48,7 +48,7 @@ const maintenanceTimer = setInterval(async () => {
 
 	const maintenanceService = scope.resolve('maintenanceService');
 	await maintenanceService.deleteExpiredSessions();
-}, 10 * 1000);
+}, 113 * 1000);
 
 // Done function to clean up the container
 export const doneContainer = async () => {
