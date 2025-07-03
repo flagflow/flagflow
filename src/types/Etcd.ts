@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+// EtcdTouchable
+export const EtcdTouchable = z.object({
+	expiredAt: z.number().int().positive(),
+	ttlSeconds: z.number().int().positive()
+});
+export type EtcdTouchable = z.infer<typeof EtcdTouchable>;
+
 // EtcdUser
 export const EtcdUser = z.object({
 	name: z.string().trim(),
@@ -9,15 +16,14 @@ export const EtcdUser = z.object({
 export type EtcdUser = z.infer<typeof EtcdUser>;
 
 // EtcdSession
-export const EtcdSession = z.object({
-	name: z.string().trim(),
-	roles: z.array(z.string())
-});
+export const EtcdSession = z.intersection(
+	EtcdTouchable,
+	z.object({
+		name: z.string().trim(),
+		roles: z.array(z.string())
+	})
+);
 export type EtcdSession = z.infer<typeof EtcdSession>;
-
-// All
-export type EtcdAny = EtcdUser | EtcdSession;
-export type EtcdWithKey<K extends EtcdAny> = { key: string } & K;
 
 // Stores
 export const EtcdStores = {

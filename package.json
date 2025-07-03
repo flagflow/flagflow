@@ -6,7 +6,7 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"dev": "vite dev | ./node_modules/.bin/pino-pretty -i time,host,pid,traceId,sessionId,userId -S",
+		"dev": "vite dev | ./node_modules/.bin/pino-pretty -i time,host,pid,traceId,userId -S",
 		"dev-rawlog": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview | ./node_modules/.bin/pino-pretty -i time,host,pid -S",

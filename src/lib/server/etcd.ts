@@ -1,4 +1,4 @@
-import { Etcd3 } from 'etcd3';
+import { Etcd3, type SortTarget } from 'etcd3';
 
 import {
 	type EtcdStore,
@@ -13,7 +13,7 @@ type EtcdConfig = {
 	server: string;
 	username: string | undefined;
 	password: string | undefined;
-	prefix: string;
+	namespace: string;
 };
 
 let cachedClient: Etcd3;
@@ -35,10 +35,10 @@ const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 };
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
-	const client = getEtcdClient(config, logger);
-
-	const genEtcdPrefix = (store: EtcdStore) => `flagflow/${config.prefix}/${store}/`;
+	const genEtcdPrefix = (store: EtcdStore) => `/flagflow/${config.namespace}/${store}/`;
 	const genEtcdKey = (store: EtcdStore, name: string) => genEtcdPrefix(store) + name;
+
+	const client = getEtcdClient(config, logger);
 
 	return {
 		get: async <K extends EtcdStore>(
@@ -52,7 +52,12 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 
 				const schema = EtcdStores[store];
 				const data = schema.parse(JSON.parse(etcdValue));
-				logger.debug(`Retrieved key: ${key}`);
+				if ('expiredAt' in data && data.expiredAt < Date.now()) {
+					logger.debug({ key }, 'Expired');
+					return undefined;
+				}
+
+				logger.debug({ key }, 'Get');
 				return {
 					key: name,
 					...data
@@ -65,16 +70,13 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		put: async <K extends EtcdStore>(
 			store: K,
 			name: string,
-			data: EtcdStoreDataType<K>,
-			ttlSeconds = 0
+			data: EtcdStoreDataType<K>
 		): Promise<void> => {
 			const key = genEtcdKey(store, name);
 
 			try {
-				await (ttlSeconds > 0
-					? client.lease(ttlSeconds, { autoKeepAlive: false }).put(key).value(JSON.stringify(data))
-					: client.put(key).value(JSON.stringify(data)));
-				logger.debug(`Put key: ${key}`);
+				await client.put(key).value(JSON.stringify(data));
+				logger.debug({ key }, 'Put');
 			} catch (error) {
 				logger.error(`Error putting key: ${key}`, error);
 				throw error;
@@ -83,43 +85,70 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		delete: async <K extends EtcdStore>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
+				const etcdValue = await client.get(key).string();
+				if (etcdValue === null) {
+					logger.warn({ key }, 'Key not found for deletion');
+					return;
+				}
+
 				await client.delete().key(key);
-				logger.debug(`Deleted key: ${key}`);
+				logger.debug({ key }, 'Delete');
 			} catch (error) {
 				logger.error(`Error deleting key: ${key}`, error);
 				throw error;
 			}
 		},
-		touch: async <K extends EtcdStore>(store: K, name: string, ttlSeconds: number) => {
+		touch: async <K extends EtcdStore>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
-				const response = await client.get(key).exec();
-				if (!response.kvs || response.kvs.length === 0) return;
+				const etcdValue = await client.get(key).string();
+				if (etcdValue === null) return;
 
-				const kv = response.kvs[0];
+				const schema = EtcdStores[store];
+				const data = schema.parse(JSON.parse(etcdValue));
+				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
-				await client
-					.lease(ttlSeconds, { autoKeepAlive: false })
-					.put(key)
-					.value(kv.value.toString());
+				data.expiredAt = Date.now() + data.ttlSeconds * 1000;
+				await client.put(key).value(JSON.stringify(data));
 
-				logger.debug(`Touched key: ${key}`);
+				logger.debug({ key }, 'Touch');
 			} catch (error) {
 				logger.error(`Error touching key: ${key}`, error);
 				throw error;
 			}
 		},
 		//watch: (key: string) => client.watch().key(key).create(),
-		list: async <K extends EtcdStore>(store: K, limit = 0) => {
+		list: async <K extends EtcdStore>(
+			store: K,
+			limit = 0,
+			sort: keyof typeof SortTarget = 'Key'
+		): Promise<Record<string, EtcdStoreDataType<K> | undefined>> => {
 			const prefix = genEtcdPrefix(store);
-			const getAllBuilder = client.getAll().prefix(prefix);
+			const schema = EtcdStores[store];
+
+			const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
 			if (limit > 0) getAllBuilder.limit(limit);
 
 			const data = await getAllBuilder.strings();
-			logger.debug(`Listed keys with prefix: ${store}, limit: ${limit}`);
-			return data;
+
+			const result: Record<string, EtcdStoreDataType<K> | undefined> = {};
+			let success = 0;
+			let failed = 0;
+			for (const key in data)
+				try {
+					result[key.slice(prefix.length)] = schema.parse(JSON.parse(data[key]));
+					success++;
+				} catch {
+					result[key] = undefined;
+					failed++;
+				}
+
+			logger.debug({ prefix, limit, success, failed }, 'List');
+			return result;
 		}
 	};
 };
 
-export const doneEtcdClient = () => cachedClient?.close();
+export const doneEtcdClient = () => {
+	cachedClient?.close();
+};

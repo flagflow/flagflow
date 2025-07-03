@@ -3,23 +3,28 @@ import pDebounce from 'p-debounce';
 import { generateSessionId } from '$lib/genId';
 import type { UserSession } from '$types/UserSession';
 
-import type { EtcdService, LogService } from '../index';
+import type { ConfigService, EtcdService, LogService } from '../index';
 
 type SessionServiceParameters = {
+	configService: ConfigService;
 	etcdService: EtcdService;
 	logService: LogService;
 };
 
-export const SessionService = ({ etcdService, logService }: SessionServiceParameters) => {
+export const SessionService = ({
+	configService,
+	etcdService,
+	logService
+}: SessionServiceParameters) => {
 	const log = logService('session');
 
 	const debounceTouchSession = pDebounce(
 		async (sessionId: string) => {
 			try {
-				await etcdService.touch('session', sessionId, 60);
-				log.debug('Touch');
+				await etcdService.touch('session', sessionId);
+				log.debug({ sessionId }, 'Touch');
 			} catch {
-				log.warn(`Touch unknown ${sessionId}`);
+				log.warn({ sessionId }, 'Touch unknown');
 			}
 		},
 		5000,
@@ -32,27 +37,34 @@ export const SessionService = ({ etcdService, logService }: SessionServiceParame
 			log.warn(`Not found ${sessionId}`);
 			return;
 		}
+		log.debug({ sessionId }, 'Get');
+
 		await debounceTouchSession(sessionId);
-		log.debug({ sessionId: sessionId }, 'Get');
+
 		return session;
 	};
 
 	return {
 		getSession,
-		createSession: async (session: UserSession) => {
+		createSession: async (partialSession: Omit<UserSession, 'expiredAt' | 'ttlSeconds'>) => {
 			const sessionId = generateSessionId();
+			const session: UserSession = {
+				...partialSession,
+				expiredAt: Date.now() + configService.session.timeoutSecs * 1000,
+				ttlSeconds: configService.session.timeoutSecs
+			};
 
-			await etcdService.put('session', sessionId, session, 60);
+			await etcdService.put('session', sessionId, session);
 
-			log.debug({ sessionId: sessionId }, 'Set');
+			log.debug({ sessionId }, 'Set');
 			return sessionId;
 		},
 		deleteSession: async (sessionId: string) => {
 			try {
 				await etcdService.delete('session', sessionId);
-				log.debug('Delete');
+				log.debug({ sessionId }, 'Delete');
 			} catch {
-				log.warn(`Delete unknown ${sessionId}`);
+				log.warn({ sessionId }, 'Delete unknown');
 			}
 		},
 		touchSession: async (sessionId: string) => await debounceTouchSession(sessionId)
