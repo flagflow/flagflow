@@ -8,7 +8,6 @@
 		DropdownItem,
 		Navbar,
 		NavBrand,
-		NavHamburger,
 		Sidebar,
 		SidebarGroup,
 		SidebarItem
@@ -67,20 +66,19 @@
 	});
 </script>
 
-<Navbar fluid>
+<Navbar class="bg-gray-50" fluid>
 	<NavBrand href="/">
 		<img class="me-3 h-6 sm:h-9" alt="FlagFlow Logo" src="favicon.png" />
-		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">FlagFlow</span
+		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
+			>FlagFlow admin</span
 		>
 	</NavBrand>
-	<div class="flex items-center md:order-2">
-		<Avatar id="avatar-menu" src="/images/profile-picture-3.webp" />
-		<NavHamburger />
+	<div class="flex cursor-pointer items-center md:order-2">
+		<Avatar id="avatar" class="bg-orange-100" border>BC</Avatar>
 	</div>
-	<Dropdown placement="bottom" triggeredBy="#avatar-menu">
+	<Dropdown placement="bottom" triggeredBy="#avatar">
 		<DropdownHeader>
-			<span class="block text-sm">{data.authentication.success?.name}</span>
-			<span class="block truncate text-sm font-medium">name@flowbite.com</span>
+			<span class="block text-sm font-semibold">{data.authentication.success?.name}</span>
 		</DropdownHeader>
 		<DropdownGroup>
 			<DropdownItem>Dashboard</DropdownItem>
@@ -96,10 +94,10 @@
 		class="z-50 h-full"
 		activeClass="p-2"
 		{activeUrl}
+		alwaysOpen
 		backdrop={false}
-		isOpen
 		nonActiveClass="p-2"
-		params={{ x: -50, duration: 50 }}
+		params={{ x: -50, duration: 0 }}
 		position="absolute"
 	>
 		<SidebarGroup>
@@ -142,12 +140,7 @@
 			</SidebarItem>
 		</SidebarGroup>
 	</Sidebar>
-	<div class="h-96 overflow-auto px-4 md:ml-64">
-		<div class="rounded-lg border-2 border-dashed border-gray-200 p-4 dark:border-gray-700">
-			{@render children()}
-		</div>
+	<div class="h-[calc(100svh-64px)] overflow-auto p-4 md:ml-64">
+		{@render children()}
 	</div>
 </div>
-
-<style>
-</style>
