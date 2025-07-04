@@ -26,6 +26,12 @@
 
 	const { data, children }: LayoutProperties = $props();
 
+	const username = data.authentication.success?.name || '';
+	const initials =
+		username.split(' ').length > 1
+			? username.split(' ')[0].slice(0, 1) + username.split(' ')[1].slice(0, 1)
+			: username.slice(0, 2);
+
 	const logout = async () => {
 		if (data.authentication.type === 'JWT') deleteTokensCookies();
 		if (data.logoutUrl) window.location.href = data.logoutUrl;
@@ -69,23 +75,18 @@
 <Navbar class="bg-gray-50" fluid>
 	<NavBrand href="/">
 		<img class="me-3 h-6 sm:h-9" alt="FlagFlow Logo" src="favicon.png" />
-		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
-			>FlagFlow admin</span
-		>
+		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+			FlagFlow admin
+		</span>
 	</NavBrand>
 	<div class="flex cursor-pointer items-center md:order-2">
-		<Avatar id="avatar" class="bg-orange-100" border>BC</Avatar>
+		<Avatar id="avatar" class="bg-orange-100" border>{initials}</Avatar>
 	</div>
 	<Dropdown placement="bottom" triggeredBy="#avatar">
-		<DropdownHeader>
-			<span class="block text-sm font-semibold">{data.authentication.success?.name}</span>
-		</DropdownHeader>
+		<DropdownHeader class="text-xs font-semibold">{username}</DropdownHeader>
 		<DropdownGroup>
-			<DropdownItem>Dashboard</DropdownItem>
-			<DropdownItem>Settings</DropdownItem>
-			<DropdownItem>Earnings</DropdownItem>
+			<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 		</DropdownGroup>
-		<DropdownHeader>Sign out</DropdownHeader>
 	</Dropdown>
 </Navbar>
 
