@@ -133,6 +133,7 @@
 	};
 	type AutoTableDateColumn<T> = AutoTablePropertyColumn<T> & {
 		property: NullableDateKeys<T>;
+		subProperty?: NullableStringKeys<T> | NullableStringKeys<T>[];
 		align: 'left';
 		dateFormat: string;
 		indicatorColor?: ValueOrFunction<T, IndicatorColors | undefined>;
@@ -664,6 +665,16 @@
 												{#if indicatorColor}
 													<Indicator class="ml-1 inline-flex" color={indicatorColor} size="xs" />
 												{/if}
+											{/if}
+											{#if 'subProperty' in column}
+												{@const subProperties = Array.isArray(column.subProperty)
+													? column.subProperty
+													: [column.subProperty]}
+												{#each subProperties as subProperty}
+													{#if row[subProperty]}
+														<div class="text-xs font-light">{row[subProperty]}</div>
+													{/if}
+												{/each}
 											{/if}
 										{:else}
 											<span class="flex w-full justify-between">

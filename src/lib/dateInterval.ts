@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 dayjs.extend(quarterOfYear);
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 const startYear = 2022;
 const infinityYear = 2099;
@@ -55,3 +57,6 @@ export const getIntervalDate = (interval: string): { start: Date; end: Date } =>
 		end: dayjs(`${interval}-12-31`).toDate()
 	};
 };
+
+export const getRelativeDateString = (date: Date, from: Date): string =>
+	dayjs(date).from(from, true);
