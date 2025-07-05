@@ -26,6 +26,7 @@ export const EtcdSession = z.intersection(
 export type EtcdSession = z.infer<typeof EtcdSession>;
 
 // Stores
+export type EtcdAnyObject = EtcdUser | EtcdSession;
 export const EtcdStores = {
 	user: EtcdUser,
 	session: EtcdSession
@@ -33,3 +34,17 @@ export const EtcdStores = {
 export type EtcdStore = keyof typeof EtcdStores;
 export type EtcdStoreDataType<K extends EtcdStore> = z.infer<(typeof EtcdStores)[K]>;
 export type EtcdStoreDataTypeWithKey<K extends EtcdStore> = { key: string } & EtcdStoreDataType<K>;
+
+// Record types
+export type EtcdRecord<T extends EtcdAnyObject> = Record<string, T | undefined>;
+export const etcdRecordToArray = <T extends EtcdAnyObject>(
+	record: EtcdRecord<T>
+): EtcdStoreDataTypeWithKey<keyof typeof EtcdStores>[] => {
+	return Object.entries(record).map(
+		([key, value]) =>
+			({
+				key,
+				...value
+			}) as EtcdStoreDataTypeWithKey<keyof typeof EtcdStores>
+	);
+};

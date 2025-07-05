@@ -19,6 +19,8 @@
 	import { apiClient } from '$lib/api/client';
 	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
+	import { modalHandler } from '$lib/modals';
+	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
 
@@ -137,7 +139,7 @@
 					<Icon class="mr-2" icon="mdi:user" width="18" />
 				{/snippet}
 				<SidebarItem label="Users" />
-				<SidebarItem label="Sessions" />
+				<SidebarItem href="/sessions" label="Sessions" />
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
@@ -152,3 +154,5 @@
 		{@render children()}
 	</div>
 </div>
+
+<ModalPortal store={modalHandler} />

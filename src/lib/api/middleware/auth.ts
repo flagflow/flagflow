@@ -10,7 +10,7 @@ export const authMiddleware: MiddlewareFunction<Context, Meta, any, any, any> = 
 	next,
 	meta
 }) => {
-	if (!ctx.authentication.authentication)
+	if (!ctx.authentication.success)
 		throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication error' });
 	if (meta?.permission)
 		switch (ctx.authentication.type) {
