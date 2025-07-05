@@ -9,6 +9,7 @@
 		Navbar,
 		NavBrand,
 		Sidebar,
+		SidebarDropdownWrapper,
 		SidebarGroup,
 		SidebarItem
 	} from 'flowbite-svelte';
@@ -93,7 +94,7 @@
 <div class="relative">
 	<Sidebar
 		class="z-50 h-full"
-		activeClass="p-2"
+		activeClass="p-2 text-white bg-primary-600 hover:bg-primary-800"
 		{activeUrl}
 		alwaysOpen
 		backdrop={false}
@@ -118,6 +119,8 @@
 					>
 				{/snippet}
 			</SidebarItem>
+		</SidebarGroup>
+		<SidebarGroup border>
 			<SidebarItem href="/123" label="Export / import" {spanClass}>
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:export" width="18" />
@@ -129,11 +132,15 @@
 					>
 				{/snippet}
 			</SidebarItem>
-			<SidebarItem href="/components/sidebar" label="Users">
+			<SidebarDropdownWrapper btnClass="p-2" label="Users">
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:user" width="18" />
 				{/snippet}
-			</SidebarItem>
+				<SidebarItem label="Users" />
+				<SidebarItem label="Sessions" />
+			</SidebarDropdownWrapper>
+		</SidebarGroup>
+		<SidebarGroup border>
 			<SidebarItem href="#" label="Logout" onclick={logout}>
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:logout" width="18" />
