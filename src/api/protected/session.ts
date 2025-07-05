@@ -7,9 +7,9 @@ import { etcdRecordToArray } from '$types/Etcd';
 
 export const sessionApi = createApiRouter({
 	getList: apiProcedure.query(async ({ ctx }) => {
-		const sessionService = ctx.container.resolve('sessionService');
-		const sessionsAsRecord = await sessionService.getAll();
-		const sessions = etcdRecordToArray<EtcdSession>(sessionsAsRecord);
+		const etcdService = ctx.container.resolve('etcdService');
+		const sessionRecords = await etcdService.list('session');
+		const sessions = etcdRecordToArray<EtcdSession>(sessionRecords);
 
 		return sessions;
 	}),

@@ -24,7 +24,6 @@
 
 	import type { LayoutProps as LayoutProperties } from './$types';
 
-	const activeUrl = $state(page.url.pathname);
 	const spanClass = 'flex-1 ms-3 whitespace-nowrap';
 
 	const { data, children }: LayoutProperties = $props();
@@ -97,7 +96,7 @@
 	<Sidebar
 		class="z-50 h-full"
 		activeClass="p-2 text-white bg-primary-600 hover:bg-primary-800"
-		{activeUrl}
+		activeUrl={page.url.pathname}
 		alwaysOpen
 		backdrop={false}
 		nonActiveClass="p-2"
@@ -105,7 +104,7 @@
 		position="absolute"
 	>
 		<SidebarGroup>
-			<SidebarItem href="/" label="Dashboard">
+			<SidebarItem href="/" label="Dashboard" {spanClass}>
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:view-dashboard" width="18" />
 				{/snippet}
@@ -138,7 +137,7 @@
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:user" width="18" />
 				{/snippet}
-				<SidebarItem label="Users" />
+				<SidebarItem href="/users" label="Users" />
 				<SidebarItem href="/sessions" label="Sessions" />
 			</SidebarDropdownWrapper>
 		</SidebarGroup>

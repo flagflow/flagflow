@@ -67,8 +67,7 @@ export const SessionService = ({
 				log.warn({ sessionId }, 'Delete unknown');
 			}
 		},
-		touchSession: async (sessionId: string) => await debounceTouchSession(sessionId),
-		getAll: () => etcdService.list('session')
+		touchSession: async (sessionId: string) => await debounceTouchSession(sessionId)
 	};
 };
 export type SessionService = ReturnType<typeof SessionService>;

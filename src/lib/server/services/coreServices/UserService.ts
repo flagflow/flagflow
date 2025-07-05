@@ -7,7 +7,7 @@ type UserServiceParameters = {
 	logService: LogService;
 };
 
-const hashPassword = (password: string) =>
+export const hashPassword = (password: string) =>
 	createHash('sha1').update(password).digest('hex').toLowerCase();
 
 export const UserService = ({ etcdService, logService }: UserServiceParameters) => {

@@ -1,10 +1,10 @@
 import { Etcd3, type SortTarget } from 'etcd3';
 
 import {
-	EtcdStore,
-	type EtcdStoreDataType,
-	type EtcdStoreDataTypeWithKey,
-	type EtcdStoreKey
+	EtcdSchema,
+	type EtcdSchemaDataType,
+	type EtcdSchemaDataTypeWithKey,
+	type EtcdSchemaKey
 } from '$types/Etcd';
 
 import type { ChildLogger } from './log';
@@ -35,42 +35,76 @@ const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 };
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
-	const genEtcdPrefix = (store: EtcdStoreKey) => `/flagflow/${config.namespace}/${store}/`;
-	const genEtcdKey = (store: EtcdStoreKey, name: string) => genEtcdPrefix(store) + name;
+	const genEtcdPrefix = (store: EtcdSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
+	const genEtcdKey = (store: EtcdSchemaKey, name: string) => genEtcdPrefix(store) + name;
 
 	const client = getEtcdClient(config, logger);
 
-	return {
-		get: async <K extends EtcdStoreKey>(
-			store: K,
-			name: string
-		): Promise<EtcdStoreDataTypeWithKey<K> | undefined> => {
-			const key = genEtcdKey(store, name);
-			try {
-				const etcdValue = await client.get(key).string();
-				if (etcdValue === null) return undefined;
+	const existsFunction = async <K extends EtcdSchemaKey>(
+		store: K,
+		name: string
+	): Promise<boolean> => {
+		const key = genEtcdKey(store, name);
+		try {
+			return !!(await client.get(key).string());
+		} catch (error) {
+			logger.error({ key, error }, 'Error when check exists');
+			throw error;
+		}
+	};
 
-				const schema = EtcdStore[store];
-				const data = schema.parse(JSON.parse(etcdValue));
-				if ('expiredAt' in data && data.expiredAt < Date.now()) {
-					logger.debug({ key }, 'Expired');
-					return undefined;
-				}
+	const getFunction = async <K extends EtcdSchemaKey>(
+		store: K,
+		name: string
+	): Promise<EtcdSchemaDataTypeWithKey<K> | undefined> => {
+		const key = genEtcdKey(store, name);
+		try {
+			const etcdValue = await client.get(key).string();
+			if (etcdValue === null) return undefined;
 
-				logger.debug({ key }, 'Get');
-				return {
-					key: name,
-					...data
-				};
-			} catch (error) {
-				logger.error(`Error parsing key: ${key}`, error);
+			const schema = EtcdSchema[store];
+			const data = schema.parse(JSON.parse(etcdValue));
+			if ('expiredAt' in data && data.expiredAt < Date.now()) {
+				logger.debug({ key }, 'Expired');
 				return undefined;
 			}
+
+			logger.debug({ key }, 'Get');
+			return {
+				key: name,
+				...data
+			};
+		} catch (error) {
+			logger.error({ key, error }, 'Get error');
+			return undefined;
+		}
+	};
+
+	const getOrThrowFunction = async <K extends EtcdSchemaKey>(
+		store: K,
+		name: string
+	): Promise<EtcdSchemaDataTypeWithKey<K>> => {
+		const data = await getFunction(store, name);
+		if (!data) throw new Error(`Key not exists or invalid: ${store}:${name}`);
+		return data;
+	};
+
+	return {
+		get: getFunction,
+		getOrThrow: getOrThrowFunction,
+		exists: existsFunction,
+		throwIfExists: async <K extends EtcdSchemaKey>(store: K, name: string): Promise<void> => {
+			const exists = await existsFunction(store, name);
+			if (exists) throw new Error(`Key already exists: ${store}:${name}`);
 		},
-		put: async <K extends EtcdStoreKey>(
+		throwIfNotExists: async <K extends EtcdSchemaKey>(store: K, name: string): Promise<void> => {
+			const exists = await existsFunction(store, name);
+			if (!exists) throw new Error(`Key not exists: ${store}:${name}`);
+		},
+		put: async <K extends EtcdSchemaKey>(
 			store: K,
 			name: string,
-			data: EtcdStoreDataType<K>
+			data: EtcdSchemaDataType<K>
 		): Promise<void> => {
 			const key = genEtcdKey(store, name);
 
@@ -78,11 +112,30 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				await client.put(key).value(JSON.stringify(data));
 				logger.debug({ key }, 'Put');
 			} catch (error) {
-				logger.error(`Error putting key: ${key}`, error);
+				logger.error({ key, error }, 'Put error');
 				throw error;
 			}
 		},
-		delete: async <K extends EtcdStoreKey>(store: K, name: string) => {
+		overwrite: async <K extends EtcdSchemaKey>(
+			store: K,
+			name: string,
+			data: Partial<EtcdSchemaDataType<K>>
+		): Promise<void> => {
+			const key = genEtcdKey(store, name);
+			try {
+				const sourceData = await getOrThrowFunction(store, name);
+				const overwrittenData: EtcdSchemaDataType<K> = {
+					...sourceData,
+					...data
+				};
+				await client.put(key).value(JSON.stringify(overwrittenData));
+				logger.debug({ key }, 'Overwrite');
+			} catch (error) {
+				logger.error({ key, error }, 'Overwrite error');
+				throw error;
+			}
+		},
+		delete: async <K extends EtcdSchemaKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
@@ -94,17 +147,17 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				await client.delete().key(key);
 				logger.debug({ key }, 'Delete');
 			} catch (error) {
-				logger.error(`Error deleting key: ${key}`, error);
+				logger.error({ key, error }, 'Delete error');
 				throw error;
 			}
 		},
-		touch: async <K extends EtcdStoreKey>(store: K, name: string) => {
+		touch: async <K extends EtcdSchemaKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
 				if (etcdValue === null) return;
 
-				const schema = EtcdStore[store];
+				const schema = EtcdSchema[store];
 				const data = schema.parse(JSON.parse(etcdValue));
 				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
@@ -113,38 +166,43 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 
 				logger.debug({ key }, 'Touch');
 			} catch (error) {
-				logger.error(`Error touching key: ${key}`, error);
+				logger.error({ key, error }, 'Touch error');
 				throw error;
 			}
 		},
 		//watch: (key: string) => client.watch().key(key).create(),
-		list: async <K extends EtcdStoreKey>(
+		list: async <K extends EtcdSchemaKey>(
 			store: K,
 			limit = 0,
 			sort: keyof typeof SortTarget = 'Key'
-		): Promise<Record<string, EtcdStoreDataType<K> | undefined>> => {
+		): Promise<Record<string, EtcdSchemaDataType<K> | undefined>> => {
 			const prefix = genEtcdPrefix(store);
-			const schema = EtcdStore[store];
+			try {
+				const schema = EtcdSchema[store];
 
-			const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
-			if (limit > 0) getAllBuilder.limit(limit);
+				const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
+				if (limit > 0) getAllBuilder.limit(limit);
 
-			const data = await getAllBuilder.strings();
+				const data = await getAllBuilder.strings();
 
-			const result: Record<string, EtcdStoreDataType<K> | undefined> = {};
-			let success = 0;
-			let failed = 0;
-			for (const key in data)
-				try {
-					result[key.slice(prefix.length)] = schema.parse(JSON.parse(data[key]));
-					success++;
-				} catch {
-					result[key.slice(prefix.length)] = undefined;
-					failed++;
-				}
+				const result: Record<string, EtcdSchemaDataType<K> | undefined> = {};
+				let success = 0;
+				let failed = 0;
+				for (const key in data)
+					try {
+						result[key.slice(prefix.length)] = schema.parse(JSON.parse(data[key]));
+						success++;
+					} catch {
+						result[key.slice(prefix.length)] = undefined;
+						failed++;
+					}
 
-			logger.debug({ prefix, limit, success, failed }, 'List');
-			return result;
+				logger.debug({ prefix, limit, success, failed }, 'List');
+				return result;
+			} catch (error) {
+				logger.debug({ prefix }, 'List error');
+				throw error;
+			}
 		}
 	};
 };

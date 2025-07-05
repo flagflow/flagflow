@@ -17,21 +17,12 @@
 
 	const createDescriptor = () =>
 		configAutoTable({
-			data: data.sessions,
+			data: data.users,
 			columns: [
 				{
 					title: 'User',
-					property: 'userName'
-				},
-				{
-					title: 'Created at',
-					property: 'createdAt',
-					dateFormat: 'YYYY-MM-DD HH:mm:ss',
-					subProperty: 'createdAtElapsed'
-				},
-				{
-					title: 'Session',
-					property: 'key'
+					property: 'name',
+					tagsProperty: 'roles'
 				},
 				{
 					align: 'right',
@@ -40,22 +31,22 @@
 							icon: 'mdi:delete',
 							color: 'red',
 							tooltip: 'Delete session',
-							onCommand: async (row) => await removeSession(row.key, row.userName)
+							onCommand: async (row) => await removeUser(row.key)
 						}
 					]
 				}
 			],
-			primary: 'userName',
-			sortables: ['userName', 'key', 'createdAt'],
+			primary: 'name',
+			sortables: ['name'],
 			sortOrderDefaultDesc: true
 		}) as AutoTableDescriptor;
 
-	const removeSession = async (sessionId: string, name: string) => {
+	const removeUser = async (name: string) => {
 		try {
-			const result = await showModalConfirmationDelete(`session of ${name}`);
+			const result = await showModalConfirmationDelete(name);
 			if (!result.isOk) return;
 
-			await apiClient.session.delete.mutate({ sessionId });
+			//await apiClient.session.delete.mutate({ name });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -63,13 +54,13 @@
 	};
 </script>
 
-<PageTitle status="Built-in login sessions" title="Sessions" />
+<PageTitle status="Built-in users" title="Users" />
 
-{#if data.sessions.length > 0}
+{#if data.users.length > 0}
 	{#key data}
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:users-group" title="There are no sessions yet" />
+	<EmptyListBanner icon="mdi:user" title="There are no users yet" />
 {/if}
 <ScrollToTop />

@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+export const EtcdKey = z
+	.string()
+	.regex(/^[\da-z-]+$/, 'String must only contain lowercase letters, numbers and hyphens');
+export const EtcdHierarchicalKey = z
+	.string()
+	.regex(
+		/^[\da-z-](?:[\d/a-z-]*[\da-z-])?$/,
+		'String must only contain lowercase letters, numbers, hyphens and slashes'
+	);
+
 // EtcdTouchable
 export const EtcdTouchable = z.object({
 	expiredAt: z.number().int().positive(),
@@ -8,9 +18,17 @@ export const EtcdTouchable = z.object({
 export type EtcdTouchable = z.infer<typeof EtcdTouchable>;
 
 // EtcdUser
+export const EtcdUserKey = z
+	.string()
+	.regex(
+		/^[\d.@a-z-]+$/,
+		"String must only contain lowercase letters, numbers, hyphens, '@', or '.'"
+	);
 export const EtcdUser = z.object({
 	name: z.string().trim(),
+	enabled: z.boolean(),
 	passwordHash: z.string(),
+	passwordExpireAt: z.number().int().positive().optional(),
 	roles: z.array(z.string())
 });
 export type EtcdUser = z.infer<typeof EtcdUser>;
@@ -26,17 +44,17 @@ export const EtcdSession = z.intersection(
 );
 export type EtcdSession = z.infer<typeof EtcdSession>;
 
-// Stores
+// Schemas
 export type EtcdAnyObject = EtcdUser | EtcdSession;
-export const EtcdStore = {
+export const EtcdSchema = {
 	user: EtcdUser,
 	session: EtcdSession
 } as const;
-export type EtcdStoreKey = keyof typeof EtcdStore;
-export type EtcdStoreDataType<K extends EtcdStoreKey> = z.infer<(typeof EtcdStore)[K]>;
-export type EtcdStoreDataTypeWithKey<K extends EtcdStoreKey> = {
+export type EtcdSchemaKey = keyof typeof EtcdSchema;
+export type EtcdSchemaDataType<K extends EtcdSchemaKey> = z.infer<(typeof EtcdSchema)[K]>;
+export type EtcdSchemaDataTypeWithKey<K extends EtcdSchemaKey> = {
 	key: string;
-} & EtcdStoreDataType<K>;
+} & EtcdSchemaDataType<K>;
 
 // Record types
 export type EtcdRecord<T extends EtcdAnyObject> = Record<string, T | undefined>;
