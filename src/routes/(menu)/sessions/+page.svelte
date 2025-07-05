@@ -20,12 +20,15 @@
 			data: data.sessions,
 			columns: [
 				{
-					mobileVisibility: 'always',
 					title: 'User',
-					property: 'name'
+					property: 'userName'
 				},
 				{
-					mobileVisibility: 'always',
+					title: 'Created at',
+					property: 'createdAt',
+					dateFormat: 'YYYY-MM-DD HH:mm:ss'
+				},
+				{
 					title: 'Session',
 					property: 'key'
 				},
@@ -36,13 +39,13 @@
 							icon: 'mdi:delete',
 							color: 'red',
 							tooltip: 'Delete session',
-							onCommand: async (row) => await removeSession(row.key, row.name)
+							onCommand: async (row) => await removeSession(row.key, row.userName)
 						}
 					]
 				}
 			],
-			primary: 'name',
-			sortables: ['name', 'key'],
+			primary: 'userName',
+			sortables: ['userName', 'key', 'createdAt'],
 			sortOrderDefaultDesc: true
 		}) as AutoTableDescriptor;
 
@@ -59,7 +62,7 @@
 	};
 </script>
 
-<PageTitle title="Sessions" />
+<PageTitle status="Built-in login sessions" title="Sessions" />
 
 {#if data.sessions.length > 0}
 	{#key data}

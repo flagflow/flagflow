@@ -2,13 +2,14 @@ import { z } from 'zod';
 
 import { ZNonEmptryString } from '$api/zodTypes';
 import { apiProcedure, createApiRouter } from '$lib/api/init';
+import type { EtcdSession } from '$types/Etcd';
 import { etcdRecordToArray } from '$types/Etcd';
 
 export const sessionApi = createApiRouter({
 	getList: apiProcedure.query(async ({ ctx }) => {
 		const sessionService = ctx.container.resolve('sessionService');
 		const sessionsAsRecord = await sessionService.getAll();
-		const sessions = etcdRecordToArray(sessionsAsRecord);
+		const sessions = etcdRecordToArray<EtcdSession>(sessionsAsRecord);
 
 		return sessions;
 	}),

@@ -1,10 +1,10 @@
 import { Etcd3, type SortTarget } from 'etcd3';
 
 import {
-	type EtcdStore,
+	EtcdStore,
 	type EtcdStoreDataType,
 	type EtcdStoreDataTypeWithKey,
-	EtcdStores
+	type EtcdStoreKey
 } from '$types/Etcd';
 
 import type { ChildLogger } from './log';
@@ -35,13 +35,13 @@ const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 };
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
-	const genEtcdPrefix = (store: EtcdStore) => `/flagflow/${config.namespace}/${store}/`;
-	const genEtcdKey = (store: EtcdStore, name: string) => genEtcdPrefix(store) + name;
+	const genEtcdPrefix = (store: EtcdStoreKey) => `/flagflow/${config.namespace}/${store}/`;
+	const genEtcdKey = (store: EtcdStoreKey, name: string) => genEtcdPrefix(store) + name;
 
 	const client = getEtcdClient(config, logger);
 
 	return {
-		get: async <K extends EtcdStore>(
+		get: async <K extends EtcdStoreKey>(
 			store: K,
 			name: string
 		): Promise<EtcdStoreDataTypeWithKey<K> | undefined> => {
@@ -50,7 +50,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				const etcdValue = await client.get(key).string();
 				if (etcdValue === null) return undefined;
 
-				const schema = EtcdStores[store];
+				const schema = EtcdStore[store];
 				const data = schema.parse(JSON.parse(etcdValue));
 				if ('expiredAt' in data && data.expiredAt < Date.now()) {
 					logger.debug({ key }, 'Expired');
@@ -67,7 +67,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				return undefined;
 			}
 		},
-		put: async <K extends EtcdStore>(
+		put: async <K extends EtcdStoreKey>(
 			store: K,
 			name: string,
 			data: EtcdStoreDataType<K>
@@ -82,7 +82,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		delete: async <K extends EtcdStore>(store: K, name: string) => {
+		delete: async <K extends EtcdStoreKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
@@ -98,13 +98,13 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		touch: async <K extends EtcdStore>(store: K, name: string) => {
+		touch: async <K extends EtcdStoreKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
 				if (etcdValue === null) return;
 
-				const schema = EtcdStores[store];
+				const schema = EtcdStore[store];
 				const data = schema.parse(JSON.parse(etcdValue));
 				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
@@ -118,13 +118,13 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			}
 		},
 		//watch: (key: string) => client.watch().key(key).create(),
-		list: async <K extends EtcdStore>(
+		list: async <K extends EtcdStoreKey>(
 			store: K,
 			limit = 0,
 			sort: keyof typeof SortTarget = 'Key'
 		): Promise<Record<string, EtcdStoreDataType<K> | undefined>> => {
 			const prefix = genEtcdPrefix(store);
-			const schema = EtcdStores[store];
+			const schema = EtcdStore[store];
 
 			const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
 			if (limit > 0) getAllBuilder.limit(limit);
@@ -139,7 +139,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 					result[key.slice(prefix.length)] = schema.parse(JSON.parse(data[key]));
 					success++;
 				} catch {
-					result[key] = undefined;
+					result[key.slice(prefix.length)] = undefined;
 					failed++;
 				}
 

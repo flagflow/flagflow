@@ -29,11 +29,11 @@
 
 	const { data, children }: LayoutProperties = $props();
 
-	const username = data.authentication.success?.name || '';
-	const initials =
-		username.split(' ').length > 1
-			? username.split(' ')[0].slice(0, 1) + username.split(' ')[1].slice(0, 1)
-			: username.slice(0, 2);
+	const userName = data.authentication.success?.userName || '';
+	const userNameInitials =
+		userName.split(' ').length > 1
+			? userName.split(' ')[0].slice(0, 1) + userName.split(' ')[1].slice(0, 1)
+			: userName.slice(0, 2);
 
 	const logout = async () => {
 		if (data.authentication.type === 'JWT') deleteTokensCookies();
@@ -83,10 +83,10 @@
 		</span>
 	</NavBrand>
 	<div class="flex cursor-pointer items-center md:order-2">
-		<Avatar id="avatar" class="bg-orange-100" border>{initials}</Avatar>
+		<Avatar id="avatar" class="bg-orange-100" border>{userNameInitials}</Avatar>
 	</div>
 	<Dropdown placement="bottom" triggeredBy="#avatar">
-		<DropdownHeader class="text-xs font-semibold">{username}</DropdownHeader>
+		<DropdownHeader class="text-xs font-semibold">{userName}</DropdownHeader>
 		<DropdownGroup>
 			<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 		</DropdownGroup>

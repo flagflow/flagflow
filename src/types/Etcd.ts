@@ -10,7 +10,7 @@ export type EtcdTouchable = z.infer<typeof EtcdTouchable>;
 // EtcdUser
 export const EtcdUser = z.object({
 	name: z.string().trim(),
-	passwordHash: z.string().trim(),
+	passwordHash: z.string(),
 	roles: z.array(z.string())
 });
 export type EtcdUser = z.infer<typeof EtcdUser>;
@@ -19,7 +19,8 @@ export type EtcdUser = z.infer<typeof EtcdUser>;
 export const EtcdSession = z.intersection(
 	EtcdTouchable,
 	z.object({
-		name: z.string().trim(),
+		userName: z.string().trim(),
+		createdAt: z.date({ coerce: true }),
 		roles: z.array(z.string())
 	})
 );
@@ -27,24 +28,20 @@ export type EtcdSession = z.infer<typeof EtcdSession>;
 
 // Stores
 export type EtcdAnyObject = EtcdUser | EtcdSession;
-export const EtcdStores = {
+export const EtcdStore = {
 	user: EtcdUser,
 	session: EtcdSession
 } as const;
-export type EtcdStore = keyof typeof EtcdStores;
-export type EtcdStoreDataType<K extends EtcdStore> = z.infer<(typeof EtcdStores)[K]>;
-export type EtcdStoreDataTypeWithKey<K extends EtcdStore> = { key: string } & EtcdStoreDataType<K>;
+export type EtcdStoreKey = keyof typeof EtcdStore;
+export type EtcdStoreDataType<K extends EtcdStoreKey> = z.infer<(typeof EtcdStore)[K]>;
+export type EtcdStoreDataTypeWithKey<K extends EtcdStoreKey> = {
+	key: string;
+} & EtcdStoreDataType<K>;
 
 // Record types
 export type EtcdRecord<T extends EtcdAnyObject> = Record<string, T | undefined>;
+export type EtcdWithKey<T extends EtcdAnyObject> = { key: string } & T;
 export const etcdRecordToArray = <T extends EtcdAnyObject>(
 	record: EtcdRecord<T>
-): EtcdStoreDataTypeWithKey<keyof typeof EtcdStores>[] => {
-	return Object.entries(record).map(
-		([key, value]) =>
-			({
-				key,
-				...value
-			}) as EtcdStoreDataTypeWithKey<keyof typeof EtcdStores>
-	);
-};
+): EtcdWithKey<T>[] =>
+	Object.entries(record).map(([key, value]) => ({ key, ...value }) as EtcdWithKey<T>);
