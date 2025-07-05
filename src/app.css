@@ -2,6 +2,16 @@
 
 @config "./../tailwind.config.ts";
 
+body {
+	background-color: white;
+}
+
+button {
+	cursor: pointer;
+	box-shadow: none;
+	--tw-ring-shadow: 0 0 #000 !important;
+}
+
 .trimmed-content {
 	overflow: hidden;
 	text-overflow: ellipsis;

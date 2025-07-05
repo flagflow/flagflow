@@ -1,4 +1,4 @@
 <script lang="ts">
 </script>
 
-<div class="grid grid-cols-1 gap-4 md:grid-cols-3"></div>
+<div class="rounded-lg border-2 border-dashed border-gray-200 p-4 dark:border-gray-700">ABC</div>

@@ -17,11 +17,3 @@
 <ScreenProgressbar visible={!!$navigating || $isInvalidating || $isDebouncedTrpcCommunication} />
 
 {@render children()}
-
-<style>
-	:global(button) {
-		cursor: pointer;
-		box-shadow: none;
-		--tw-ring-shadow: 0 0 #000 !important;
-	}
-</style>
