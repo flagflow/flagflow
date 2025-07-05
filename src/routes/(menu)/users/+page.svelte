@@ -10,8 +10,10 @@
 	} from '$components/table/AutoTable.svelte';
 	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { Button, ButtonGroup } from 'flowbite-svelte';
 
 	import type { PageProps as PageProperties } from './$types';
+	import AsyncButton from '$components/AsyncButton.svelte';
 
 	let { data }: PageProperties = $props();
 
@@ -41,6 +43,18 @@
 			sortOrderDefaultDesc: true
 		}) as AutoTableDescriptor;
 
+	const addUser = async () => {
+		try {
+			const result = await showModalConfirmationDelete(name);
+			if (!result.isOk) return;
+
+			//await apiClient.session.delete.mutate({ name });
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
 	const removeUser = async (name: string) => {
 		try {
 			const result = await showModalConfirmationDelete(name);
@@ -54,7 +68,11 @@
 	};
 </script>
 
-<PageTitle status="Built-in users" title="Users" />
+<PageTitle status="Built-in users" title="Users" toolbarPos="left">
+	<ButtonGroup>
+		<AsyncButton action={addUser}>AAA</AsyncButton>
+	</ButtonGroup>
+</PageTitle>
 
 {#if data.users.length > 0}
 	{#key data}

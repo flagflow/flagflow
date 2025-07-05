@@ -188,6 +188,40 @@ export class StringValidator {
 	}
 }
 
+export class ArrayValidator<T> {
+	private s: T[];
+	private _error: ValidityItem = { isError: false };
+	private updateError(message: string) {
+		if (!this._error.isError) this._error = { isError: true, message };
+	}
+	constructor(input: T[]) {
+		this.s = input;
+	}
+
+	public get error() {
+		return this._error;
+	}
+
+	public min(length: number): ArrayValidator<T> {
+		if (this.s.length < length) this.updateError(`Min item count ${length}`);
+		return this;
+	}
+	public max(length: number): ArrayValidator<T> {
+		if (this.s.length > length) this.updateError(`Max item count ${length}`);
+		return this;
+	}
+	public required(): ArrayValidator<T> {
+		return this.min(1);
+	}
+	public zod(schema: z.ZodTypeAny, message?: string): ArrayValidator<T> {
+		if (this.s) {
+			const isValid = schema.safeParse(this.s);
+			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+		}
+		return this;
+	}
+}
+
 export const convertToSelect = <T extends Record<string, unknown>, U extends string | number>(
 	source: T[],
 	valueField: TypeKeys<T, U>,
