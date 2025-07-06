@@ -46,8 +46,7 @@
 				}
 			],
 			primary: 'userName',
-			sortables: ['userName', 'key', 'createdAt'],
-			sortOrderDefaultDesc: true
+			sortables: ['userName', 'key', 'createdAt']
 		}) as AutoTableDescriptor;
 
 	const removeSession = async (sessionId: string, name: string) => {

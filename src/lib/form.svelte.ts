@@ -142,12 +142,20 @@ export class StringValidator {
 		if (!this.s) this.updateError('Required');
 		return this;
 	}
+	public equalsWith(value: string, title = ''): StringValidator {
+		if (this.s !== value) this.updateError('Must be equal' + (title ? ` to ${title}` : ''));
+		return this;
+	}
 	public noSpace(): StringValidator {
 		if (this.s.includes(' ')) this.updateError('No space allowed');
 		return this;
 	}
 	public maxLength(length: number): StringValidator {
 		if (this.s.length > length) this.updateError(`Max length ${length}`);
+		return this;
+	}
+	public minLength(length: number): StringValidator {
+		if (this.s.length < length) this.updateError(`Min length ${length}`);
 		return this;
 	}
 	public uppercase(): StringValidator {

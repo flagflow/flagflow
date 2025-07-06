@@ -13,7 +13,6 @@
 		digits?: number;
 		allowNull?: boolean;
 		disabled?: boolean;
-		onkeydown: (event: KeyboardEvent) => void;
 		onkeypress?: KeyboardEventHandler<EventTarget> | undefined | null;
 	}
 
@@ -25,7 +24,6 @@
 		digits = 0,
 		allowNull = false,
 		disabled = false,
-		onkeydown,
 		onkeypress
 	}: Properties = $props();
 
@@ -46,7 +44,6 @@
 		if (value !== null && max !== undefined && value > max) value = max;
 		if (value !== null) value = roundTo(value, digits);
 	}}
-	{onkeydown}
 	{onkeypress}
 	type="number"
 	bind:value

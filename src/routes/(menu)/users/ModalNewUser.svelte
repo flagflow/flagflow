@@ -6,6 +6,7 @@
 			userName: 'user@company.com',
 			name: 'John Doe',
 			password: '',
+			password2: '',
 			roles: [USER_ROLE_VIEWER],
 			mustChangePassword: true
 		};
@@ -20,20 +21,17 @@
 </script>
 
 <script lang="ts">
+	import { passwordStrength } from 'check-password-strength';
 	import { Badge, Button, Modal } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	import FormInput from '$components/form/FormInput.svelte';
-	import FormSelect from '$components/form/FormSelect.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
+	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
+	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
 	import { apiClient } from '$lib/api/client';
-	import {
-		ArrayValidator,
-		convertToSelect,
-		focusInputById,
-		FormLogic,
-		StringValidator
-	} from '$lib/form.svelte';
+	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
+	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
 	import { EtcdUserKey } from '$types/Etcd';
 	import { USER_ROLE_VIEWER } from '$types/UserRoles';
@@ -47,6 +45,7 @@
 			userName: string;
 			name: string;
 			password: string;
+			password2: string;
 			roles: string[];
 			mustChangePassword: boolean;
 		};
@@ -76,6 +75,11 @@
 							.noSpace()
 							.maxLength(64)
 							.zod(EtcdUserKey).error,
+						password: new StringValidator(source.password).required().minLength(8).error,
+						password2: new StringValidator(source.password2)
+							.required()
+							.minLength(8)
+							.equalsWith(source.password, 'password').error,
 						name: new StringValidator(source.name, 'trim').required().maxLength(100).error,
 						roles: new ArrayValidator(source.roles).required().error
 					}
@@ -83,6 +87,22 @@
 			}
 		}
 	);
+
+	const generateRandomPassword = async () => {
+		let password = generatePassword(8 + Math.random() * 8);
+		while (passwordStrength(password).id < 3) password = generatePassword();
+
+		formData.password = password;
+		formData.password2 = password;
+
+		await showModalInformation(
+			'Generated password',
+			`The generated password is: <strong>${password}</strong>
+			<br/><br/>
+			Warning! Keep it safe and send it to the user after user creation!`
+		);
+	};
+
 	focusInputById('userName');
 </script>
 
@@ -91,7 +111,7 @@
 		dismissable={false}
 		onclose={() => dispatch('resolve', { isOk: false })}
 		permanent
-		size="sm"
+		size="md"
 	>
 		{#snippet header()}
 			<div class="flex justify-between">
@@ -106,7 +126,7 @@
 		<div class="grid grid-cols-6 gap-4">
 			<FormInput
 				id="userName"
-				class="col-span-5"
+				class="col-span-3"
 				inProgress={$stateInProgress}
 				mandatory
 				title="Username"
@@ -114,36 +134,47 @@
 				bind:value={formData.userName}
 			/>
 			<FormInput
-				id="password"
-				class="col-span-5"
-				inProgress={$stateInProgress}
-				mandatory
-				title="Password"
-				validity={$stateIsValid?.user.password}
-				bind:value={formData.password}
-			/>
-			<FormInput
 				id="name"
-				class="col-span-5"
+				class="col-span-3"
 				inProgress={$stateInProgress}
 				mandatory
 				title="Name"
 				validity={$stateIsValid?.user.name}
 				bind:value={formData.name}
 			/>
-			<FormToggle
-				inProgress={$stateInProgress}
-				title="Service"
-				bind:checked={formData.mustChangePassword}
-			/>
-			<FormSelect
+			<FormInput
+				id="password"
 				class="col-span-3"
 				inProgress={$stateInProgress}
-				items={convertToSelect(quantityUnits, 'code', 'code')}
 				mandatory
-				title="Quantity unit"
-				bind:value={formData.roles}
+				title="Password"
+				type="password"
+				validity={$stateIsValid?.user.password}
+				bind:value={formData.password}
 			/>
+			<FormInput
+				id="password2"
+				class="col-span-3"
+				inProgress={$stateInProgress}
+				mandatory
+				title="Password again"
+				type="password"
+				validity={$stateIsValid?.user.password2}
+				bind:value={formData.password2}
+			/>
+			<span class="col-span-6">
+				<PasswordStrengthIndicator password={formData.password} />
+			</span>
+			<FormToggle
+				class="col-span-4"
+				inProgress={$stateInProgress}
+				inline
+				title="Must change password"
+				bind:checked={formData.mustChangePassword}
+			/>
+			<Button class="col-span-2" color="light" onclick={generateRandomPassword} size="xs"
+				>Generate password</Button
+			>
 		</div>
 
 		<div class="mt-4 flex justify-center space-x-4">

@@ -179,7 +179,6 @@
 					disabled={inProgress}
 					max={maxValue}
 					min={minValue}
-					onkeydown={onInputKeydown}
 					onkeypress={onInputKeypress}
 					bind:value={localValue}
 				/>

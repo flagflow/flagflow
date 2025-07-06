@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { ButtonGroup } from 'flowbite-svelte';
+
+	import AsyncButton from '$components/AsyncButton.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
@@ -8,12 +11,10 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
-	import { Button, ButtonGroup } from 'flowbite-svelte';
 
 	import type { PageProps as PageProperties } from './$types';
-	import AsyncButton from '$components/AsyncButton.svelte';
+	import { showModalNewUser } from './ModalNewUser.svelte';
 
 	let { data }: PageProperties = $props();
 
@@ -39,16 +40,14 @@
 				}
 			],
 			primary: 'name',
-			sortables: ['name'],
-			sortOrderDefaultDesc: true
+			sortables: ['name']
 		}) as AutoTableDescriptor;
 
 	const addUser = async () => {
 		try {
-			const result = await showModalConfirmationDelete(name);
+			const result = await showModalNewUser();
 			if (!result.isOk) return;
 
-			//await apiClient.session.delete.mutate({ name });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -70,7 +69,7 @@
 
 <PageTitle status="Built-in users" title="Users" toolbarPos="left">
 	<ButtonGroup>
-		<AsyncButton action={addUser}>AAA</AsyncButton>
+		<AsyncButton action={addUser}>New user</AsyncButton>
 	</ButtonGroup>
 </PageTitle>
 
