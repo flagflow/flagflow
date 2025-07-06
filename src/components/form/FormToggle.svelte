@@ -25,7 +25,7 @@
 </script>
 
 {#if inline}
-	<Toggle disabled={inProgress} bind:checked>{title}</Toggle>
+	<Toggle class={aClass} disabled={inProgress} bind:checked>{title}</Toggle>
 {:else}
 	<FormContainer class={aClass} {title} {validity}>
 		<Toggle class="mt-3" disabled={inProgress} bind:checked />
