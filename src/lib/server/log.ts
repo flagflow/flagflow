@@ -2,17 +2,20 @@ import pino from 'pino';
 
 import { config } from './config';
 
-export type ChildLogger = pino.Logger<never, boolean>;
+export type ChildLogger = pino.Logger<'audit', boolean>;
 
 const baseLogger = pino({
 	level: config.logLevel || 'info',
+	customLevels: {
+		audit: 100
+	},
+	useOnlyCustomLevels: false,
 	formatters: {
-		bindings: (bindings) => {
-			return {
-				pid: bindings['pid'],
-				host: bindings['hostname']
-			};
-		}
+		bindings: (bindings) => ({
+			pid: bindings['pid'],
+			host: bindings['hostname']
+		}),
+		level: (label, level) => ({ level, label })
 	}
 });
 
