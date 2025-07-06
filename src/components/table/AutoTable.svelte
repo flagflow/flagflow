@@ -512,6 +512,7 @@
 											class={clsx(
 												'rounded-none',
 												'unfocused',
+												'px-1',
 												commandColors[
 													typeof command.color === 'function'
 														? command.color(row)

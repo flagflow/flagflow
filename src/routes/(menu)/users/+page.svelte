@@ -16,6 +16,7 @@
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalNewUser } from './ModalNewUser.svelte';
+	import { showModalUserModify } from './ModalUserModify.svelte';
 
 	let { data }: PageProperties = $props();
 
@@ -28,18 +29,19 @@
 					property: 'key'
 				},
 				{
-					title: 'User',
-					property: 'name',
-					tagsProperty: 'roles'
-				},
-				{
-					title: 'User',
+					title: 'Name',
 					property: 'name',
 					tagsProperty: 'roles'
 				},
 				{
 					align: 'right',
 					commands: [
+						{
+							icon: 'mdi:edit',
+							color: 'black',
+							tooltip: 'Modify user',
+							onCommand: async (row) => await modifyUser(row.key)
+						},
 						{
 							icon: 'mdi:delete',
 							color: 'red',
@@ -56,9 +58,16 @@
 	const addUser = async () => {
 		try {
 			const result = await showModalNewUser();
-			if (!result.isOk) return;
+			if (result.isOk) await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
 
-			await invalidatePage();
+	const modifyUser = async (userName: string) => {
+		try {
+			const result = await showModalUserModify(userName);
+			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
 		}

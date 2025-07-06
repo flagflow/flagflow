@@ -175,6 +175,7 @@
 					inProgress={$stateInProgress}
 					mandatory
 					title="Assigned roles"
+					validity={$stateIsValid?.user.roles}
 					bind:roles={formData.roles}
 				/>
 			</div>
