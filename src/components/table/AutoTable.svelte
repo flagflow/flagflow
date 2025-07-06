@@ -97,24 +97,6 @@
 		property: keyof T;
 		align?: Align;
 		textClass?: ValueOrFunction<T, string>;
-		editable?: {
-			enabled?: ValueOrFunction<T, boolean>;
-			idProperty: NumberKeys<T>;
-			modifyAction: (key: string, value: unknown, extraData: number | undefined) => Promise<void>;
-
-			class?: ValueOrFunction<T, string>;
-			mandatory?: boolean;
-
-			nullDisplay?: string;
-
-			maxLength?: number;
-			regexp?: RegExp;
-
-			minValue?: number;
-			maxValue?: number;
-			digits?: number;
-			allowNumberNull?: boolean;
-		};
 	};
 	type AutoTableSubColumn<T> = AutoTablePropertyColumn<T> & {
 		property: NullableStringKeys<T>;
@@ -251,7 +233,6 @@
 	import { derived, get, type Writable } from 'svelte/store';
 
 	import AsyncButton from '$components/AsyncButton.svelte';
-	import InplaceInput from '$components/inplace/InplaceInput.svelte';
 	import { isStringArray, searchObjectStringField } from '$lib/objectEx';
 	import { isStringStore } from '$lib/storeEx';
 	import { trimEnd } from '$lib/stringEx';
@@ -585,31 +566,6 @@
 											{/if}
 										{/each}
 									</span>
-								{:else if 'editable' in column && (!column.editable.enabled || (typeof column.editable.enabled === 'function' && column.editable.enabled(row)) || (typeof column.editable.enabled === 'boolean' && column.editable.enabled))}
-									<InplaceInput
-										class={column.editable.class
-											? typeof column.editable.class === 'function'
-												? column.editable.class(row)
-												: column.editable.class
-											: ''}
-										allowNumberNull={column.editable.allowNumberNull}
-										digits={column.editable.digits}
-										extraData={row[column.editable.idProperty] as number}
-										key={column.property}
-										mandatory={column.editable.mandatory}
-										maxLength={column.editable.maxLength}
-										maxValue={column.editable.maxValue}
-										minValue={column.editable.minValue}
-										modifyAction={column.editable.modifyAction}
-										nullDisplay={column.editable.nullDisplay}
-										postfix={'metric' in column
-											? column.metric
-											: 'metricProperty' in column
-												? row[column.metricProperty]
-												: ''}
-										regexp={column.editable.regexp}
-										value={row[column.property]}
-									/>
 								{:else}
 									{@const value = row[column.property]}
 									{@const textClass = clsx(
