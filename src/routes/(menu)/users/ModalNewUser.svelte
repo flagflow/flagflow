@@ -22,11 +22,12 @@
 
 <script lang="ts">
 	import { passwordStrength } from 'check-password-strength';
-	import { Badge, Button, Modal } from 'flowbite-svelte';
+	import { Badge, Button, Hr, Modal } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
+	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
 	import { apiClient } from '$lib/api/client';
@@ -123,10 +124,9 @@
 				{/if}
 			</div>
 		{/snippet}
-		<div class="grid grid-cols-6 gap-4">
+		<div class="grid grid-cols-2 gap-4">
 			<FormInput
 				id="userName"
-				class="col-span-3"
 				inProgress={$stateInProgress}
 				mandatory
 				title="Username"
@@ -135,46 +135,49 @@
 			/>
 			<FormInput
 				id="name"
-				class="col-span-3"
 				inProgress={$stateInProgress}
 				mandatory
 				title="Name"
 				validity={$stateIsValid?.user.name}
 				bind:value={formData.name}
 			/>
-			<FormInput
-				id="password"
-				class="col-span-3"
-				inProgress={$stateInProgress}
-				mandatory
-				title="Password"
-				type="password"
-				validity={$stateIsValid?.user.password}
-				bind:value={formData.password}
-			/>
-			<FormInput
-				id="password2"
-				class="col-span-3"
-				inProgress={$stateInProgress}
-				mandatory
-				title="Password again"
-				type="password"
-				validity={$stateIsValid?.user.password2}
-				bind:value={formData.password2}
-			/>
-			<span class="col-span-6">
+			<Hr class="col-span-2 m-2" />
+			<div class="flex flex-col gap-4">
+				<FormInput
+					id="password"
+					inProgress={$stateInProgress}
+					mandatory
+					title="Password"
+					type="password"
+					validity={$stateIsValid?.user.password}
+					bind:value={formData.password}
+				/>
+				<FormInput
+					id="password2"
+					inProgress={$stateInProgress}
+					mandatory
+					title="Password again"
+					type="password"
+					validity={$stateIsValid?.user.password2}
+					bind:value={formData.password2}
+				/>
 				<PasswordStrengthIndicator password={formData.password} />
-			</span>
-			<FormToggle
-				class="col-span-4"
-				inProgress={$stateInProgress}
-				inline
-				title="Must change password"
-				bind:checked={formData.mustChangePassword}
-			/>
-			<Button class="col-span-2" color="light" onclick={generateRandomPassword} size="xs"
-				>Generate password</Button
-			>
+				<Button color="light" onclick={generateRandomPassword} size="xs">Generate password</Button>
+				<FormToggle
+					inProgress={$stateInProgress}
+					inline
+					title="Must change password"
+					bind:checked={formData.mustChangePassword}
+				/>
+			</div>
+			<div class="flex flex-col gap-4">
+				<FormUserRoleEditor
+					inProgress={$stateInProgress}
+					mandatory
+					title="Assigned roles"
+					bind:roles={formData.roles}
+				/>
+			</div>
 		</div>
 
 		<div class="mt-4 flex justify-center space-x-4">

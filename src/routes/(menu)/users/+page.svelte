@@ -11,6 +11,7 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
+	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
 
 	import type { PageProps as PageProperties } from './$types';
@@ -23,6 +24,15 @@
 			data: data.users,
 			columns: [
 				{
+					title: 'Username',
+					property: 'key'
+				},
+				{
+					title: 'User',
+					property: 'name',
+					tagsProperty: 'roles'
+				},
+				{
 					title: 'User',
 					property: 'name',
 					tagsProperty: 'roles'
@@ -33,14 +43,14 @@
 						{
 							icon: 'mdi:delete',
 							color: 'red',
-							tooltip: 'Delete session',
-							onCommand: async (row) => await removeUser(row.key)
+							tooltip: 'Delete user',
+							onCommand: async (row) => await removeUser(row.key, row.name)
 						}
 					]
 				}
 			],
-			primary: 'name',
-			sortables: ['name']
+			primary: 'key',
+			sortables: ['key', 'name']
 		}) as AutoTableDescriptor;
 
 	const addUser = async () => {
@@ -54,12 +64,12 @@
 		}
 	};
 
-	const removeUser = async (name: string) => {
+	const removeUser = async (userName: string, name: string) => {
 		try {
 			const result = await showModalConfirmationDelete(name);
 			if (!result.isOk) return;
 
-			//await apiClient.session.delete.mutate({ name });
+			await apiClient.user.delete.mutate({ key: userName });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
