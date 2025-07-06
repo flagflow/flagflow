@@ -245,6 +245,7 @@
 		descriptor: AutoTableDescriptor;
 		selectedIds?: SvelteSet<number>;
 		shadow?: boolean;
+		border?: boolean;
 		headClass?: string;
 		footClass?: string;
 	}
@@ -252,7 +253,8 @@
 	let {
 		descriptor,
 		selectedIds = $bindable(),
-		shadow = true,
+		shadow = false,
+		border = true,
 		headClass = 'bg-slate-200',
 		footClass = 'bg-slate-100'
 	}: Properties = $props();
@@ -379,7 +381,7 @@
 	</tr>
 {/snippet}
 
-<Table hoverable {shadow}>
+<Table {border} hoverable {shadow}>
 	{@const hasMobileColumn = descriptor.columns.some((column) => !!column.mobileVisibility)}
 	<TableHead class={headClass}>
 		{#if 'preview' in descriptor && descriptor.preview}
