@@ -5,6 +5,7 @@ import { apiProcedure, createApiRouter } from '$lib/api/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import type { EtcdUser } from '$types/Etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/Etcd';
+import { UserRoleZodEnum } from '$types/UserRoles';
 
 export const userApi = createApiRouter({
 	getList: apiProcedure.query(async ({ ctx }) => {
@@ -20,7 +21,7 @@ export const userApi = createApiRouter({
 				key: EtcdUserKey.trim(),
 				name: z.string().trim(),
 				password: ZNonEmptryString(),
-				roles: z.array(z.string()),
+				roles: z.array(UserRoleZodEnum),
 				mustChangePassword: z.boolean()
 			})
 		)
@@ -40,7 +41,7 @@ export const userApi = createApiRouter({
 			z.object({
 				key: EtcdUserKey.trim(),
 				name: z.string().trim(),
-				roles: z.array(z.string())
+				roles: z.array(UserRoleZodEnum)
 			})
 		)
 		.mutation(async ({ ctx, input }) => {

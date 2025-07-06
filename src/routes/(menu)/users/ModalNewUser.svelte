@@ -7,7 +7,7 @@
 			name: 'John Doe',
 			password: '',
 			password2: '',
-			roles: [USER_ROLE_VIEWER],
+			roles: ['flagflow-viewer'] as UserRole[],
 			mustChangePassword: true
 		};
 
@@ -34,7 +34,7 @@
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
 	import { EtcdUserKey } from '$types/Etcd';
-	import { USER_ROLE_VIEWER } from '$types/UserRoles';
+	import { type UserRole } from '$types/UserRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -46,7 +46,7 @@
 			name: string;
 			password: string;
 			password2: string;
-			roles: string[];
+			roles: UserRole[];
 			mustChangePassword: boolean;
 		};
 	}
