@@ -1,7 +1,9 @@
 import { createApiRouter } from '$lib/api/init';
 
-//import { keycloakApi } from './keycloak';
+import { sessionApi } from './session';
+import { userApi } from './user';
 
 export const rootProtectedApi = createApiRouter({
-	//keycloak: keycloakApi
+	session: sessionApi,
+	user: userApi
 });

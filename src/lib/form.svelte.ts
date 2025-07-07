@@ -142,12 +142,20 @@ export class StringValidator {
 		if (!this.s) this.updateError('Required');
 		return this;
 	}
+	public equalsWith(value: string, title = ''): StringValidator {
+		if (this.s !== value) this.updateError('Must be equal' + (title ? ` to ${title}` : ''));
+		return this;
+	}
 	public noSpace(): StringValidator {
 		if (this.s.includes(' ')) this.updateError('No space allowed');
 		return this;
 	}
 	public maxLength(length: number): StringValidator {
 		if (this.s.length > length) this.updateError(`Max length ${length}`);
+		return this;
+	}
+	public minLength(length: number): StringValidator {
+		if (this.s.length < length) this.updateError(`Min length ${length}`);
 		return this;
 	}
 	public uppercase(): StringValidator {
@@ -180,6 +188,40 @@ export class StringValidator {
 		return this;
 	}
 	public zod(schema: z.ZodTypeAny, message?: string): StringValidator {
+		if (this.s) {
+			const isValid = schema.safeParse(this.s);
+			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+		}
+		return this;
+	}
+}
+
+export class ArrayValidator<T> {
+	private s: T[];
+	private _error: ValidityItem = { isError: false };
+	private updateError(message: string) {
+		if (!this._error.isError) this._error = { isError: true, message };
+	}
+	constructor(input: T[]) {
+		this.s = input;
+	}
+
+	public get error() {
+		return this._error;
+	}
+
+	public min(length: number): ArrayValidator<T> {
+		if (this.s.length < length) this.updateError(`Min item count ${length}`);
+		return this;
+	}
+	public max(length: number): ArrayValidator<T> {
+		if (this.s.length > length) this.updateError(`Max item count ${length}`);
+		return this;
+	}
+	public required(): ArrayValidator<T> {
+		return this.min(1);
+	}
+	public zod(schema: z.ZodTypeAny, message?: string): ArrayValidator<T> {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
 			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));

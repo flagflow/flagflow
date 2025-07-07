@@ -6,7 +6,7 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"dev": "vite dev | ./node_modules/.bin/pino-pretty -i time,host,pid,traceId -S",
+		"dev": "vite dev | ./node_modules/.bin/pino-pretty -x audit:100,fatal:60,error:50,warn:40,info:30,debug:20,trace:10 -i time,host,pid,traceId,label -S",
 		"dev-rawlog": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview | ./node_modules/.bin/pino-pretty -i time,host,pid -S",
@@ -56,12 +56,12 @@
 		"flowbite": "^3.1.2",
 		"flowbite-svelte": "^1.8.3",
 		"globals": "^16.3.0",
-		"mermaid": "^11.7.0",
+		"mermaid": "^11.8.0",
 		"pino-pretty": "^13.0.0",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.6.13",
-		"svelte": "^5.34.9",
+		"svelte": "^5.35.2",
 		"svelte-check": "^4.2.2",
 		"tailwindcss": "^4.1.11",
 		"typescript": "^5.8.3",
@@ -72,7 +72,7 @@
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
-		"@dotenvx/dotenvx": "^1.45.1",
+		"@dotenvx/dotenvx": "^1.45.2",
 		"@qiwi/deep-proxy": "^3.0.0",
 		"awilix": "^12.0.5",
 		"axios": "^1.10.0",
@@ -92,6 +92,6 @@
 		"superjson": "^2.2.2",
 		"svelte-persisted-store": "^0.12.0",
 		"tsx": "^4.20.3",
-		"zod": "^3.25.67"
+		"zod": "^3.25.74"
 	}
 }

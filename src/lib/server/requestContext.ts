@@ -47,7 +47,7 @@ export const createRequestContext = async (request: Request) => {
 					id_token
 				},
 				success: {
-					name: accessTokenAuth.name,
+					userName: accessTokenAuth.name,
 					email: accessTokenAuth.email,
 					roles: accessTokenAuth.resource_access[config.keycloak.client]?.roles || [],
 					expiredAt: new Date(accessTokenAuth.exp * 1000)
@@ -76,12 +76,12 @@ export const createRequestContext = async (request: Request) => {
 				sessionId: sessionId,
 				success: session
 					? {
-							name: session.name,
+							userName: session.userName,
 							roles: session.roles
 						}
 					: undefined
 			};
-			scope.register({ userName: asValue(session ? session.name : undefined) });
+			scope.register({ userName: asValue(session ? session.userName : undefined) });
 		} catch {
 			authentication = {
 				type: 'SESSION',

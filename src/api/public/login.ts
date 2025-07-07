@@ -18,7 +18,8 @@ export const loginApi = createApiRouter({
 
 			const sessionService = ctx.container.resolve('sessionService');
 			const sessionId = await sessionService.createSession({
-				name: user?.name || username,
+				userName: user?.name || username,
+				createdAt: new Date(),
 				roles: user?.roles || []
 			});
 

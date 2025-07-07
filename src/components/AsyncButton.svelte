@@ -1,4 +1,5 @@
 <script lang="ts">
+	import clsx from 'clsx';
 	import { Button } from 'flowbite-svelte';
 	import type { Snippet } from 'svelte';
 
@@ -17,7 +18,8 @@
 			| 'light'
 			| 'dark'
 			| 'primary'
-			| 'alternative';
+			| 'alternative'
+			| 'none';
 		children: Snippet;
 	}
 
@@ -45,7 +47,15 @@
 </script>
 
 {#if children}
-	<Button class={aClass} {color} disabled={isWorking} onclick={handleClick} {outline} {pill} {size}>
+	<Button
+		class={clsx(aClass, color === 'none' ? 'border-0 py-0 hover:bg-inherit' : '')}
+		color={color === 'none' ? 'alternative' : color}
+		disabled={isWorking}
+		onclick={handleClick}
+		{outline}
+		{pill}
+		{size}
+	>
 		{@render children()}
 	</Button>
 {/if}

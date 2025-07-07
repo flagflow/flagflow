@@ -147,3 +147,5 @@ export const verifyKeycloakAccessToken = async (
 		});
 	});
 };
+
+export const verifyKeycloakCommunication = async () => jwksClient.getKeys();

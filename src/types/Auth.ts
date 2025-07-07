@@ -6,7 +6,7 @@ export type Authentication =
 			tokens: JwtTokens;
 			success?:
 				| {
-						name: string;
+						userName: string;
 						email: string;
 						roles: string[];
 						expiredAt: Date;
@@ -18,7 +18,7 @@ export type Authentication =
 			sessionId: string;
 			success?:
 				| {
-						name: string;
+						userName: string;
 						roles: string[];
 				  }
 				| undefined;
