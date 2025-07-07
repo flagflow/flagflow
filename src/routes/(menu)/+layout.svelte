@@ -76,7 +76,7 @@
 
 <Navbar class="bg-gray-50" fluid>
 	<NavBrand href="/">
-		<img class="me-3 h-6 sm:h-9" alt="FlagFlow Logo" src="favicon.png" />
+		<img class="me-3 h-6 sm:h-9" alt="FlagFlow Logo" src="/favicon.png" />
 		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
 			FlagFlow admin
 		</span>
@@ -97,10 +97,9 @@
 		class="z-50 h-full"
 		activeClass="p-2 text-white bg-primary-600 hover:bg-primary-800"
 		activeUrl={page.url.pathname}
-		alwaysOpen
 		backdrop={false}
 		nonActiveClass="p-2"
-		params={{ x: -50, duration: 0 }}
+		params={{ x: 0, duration: 0 }}
 		position="absolute"
 	>
 		<SidebarGroup>
