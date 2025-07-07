@@ -126,6 +126,13 @@
 		trueValue: string;
 		falseValue: string;
 	};
+	type AutoTableTagColumn<T> = AutoTablePropertyColumn<T> & {
+		property: NullableArrayStringKeys<T>;
+		subProperty?: NullableStringKeys<T> | NullableStringKeys<T>[];
+		statusProperty?: NullableStringKeys<T>;
+		align: 'left';
+		isTagLarge: boolean;
+	};
 	type AutoTableInfoColumn<T> = AutoTableColumn<T> & {
 		align: 'left';
 		calcInfoItems: (row: T) => (string | undefined)[];
@@ -143,6 +150,7 @@
 			| AutoTableValueColumn<T>
 			| AutoTableDateColumn<T>
 			| AutoTableBooleanColumn<T>
+			| AutoTableTagColumn<T>
 			| AutoTableCustomColumn<T>
 			| AutoTableInfoColumn<T>
 		)[];
@@ -560,6 +568,32 @@
 												else selectedIds.add(id);
 										}}
 									/>
+								{:else if 'isTagLarge' in column}
+									<div class="pt-1 pl-2 text-xs font-light">
+										{#each toTagArray(row[column.property]) as tag}
+											<button
+												onclick={(event) => {
+													event.stopPropagation();
+													event.preventDefault();
+													for (const filter of descriptor.filters ?? []) {
+														if (isStringStore(filter.value)) filter.value.set(tag);
+														break;
+													}
+												}}
+											>
+												<Badge
+													class="mr-2 px-1.5 py-0.5"
+													border
+													color={tag.endsWith('!!')
+														? 'red'
+														: tag.endsWith('!')
+															? 'yellow'
+															: 'green'}
+													large={column.isTagLarge}>{trimEnd(tag, '!')}</Badge
+												>
+											</button>
+										{/each}
+									</div>
 								{:else if 'calcInfoItems' in column}
 									{@const infoItems = column.calcInfoItems(row)}
 									<span class="text-xs font-light">

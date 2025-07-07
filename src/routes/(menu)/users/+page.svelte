@@ -30,8 +30,12 @@
 				},
 				{
 					title: 'Name',
-					property: 'name',
-					tagsProperty: 'roles'
+					property: 'name'
+				},
+				{
+					title: 'Roles',
+					property: 'rolesToDisplay',
+					isTagLarge: false
 				},
 				{
 					align: 'right',

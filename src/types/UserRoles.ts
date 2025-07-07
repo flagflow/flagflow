@@ -1,5 +1,6 @@
 import z from 'zod';
 
+export const USER_ROLES_PREFIX = 'flagflow-';
 export const USER_ROLES_DESCRIPTOR = {
 	'flagflow-admin':
 		'Can manage all aspects of Flagflow, including user management and system settings',
@@ -17,3 +18,13 @@ export const UserRoleZodEnum = z.enum([
 	'flagflow-editor',
 	'flagflow-viewer'
 ]);
+
+export const UserRolePostfixToColor: Record<UserRole, string> = {
+	'flagflow-admin': '!!',
+	'flagflow-maintainer': '!',
+	'flagflow-editor': '!',
+	'flagflow-viewer': ''
+};
+
+export const sortUserRoles = (soles: UserRole[]): UserRole[] =>
+	soles.sort((a, b) => UserRoleZodEnum.options.indexOf(a) - UserRoleZodEnum.options.indexOf(b));
