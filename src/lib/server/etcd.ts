@@ -16,7 +16,7 @@ type EtcdConfig = {
 	namespace: string;
 };
 
-let cachedClient: Etcd3;
+let cachedClient: Etcd3 | undefined;
 const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 	if (!cachedClient) {
 		cachedClient =
@@ -33,6 +33,12 @@ const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
 	}
 	return cachedClient;
 };
+const resetEctdClient = () => {
+	if (cachedClient) {
+		cachedClient.close();
+		cachedClient = undefined;
+	}
+};
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	const genEtcdPrefix = (store: EtcdSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
@@ -48,6 +54,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		try {
 			return !!(await client.get(key).string());
 		} catch (error) {
+			resetEctdClient();
 			logger.error({ key, error }, 'Error when check exists');
 			throw error;
 		}
@@ -75,6 +82,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				...data
 			};
 		} catch (error) {
+			resetEctdClient();
 			logger.error({ key, error }, 'Get error');
 			return undefined;
 		}
@@ -112,6 +120,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				await client.put(key).value(JSON.stringify(data));
 				logger.debug({ key }, 'Put');
 			} catch (error) {
+				resetEctdClient();
 				logger.error({ key, error }, 'Put error');
 				throw error;
 			}
@@ -131,6 +140,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				await client.put(key).value(JSON.stringify(overwrittenData));
 				logger.debug({ key }, 'Overwrite');
 			} catch (error) {
+				resetEctdClient();
 				logger.error({ key, error }, 'Overwrite error');
 				throw error;
 			}
@@ -147,6 +157,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				await client.delete().key(key);
 				logger.debug({ key }, 'Delete');
 			} catch (error) {
+				resetEctdClient();
 				logger.error({ key, error }, 'Delete error');
 				throw error;
 			}
@@ -166,6 +177,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 
 				logger.debug({ key }, 'Touch');
 			} catch (error) {
+				resetEctdClient();
 				logger.error({ key, error }, 'Touch error');
 				throw error;
 			}
@@ -200,7 +212,19 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				logger.debug({ prefix, limit, success, failed }, 'List');
 				return result;
 			} catch (error) {
-				logger.debug({ prefix }, 'List error');
+				resetEctdClient();
+				logger.debug({ prefix, error }, 'List error');
+				throw error;
+			}
+		},
+		status: async () => {
+			try {
+				const result = await client.maintenance.status();
+				logger.debug({ version: result.version }, 'Status');
+				return result;
+			} catch (error) {
+				resetEctdClient();
+				logger.debug({ error }, 'Status error');
 				throw error;
 			}
 		}
