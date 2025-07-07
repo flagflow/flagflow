@@ -391,7 +391,7 @@
 	</tr>
 {/snippet}
 
-<Table {border} hoverable {shadow}>
+<Table class="border-b border-gray-200" {border} hoverable {shadow}>
 	{@const hasMobileColumn = descriptor.columns.some((column) => !!column.mobileVisibility)}
 	<TableHead class={headClass}>
 		{#if 'preview' in descriptor && descriptor.preview}
