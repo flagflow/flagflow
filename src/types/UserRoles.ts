@@ -26,5 +26,5 @@ export const UserRolePostfixToColor: Record<UserRole, string> = {
 	'flagflow-viewer': ''
 };
 
-export const sortUserRoles = (soles: UserRole[]): UserRole[] =>
-	soles.sort((a, b) => UserRoleZodEnum.options.indexOf(a) - UserRoleZodEnum.options.indexOf(b));
+export const sortUserRoles = (roles: UserRole[]): UserRole[] =>
+	roles.sort((a, b) => UserRoleZodEnum.options.indexOf(a) - UserRoleZodEnum.options.indexOf(b));

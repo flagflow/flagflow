@@ -5,11 +5,11 @@ import type { RequestEvent, RequestHandler } from './$types';
 export const GET: RequestHandler = async (event: RequestEvent) => {
 	const etcdService = event.locals.container.resolve('etcdService');
 
-	let ectdVersion: string | undefined;
+	let etcdVersion: string | undefined;
 	try {
-		ectdVersion = (await etcdService.status()).version;
+		etcdVersion = (await etcdService.status()).version;
 	} catch {
-		ectdVersion = undefined;
+		etcdVersion = undefined;
 	}
 
 	let keycloakError: string | undefined;
@@ -26,9 +26,9 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	return new Response(
 		JSON.stringify({
-			etcd: ectdVersion
+			etcd: etcdVersion
 				? {
-						version: ectdVersion,
+						version: etcdVersion,
 						status: 'OK'
 					}
 				: {
@@ -44,6 +44,6 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 						status: 'OK'
 					}
 		}),
-		{ status: ectdVersion && !keycloakError ? 200 : 500 }
+		{ status: etcdVersion && !keycloakError ? 200 : 500 }
 	);
 };
