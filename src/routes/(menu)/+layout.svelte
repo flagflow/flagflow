@@ -109,36 +109,24 @@
 					<Icon class="mr-2" icon="mdi:view-dashboard" width="18" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarItem href="/abc" label="Flags" {spanClass}>
+			<SidebarItem href="/ui/flags" label="Flags" {spanClass}>
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:flag" width="18" />
-				{/snippet}
-				{#snippet subtext()}
-					<span
-						class="ms-3 inline-flex items-center justify-center rounded-full bg-gray-200 px-2 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-						>Pro</span
-					>
 				{/snippet}
 			</SidebarItem>
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem href="/123" label="Export / import" {spanClass}>
+			<SidebarItem href="/ui/export" label="Export / import" {spanClass}>
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:export" width="18" />
-				{/snippet}
-				{#snippet subtext()}
-					<span
-						class="bg-primary-200 text-primary-600 dark:bg-primary-900 dark:text-primary-200 ms-3 inline-flex h-3 w-3 items-center justify-center rounded-full p-3 text-sm font-medium"
-						>3</span
-					>
 				{/snippet}
 			</SidebarItem>
 			<SidebarDropdownWrapper btnClass="p-2" label="Users">
 				{#snippet icon()}
 					<Icon class="mr-2" icon="mdi:user" width="18" />
 				{/snippet}
-				<SidebarItem href="/users" label="Users" />
-				<SidebarItem href="/sessions" label="Sessions" />
+				<SidebarItem href="/ui/users" label="Users" />
+				<SidebarItem href="/ui/sessions" label="Sessions" />
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
