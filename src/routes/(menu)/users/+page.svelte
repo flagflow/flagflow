@@ -56,7 +56,8 @@
 				}
 			],
 			primary: 'key',
-			sortables: ['key', 'name']
+			sortables: ['key', 'name'],
+			ondblclick: (row) => modifyUser(row.key)
 		}) as AutoTableDescriptor;
 
 	const addUser = async () => {
@@ -92,7 +93,7 @@
 
 <PageTitle
 	count={data.users.length}
-	description="This is where you'll manage your built-in users – you can create new ones, modify their settings, or even delete them. (Just a heads-up: if you're using Keycloak, you won't be doing your user management here)"
+	description="This is where you'll manage your built-in users - you can create new ones, modify their settings (double click), or even delete them. (Just a heads-up: if you're using Keycloak, you won't be doing your user management here)"
 	title="Users"
 	toolbarPos="left"
 >

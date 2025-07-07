@@ -159,6 +159,8 @@
 		sortOrderDefaultDesc?: boolean;
 		rowClass?: (row: T) => string;
 		href?: (row: T) => string;
+		onclick?: (row: T) => void;
+		ondblclick?: (row: T) => void;
 		preview?: {
 			component: typeof AutoTablePreview;
 			callback?: () => void;
@@ -469,8 +471,11 @@
 			<TableBodyRow
 				class={clsx('border-gray-200', 'rowClass' in descriptor ? descriptor.rowClass(row) : '')}
 				onclick={() => {
-					if ('href' in descriptor && descriptor.href) descriptor.href(row);
+					if ('onclick' in descriptor && descriptor.onclick) descriptor.onclick(row);
 					else if ('preview' in descriptor && descriptor.preview) togglePreview(index);
+				}}
+				ondblclick={() => {
+					if ('ondblclick' in descriptor && descriptor.ondblclick) descriptor.ondblclick(row);
 				}}
 			>
 				{#if 'preview' in descriptor && descriptor.preview}
