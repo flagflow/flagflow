@@ -5,21 +5,34 @@
 
 	interface Properties {
 		title: string;
+		count?: number;
 		status?: string;
+		description?: string;
 		titleLineThrough?: boolean;
 
 		toolbarPos?: 'left' | 'right';
 		children?: Snippet;
 	}
 
-	const { title, status, titleLineThrough, toolbarPos = 'right', children }: Properties = $props();
+	const {
+		title,
+		count,
+		status,
+		description,
+		titleLineThrough,
+		toolbarPos = 'right',
+		children
+	}: Properties = $props();
 </script>
 
 <HtmlTitle {title} />
 
-<div class="mb-4 flex flex-row items-center gap-4">
-	<span class="text-xl font-medium" class:line-through={titleLineThrough}>
-		{title}
+<div class="mb-4 flex min-h-10 flex-row items-center gap-4">
+	<span class:line-through={titleLineThrough}>
+		<span class="text-xl font-medium">{title}</span>
+		{#if count}
+			<span class="text-sm font-light"> ({count})</span>
+		{/if}
 	</span>
 
 	{#if status}
@@ -30,3 +43,6 @@
 		<div class="flex gap-4" class:ml-auto={toolbarPos === 'right'}>{@render children()}</div>
 	{/if}
 </div>
+{#if description}
+	<div class="m-0 my-6 -mt-2 text-xs font-light">{description}</div>
+{/if}

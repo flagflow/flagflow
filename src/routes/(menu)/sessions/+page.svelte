@@ -62,7 +62,11 @@
 	};
 </script>
 
-<PageTitle status="Built-in login sessions" title="Sessions" />
+<PageTitle
+	count={data.sessions.length}
+	description="Here's where you can see the active sessions for your built-in users, along with their login times. You also have the power to terminate a session, which will log that user out."
+	title="Sessions"
+/>
 
 {#if data.sessions.length > 0}
 	{#key data}

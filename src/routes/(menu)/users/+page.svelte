@@ -90,9 +90,14 @@
 	};
 </script>
 
-<PageTitle status="Built-in users" title="Users" toolbarPos="left">
-	<ButtonGroup>
-		<AsyncButton action={addUser}>New user</AsyncButton>
+<PageTitle
+	count={data.users.length}
+	description="This is where you'll manage your built-in users – you can create new ones, modify their settings, or even delete them. (Just a heads-up: if you're using Keycloak, you won't be doing your user management here)"
+	title="Users"
+	toolbarPos="left"
+>
+	<ButtonGroup size="md">
+		<AsyncButton action={addUser} size="lg">New user</AsyncButton>
 	</ButtonGroup>
 </PageTitle>
 
