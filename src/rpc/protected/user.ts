@@ -1,21 +1,21 @@
 import { z } from 'zod';
 
-import { ZNonEmptryString } from '$api/zodTypes';
-import { apiProcedure, createApiRouter } from '$lib/api/init';
+import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
+import { ZNonEmptryString } from '$rpc/zodTypes';
 import type { EtcdUser } from '$types/etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
 import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
 
-export const userApi = createApiRouter({
-	getList: apiProcedure.query(async ({ ctx }) => {
+export const userRpc = createRpcRouter({
+	getList: rpcProcedure.query(async ({ ctx }) => {
 		const etcdService = ctx.container.resolve('etcdService');
 		const usersAsRecord = await etcdService.list('user');
 		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
 
 		return users;
 	}),
-	get: apiProcedure
+	get: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim()
@@ -31,7 +31,7 @@ export const userApi = createApiRouter({
 				mustChangePassword: !!user.passwordExpireAt && user.passwordExpireAt > Date.now()
 			};
 		}),
-	create: apiProcedure
+	create: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -52,7 +52,7 @@ export const userApi = createApiRouter({
 				roles: input.roles
 			});
 		}),
-	update: apiProcedure
+	update: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -67,7 +67,7 @@ export const userApi = createApiRouter({
 				roles: input.roles
 			});
 		}),
-	setPassword: apiProcedure
+	setPassword: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -82,7 +82,7 @@ export const userApi = createApiRouter({
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
 		}),
-	setEnabled: apiProcedure
+	setEnabled: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -95,7 +95,7 @@ export const userApi = createApiRouter({
 				enabled: input.enabled
 			});
 		}),
-	delete: apiProcedure
+	delete: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdUserKey.trim()

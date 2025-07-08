@@ -2,7 +2,7 @@
 	import ModalUserModify from './ModalUserModify.svelte';
 
 	export const showModalUserModify = async (userName: string) => {
-		const user = await apiClient.user.get.query({ key: userName });
+		const user = await rpcClient.user.get.query({ key: userName });
 
 		return modalHandler.show({
 			component: ModalUserModify,
@@ -23,9 +23,9 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
+	import { rpcClient } from '$lib/rpc/client';
 	import { type UserRole } from '$types/userRoles';
 
 	const dispatch = createEventDispatcher<{
@@ -49,7 +49,7 @@
 	} = new FormLogic(
 		user,
 		async () => {
-			await apiClient.user.update.mutate({
+			await rpcClient.user.update.mutate({
 				key: formData.userName,
 				...formData
 			});

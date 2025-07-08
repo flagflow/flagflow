@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { ZMinLengthString, ZNonEmptryString } from '$api/zodTypes';
-import { createApiRouter, publicApiProcedure } from '$lib/api/init';
+import { createRpcRouter, publicRpcProcedure } from '$lib/rpc/init';
 import { refreshKeycloakTokens } from '$lib/server/keycloak';
+import { ZMinLengthString, ZNonEmptryString } from '$rpc/zodTypes';
 
-export const loginApi = createApiRouter({
-	login: publicApiProcedure
+export const loginRpc = createRpcRouter({
+	login: publicRpcProcedure
 		.input(
 			z.object({
 				username: ZNonEmptryString(),
@@ -26,11 +26,11 @@ export const loginApi = createApiRouter({
 			return { sessionId, userName: user.name };
 		}),
 
-	logout: publicApiProcedure.mutation(async () => {
+	logout: publicRpcProcedure.mutation(async () => {
 		return {};
 	}),
 
-	refreshKeycloakToken: publicApiProcedure.mutation(async ({ ctx: { authentication } }) => {
+	refreshKeycloakToken: publicRpcProcedure.mutation(async ({ ctx: { authentication } }) => {
 		if (authentication.type !== 'JWT') throw new Error('Not authenticated with JWT');
 		if (!authentication.tokens.refresh_token) throw new Error('No refresh token provided');
 		return await refreshKeycloakTokens(authentication.tokens.refresh_token);

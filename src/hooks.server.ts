@@ -2,10 +2,10 @@ import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { building } from '$app/environment';
-import { URI_API } from '$lib/api/client';
-import { createContext } from '$lib/api/context';
-import { router } from '$lib/api/router';
-import { createTRPCHandle } from '$lib/api/server';
+import { URI_RPC } from '$lib/rpc/client';
+import { createContext } from '$lib/rpc/context';
+import { router } from '$lib/rpc/router';
+import { createTRPCHandle } from '$lib/rpc/server';
 import { doneContainer } from '$lib/server/container';
 import { createLocalContextHandle } from '$lib/server/svelteMiddleware/localContext';
 import { createMetricsHandle } from '$lib/server/svelteMiddleware/metrics';
@@ -27,7 +27,7 @@ if (!building) {
 }
 
 export const handle: Handle = sequence(
-	createTRPCHandle(router, URI_API, createContext),
+	createTRPCHandle(router, URI_RPC, createContext),
 
 	createLocalContextHandle,
 	createUrlLogHandle,

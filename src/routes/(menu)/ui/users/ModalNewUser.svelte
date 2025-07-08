@@ -30,10 +30,10 @@
 	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
+	import { rpcClient } from '$lib/rpc/client';
 	import { EtcdUserKey } from '$types/etcd';
 	import { type UserRole } from '$types/userRoles';
 
@@ -61,7 +61,7 @@
 	} = new FormLogic(
 		user,
 		async () => {
-			await apiClient.user.create.mutate({
+			await rpcClient.user.create.mutate({
 				key: formData.userName,
 				...formData
 			});

@@ -8,8 +8,8 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
 
@@ -54,7 +54,7 @@
 			const result = await showModalConfirmationDelete(`session of ${name}`);
 			if (!result.isOk) return;
 
-			await apiClient.session.delete.mutate({ sessionId });
+			await rpcClient.session.delete.mutate({ sessionId });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);

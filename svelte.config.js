@@ -14,11 +14,11 @@ const config = {
 			polyfill: false
 		}),
 		alias: {
-			$api: './src/api',
 			$components: './src/components',
 			$lib: './src/lib',
 			$routeparams: './src/types/routeparams',
 			$routes: './src/routes',
+			$rpc: './src/rpc',
 			$types: './src/types'
 		},
 		files: {

@@ -5,13 +5,13 @@ import superjson from 'superjson';
 import { goto } from '$app/navigation';
 import { isTrpcCommunication } from '$lib/navigationEx';
 
-import type { Router } from './router';
+import type { RpcRouter } from './router';
 
-export const URI_API = '/api';
+export const URI_RPC = '/ui-rpc';
 
 const URI_LOGVISITEDPAGES = 'logVisitedPages';
 
-export const errorAndCommunicationObserverLink: TRPCLink<Router> =
+export const errorAndCommunicationObserverLink: TRPCLink<RpcRouter> =
 	() =>
 	// eslint-disable-next-line unicorn/consistent-function-scoping
 	({ next, op }) =>
@@ -32,11 +32,11 @@ export const errorAndCommunicationObserverLink: TRPCLink<Router> =
 			});
 		});
 
-export const apiClient = createTRPCClient<Router>({
+export const rpcClient = createTRPCClient<RpcRouter>({
 	links: [
 		errorAndCommunicationObserverLink,
 		httpBatchLink({
-			url: URI_API,
+			url: URI_RPC,
 			transformer: superjson
 		})
 	]

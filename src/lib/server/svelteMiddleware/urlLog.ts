@@ -1,6 +1,6 @@
 import { error as svelteKitError, type Handle, type HandleServerError } from '@sveltejs/kit';
 
-import { URI_API } from '$lib/api/client';
+import { URI_RPC } from '$lib/rpc/client';
 
 import { createLogger } from '../log';
 import { createCounter, METRICS_ENABLED, URI_METRICS } from './metrics';
@@ -14,7 +14,7 @@ const metricUrl = METRICS_ENABLED
 	: undefined;
 
 const isInternalUrl = (url: URL) =>
-	url.pathname.startsWith(URI_API) || url.pathname.startsWith('/health');
+	url.pathname.startsWith(URI_RPC) || url.pathname.startsWith('/health');
 
 export const createUrlLogHandle: Handle = async ({ event, resolve }) => {
 	const logService = event.locals.container.resolve('logService')('http');

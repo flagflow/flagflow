@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { createServerApiCaller } from '$lib/api/serverApiCaller';
+import { createServerRpcCaller } from '$lib/rpc/serverRpcCaller';
 
 import { createRequestContext } from '../requestContext';
 
@@ -9,7 +9,7 @@ export const createLocalContextHandle: Handle = async ({ event, resolve }) => {
 
 	event.locals = {
 		...requestContext,
-		apiCaller: createServerApiCaller(requestContext)
+		rpcCaller: createServerRpcCaller(requestContext)
 	};
 
 	return resolve(event);

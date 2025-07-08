@@ -18,10 +18,10 @@
 
 	import { page } from '$app/state';
 	import Icon from '$components/icon/Icon.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
 	import { modalHandler } from '$lib/modals';
+	import { rpcClient } from '$lib/rpc/client';
 	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
@@ -49,7 +49,7 @@
 		if (data.authentication.type !== 'JWT' || !data.authentication.success) return;
 		if (accessTokenExpiredAt.getTime() - Date.now() < 23 * 1000)
 			try {
-				const tokens = await apiClient.login.refreshKeycloakToken.mutate();
+				const tokens = await rpcClient.login.refreshKeycloakToken.mutate();
 				setTokensCookies(tokens);
 				accessTokenExpiredAt = dateAddSeconds(new Date(), tokens.expires_in);
 			} catch (error) {

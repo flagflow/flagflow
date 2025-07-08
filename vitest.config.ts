@@ -14,11 +14,11 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			$api: new URL('./src/api', importMeta).pathname,
 			$components: new URL('./src/components', importMeta).pathname,
 			$lib: new URL('./src/lib', importMeta).pathname,
 			$routeparams: new URL('./src/types/routeparams', importMeta).pathname,
 			$routes: new URL('./src/routes', importMeta).pathname,
+			$rpc: new URL('./src/rpc', importMeta).pathname,
 			$types: new URL('./src/types', importMeta).pathname
 		}
 	}

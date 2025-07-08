@@ -11,8 +11,8 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalNewUser } from './ModalNewUser.svelte';
@@ -83,7 +83,7 @@
 			const result = await showModalConfirmationDelete(name);
 			if (!result.isOk) return;
 
-			await apiClient.user.delete.mutate({ key: userName });
+			await rpcClient.user.delete.mutate({ key: userName });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);

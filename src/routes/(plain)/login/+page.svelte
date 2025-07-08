@@ -8,9 +8,9 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import Icon from '$components/icon/Icon.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { setSessionCookie } from '$lib/cookies';
 	import { focusInputById, FormLogic } from '$lib/form.svelte';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
 
@@ -44,7 +44,7 @@
 	} = new FormLogic(
 		input,
 		async () => {
-			const { sessionId } = await apiClient.login.login.mutate(formData);
+			const { sessionId } = await rpcClient.login.login.mutate(formData);
 			setSessionCookie(sessionId, formData.rememberMe ? 7 : 0);
 			await goto('/');
 		},
