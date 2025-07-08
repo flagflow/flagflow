@@ -12,7 +12,7 @@
 		onclose?: () => void;
 		onfinish?: () => void;
 	} & {
-		[key: `content${number}`]: Snippet;
+		[key: `content${number}${string}`]: Snippet;
 	};
 	const {
 		steps,
