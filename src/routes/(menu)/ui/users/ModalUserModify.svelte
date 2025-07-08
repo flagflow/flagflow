@@ -110,7 +110,7 @@
 			<Button
 				class="w-20"
 				disabled={!$stateAllValid || $stateInProgress}
-				onclick={() => formExecute({})}
+				onclick={() => formExecute()}
 			>
 				Update</Button
 			>

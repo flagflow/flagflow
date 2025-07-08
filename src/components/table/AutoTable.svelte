@@ -72,7 +72,7 @@
 		visible?: ValueOrFunction<T, boolean>;
 		title?: ValueOrFunction<T, string>;
 		tooltip?: ValueOrFunction<T, string>;
-		icon?: ValueOrFunction<T, string>;
+		icon?: ValueOrFunction<T, IconId>;
 		color?: ValueOrFunction<T, CommandColor>;
 		onCommand: (row: T) => void | Promise<void>;
 	};
@@ -224,7 +224,6 @@
 </script>
 
 <script lang="ts">
-	import Icon, { loadIcons } from '@iconify/svelte';
 	import { clsx } from 'clsx';
 	import dayjs from 'dayjs';
 	import {
@@ -243,6 +242,8 @@
 	import { derived, get, type Writable } from 'svelte/store';
 
 	import AsyncButton from '$components/AsyncButton.svelte';
+	import Icon from '$components/icon/Icon.svelte';
+	import { type IconId } from '$components/icon/Icons';
 	import { isStringArray, searchObjectStringField } from '$lib/objectEx';
 	import { isStringStore } from '$lib/storeEx';
 	import { trimEnd } from '$lib/stringEx';
@@ -268,13 +269,6 @@
 		headClass = 'bg-slate-200',
 		footClass = 'bg-slate-100'
 	}: Properties = $props();
-
-	loadIcons([
-		'mdi:arrow-down-drop-circle',
-		'mdi:arrow-right-drop-circle-outline',
-		'mdi:arrow-up',
-		'mdi:arrow-down'
-	]);
 
 	/* Infinite scroll */
 	const SCROLL_BATCH_SIZE = 50;
@@ -456,9 +450,9 @@
 					{/if}
 					{#if isSorted}
 						<Icon
+							id={sortDirection > 0 ? 'arrowDown' : 'arrowUp'}
 							class="inline-flex text-gray-500"
-							icon={sortDirection > 0 ? 'mdi:arrow-down' : 'mdi:arrow-up'}
-							width="12"
+							size={12}
 						/>
 					{/if}
 				</TableHeadCell>
@@ -481,11 +475,8 @@
 				{#if 'preview' in descriptor && descriptor.preview}
 					<TableBodyCell class="px-0 pl-4">
 						<Icon
+							id={previewId === index ? 'arrowDownCircle' : 'arrowRightCircleOutline'}
 							color="#bbb"
-							icon={previewId === index
-								? 'mdi:arrow-down-drop-circle'
-								: 'mdi:arrow-right-drop-circle-outline'}
-							width="20"
 						/>
 					</TableBodyCell>
 				{/if}
@@ -542,11 +533,10 @@
 											{#if visible}
 												{#if command.icon}
 													<Icon
-														class={command.title ? 'mr-1' : ''}
-														icon={typeof command.icon === 'function'
+														id={typeof command.icon === 'function'
 															? command.icon(row)
 															: command.icon}
-														width={20}
+														class={command.title ? 'mr-1' : ''}
 													/>
 												{/if}
 												{#if command.title}

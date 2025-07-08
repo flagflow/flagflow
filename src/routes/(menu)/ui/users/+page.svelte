@@ -41,13 +41,13 @@
 					align: 'right',
 					commands: [
 						{
-							icon: 'mdi:edit',
+							icon: 'edit',
 							color: 'black',
 							tooltip: 'Modify user',
 							onCommand: async (row) => await modifyUser(row.key)
 						},
 						{
-							icon: 'mdi:delete',
+							icon: 'delete',
 							color: 'red',
 							tooltip: 'Delete user',
 							onCommand: async (row) => await removeUser(row.key, row.name)
@@ -107,6 +107,6 @@
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:user" title="There are no users yet" />
+	<EmptyListBanner icon="user" title="There are no users yet" />
 {/if}
 <ScrollToTop />

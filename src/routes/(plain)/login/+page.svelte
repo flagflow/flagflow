@@ -1,6 +1,5 @@
 <script lang="ts">
 	/* eslint-disable no-undef */
-	import Icon from '@iconify/svelte';
 	import { Button, Card } from 'flowbite-svelte';
 	import { persisted } from 'svelte-persisted-store';
 
@@ -8,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import FormInput from '$components/form/FormInput.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
-	import { Icons } from '$components/Icons';
+	import Icon from '$components/icon/Icon.svelte';
 	import { apiClient } from '$lib/api/client';
 	import { setSessionCookie } from '$lib/cookies';
 	import { focusInputById, FormLogic } from '$lib/form.svelte';
@@ -90,7 +89,7 @@
 				<div class="grid grid-cols-1 gap-4">
 					<FormInput
 						class="unfocused"
-						icon={Icons.email}
+						icon="email"
 						inProgress={$stateInProgress}
 						mandatory
 						title="Username"
@@ -107,7 +106,7 @@
 						bind:value={formData.password}
 					/>
 					<Button class="w-full" disabled={!$stateAllValid || $stateInProgress} type="submit">
-						<Icon class="mr-2" icon={Icons.login} width="24" />
+						<Icon id="login" align="left" />
 						Login
 					</Button>
 				</div>
@@ -115,7 +114,7 @@
 		</form>
 		{#if data.keycloak.enabled}
 			<Button class="mt-6 w-full bg-[#3F86B0] hover:bg-[#326B8E]" href={data.keycloak.loginUrl}>
-				<Icon class="mr-2" icon="simple-icons:keycloak" width="24" />
+				<Icon id="keycloak" align="left" />
 				Keycloak login
 			</Button>
 		{/if}

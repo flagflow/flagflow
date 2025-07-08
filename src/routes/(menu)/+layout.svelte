@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import {
 		Avatar,
 		Button,
@@ -18,6 +17,7 @@
 	import { onMount } from 'svelte';
 
 	import { page } from '$app/state';
+	import Icon from '$components/icon/Icon.svelte';
 	import { apiClient } from '$lib/api/client';
 	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
@@ -122,24 +122,24 @@
 		<SidebarGroup>
 			<SidebarItem href="/" label="Dashboard" {spanClass}>
 				{#snippet icon()}
-					<Icon class="mr-2" icon="mdi:view-dashboard" width="18" />
+					<Icon id="dashboard" />
 				{/snippet}
 			</SidebarItem>
 			<SidebarItem href="/ui/flags" label="Flags" {spanClass}>
 				{#snippet icon()}
-					<Icon class="mr-2" icon="mdi:flag" width="18" />
+					<Icon id="flag" />
 				{/snippet}
 			</SidebarItem>
 		</SidebarGroup>
 		<SidebarGroup border>
 			<SidebarItem href="/ui/export" label="Export / import" {spanClass}>
 				{#snippet icon()}
-					<Icon class="mr-2" icon="mdi:export" width="18" />
+					<Icon id="export" />
 				{/snippet}
 			</SidebarItem>
 			<SidebarDropdownWrapper btnClass="p-2" label="Users">
 				{#snippet icon()}
-					<Icon class="mr-2" icon="mdi:user" width="18" />
+					<Icon id="user" />
 				{/snippet}
 				<SidebarItem href="/ui/users" label="Users" />
 				<SidebarItem href="/ui/sessions" label="Sessions" />
@@ -148,7 +148,7 @@
 		<SidebarGroup border>
 			<SidebarItem href="#" label="Logout" onclick={logout}>
 				{#snippet icon()}
-					<Icon class="mr-2" icon="mdi:logout" width="18" />
+					<Icon id="logout" />
 				{/snippet}
 			</SidebarItem>
 		</SidebarGroup>

@@ -10,12 +10,11 @@
 
 <script lang="ts">
 	/* eslint-disable svelte/no-at-html-tags */
-	import Icon from '@iconify/svelte';
 	import { Button, Modal } from 'flowbite-svelte';
 	import { marked } from 'marked';
 	import { createEventDispatcher } from 'svelte';
 
-	import { Icons } from '$components/Icons';
+	import Icon from '$components/icon/Icon.svelte';
 	import { modalHandler } from '$lib/modals';
 
 	const dispatch = createEventDispatcher<{
@@ -37,7 +36,7 @@
 		<div class="flex justify-between">Information</div>
 	{/snippet}
 	<div class="flex flex-col items-center justify-center space-y-4 text-center">
-		<Icon class="text-green-700" icon={Icons.information} width={32} />
+		<Icon id="information" color="green" size={32} />
 		<div class="text-lg font-semibold">{title}</div>
 		<div class="text-md">{@html message}</div>
 	</div>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import { Badge, Button, Input } from 'flowbite-svelte';
 
+	import Icon from '$components/icon/Icon.svelte';
 	import { trimEnd } from '$lib/stringEx';
 
 	interface Properties {
@@ -66,7 +66,7 @@
 			>{trimEnd(tag, '!')}
 			{#if !disabled}
 				<button onclick={() => onDelete(tag)}>
-					<Icon class="ml-1 inline-flex cursor-pointer" icon="mdi:close" />
+					<Icon id="close" class="inline-flex cursor-pointer" align="right" />
 				</button>
 			{/if}
 		</Badge>

@@ -37,7 +37,7 @@
 					align: 'right',
 					commands: [
 						{
-							icon: 'mdi:delete',
+							icon: 'delete',
 							color: 'red',
 							tooltip: 'Delete session',
 							onCommand: async (row) => await removeSession(row.key, row.userName)
@@ -73,6 +73,6 @@
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:users-group" title="There are no sessions yet" />
+	<EmptyListBanner icon="session" title="There are no sessions yet" />
 {/if}
 <ScrollToTop />

@@ -14,9 +14,7 @@ type Validator = { [S in string]: ValidityItem | Validator };
 const allValid = (validator: Validator): boolean =>
 	Object.values(validator).every((item) => ('isError' in item ? !item.isError : allValid(item)));
 
-type Action<P extends object> =
-	| ((parameters: P) => Promise<void> | void)
-	| (() => Promise<void> | void);
+type Action<P extends object> = (parameters?: P) => Promise<void> | void;
 
 type Actuators<T extends InputObject, V extends Validator> = {
 	validator?: (source: T) => V;
@@ -49,7 +47,7 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 	private _action: Action<P>;
 	private _actuators?: Actuators<T, V> | undefined;
 
-	private _formExecute = async (parameters: P) => {
+	private _formExecute = async (parameters?: P) => {
 		this._stateError.set(undefined);
 		this._stateInProgress.set(true);
 		try {
