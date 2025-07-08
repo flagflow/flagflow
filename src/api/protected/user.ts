@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { ZNonEmptryString } from '$api/zodTypes';
 import { apiProcedure, createApiRouter } from '$lib/api/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
-import type { EtcdUser } from '$types/Etcd';
-import { etcdRecordToArray, EtcdUserKey } from '$types/Etcd';
-import { type UserRole, UserRoleZodEnum } from '$types/UserRoles';
+import type { EtcdUser } from '$types/etcd';
+import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
+import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
 
 export const userApi = createApiRouter({
 	getList: apiProcedure.query(async ({ ctx }) => {

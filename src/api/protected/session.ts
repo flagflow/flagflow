@@ -1,9 +1,8 @@
 import { z } from 'zod';
 
-import { ZNonEmptryString } from '$api/zodTypes';
 import { apiProcedure, createApiRouter } from '$lib/api/init';
-import type { EtcdSession } from '$types/Etcd';
-import { etcdRecordToArray } from '$types/Etcd';
+import type { EtcdSession } from '$types/etcd';
+import { etcdRecordToArray, EtcdSessionKey } from '$types/etcd';
 
 export const sessionApi = createApiRouter({
 	getList: apiProcedure.query(async ({ ctx }) => {
@@ -16,7 +15,7 @@ export const sessionApi = createApiRouter({
 	delete: apiProcedure
 		.input(
 			z.object({
-				sessionId: ZNonEmptryString()
+				sessionId: EtcdSessionKey
 			})
 		)
 		.mutation(async ({ ctx, input }) => {

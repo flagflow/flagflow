@@ -26,7 +26,7 @@
 	import { apiClient } from '$lib/api/client';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
-	import { type UserRole } from '$types/UserRoles';
+	import { type UserRole } from '$types/userRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

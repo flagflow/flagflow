@@ -34,8 +34,8 @@
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
-	import { EtcdUserKey } from '$types/Etcd';
-	import { type UserRole } from '$types/UserRoles';
+	import { EtcdUserKey } from '$types/etcd';
+	import { type UserRole } from '$types/userRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

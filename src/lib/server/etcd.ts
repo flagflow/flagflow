@@ -5,7 +5,7 @@ import {
 	type EtcdSchemaDataType,
 	type EtcdSchemaDataTypeWithKey,
 	type EtcdSchemaKey
-} from '$types/Etcd';
+} from '$types/etcd';
 
 import type { ChildLogger } from './log';
 

@@ -3,7 +3,7 @@
 	import { Toggle, Tooltip } from 'flowbite-svelte';
 
 	import Icon from '$components/icon/Icon.svelte';
-	import { USER_ROLES_DESCRIPTOR, type UserRole } from '$types/UserRoles';
+	import { USER_ROLES_DESCRIPTOR, type UserRole } from '$types/userRoles';
 
 	interface Properties {
 		class?: string;
