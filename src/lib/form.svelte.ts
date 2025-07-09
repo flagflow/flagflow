@@ -187,7 +187,7 @@ export class StringValidator {
 	public zod(schema: z.ZodTypeAny, message?: string): StringValidator {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? isValid.error.message);
+			if (!isValid.success) this.updateError(message ?? isValid.error.issues[0].message);
 		}
 		return this;
 	}
@@ -221,7 +221,7 @@ export class ArrayValidator<T> {
 	public zod(schema: z.ZodTypeAny, message?: string): ArrayValidator<T> {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? isValid.error.message);
+			if (!isValid.success) this.updateError(message ?? isValid.error.issues[0].message);
 		}
 		return this;
 	}
