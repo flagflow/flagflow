@@ -109,7 +109,7 @@
 			finishOperation="Create flag"
 			onclose={() => dispatch('resolve', { isOk: false })}
 			onfinish={() => formExecute()}
-			steps={['Welcome', 'Type', 'Schema', 'Value']}
+			steps={['Welcome', 'Name & Type', 'Schema', 'Value']}
 		>
 			{#snippet content1Welcome()}
 				<Heading class="mt-4 text-center text-xl font-bold">Welcome to Flag Creation</Heading>
