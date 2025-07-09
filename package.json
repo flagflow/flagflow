@@ -84,6 +84,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"jszip": "^3.10.1",
 		"jwks-rsa": "^3.2.0",
+		"marked": "^16.0.0",
 		"nanoid": "^5.1.5",
 		"p-debounce": "^4.0.0",
 		"p-props": "^6.0.0",
