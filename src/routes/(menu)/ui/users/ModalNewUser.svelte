@@ -1,23 +1,7 @@
 <script lang="ts" module>
 	import ModalNewUser from './ModalNewUser.svelte';
 
-	export const showModalNewUser = async () => {
-		const user = {
-			userName: 'user@company.com',
-			name: 'John Doe',
-			password: '',
-			password2: '',
-			roles: ['flagflow-viewer'] as UserRole[],
-			mustChangePassword: true
-		};
-
-		return modalHandler.show({
-			component: ModalNewUser,
-			props: {
-				user
-			}
-		});
-	};
+	export const showModalNewUser = async () => modalHandler.show({ component: ModalNewUser });
 </script>
 
 <script lang="ts">
@@ -41,18 +25,14 @@
 		resolve: { isOk: boolean };
 	}>();
 
-	interface Properties {
-		user: {
-			userName: string;
-			name: string;
-			password: string;
-			password2: string;
-			roles: UserRole[];
-			mustChangePassword: boolean;
-		};
-	}
-
-	const { user }: Properties = $props();
+	const user = {
+		userName: 'user@company.com',
+		name: 'John Doe',
+		password: '',
+		password2: '',
+		roles: ['flagflow-viewer'] as UserRole[],
+		mustChangePassword: true
+	};
 
 	const {
 		formData,
@@ -98,7 +78,7 @@
 
 		await showModalInformation(
 			'Generated password',
-			`The generated password is: <strong>${password}</strong>
+			`The generated password is: **${password}**
 			<br/><br/>
 			Warning! Keep it safe and send it to the user after user creation!`
 		);
