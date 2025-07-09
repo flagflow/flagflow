@@ -172,8 +172,12 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				const data = schema.parse(JSON.parse(etcdValue));
 				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
-				data.expiredAt = Date.now() + data.ttlSeconds * 1000;
-				await client.put(key).value(JSON.stringify(data));
+				await client.put(key).value(
+					JSON.stringify({
+						...data,
+						expiredAt: Date.now() + data.ttlSeconds * 1000
+					})
+				);
 
 				logger.debug({ key }, 'Touch');
 			} catch (error) {

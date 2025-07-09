@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const EtcdGenericFlag = z.object({
+const EtcdBaseFlag = z.object({
 	description: z.string().trim()
 });
 
@@ -32,10 +32,12 @@ const EtcdEnumFlag = z.object({
 	enumValues: z.array(z.string().trim())
 });
 
-export const EtcdFlag = z.intersection(
-	EtcdGenericFlag,
-	z.union([EtcdBooleanFlag, EtcdIntegerFlag, EtcdStringFlag, EtcdEnumFlag])
-);
+export const EtcdFlag = z
+	.intersection(
+		EtcdBaseFlag,
+		z.discriminatedUnion('type', [EtcdBooleanFlag, EtcdIntegerFlag, EtcdStringFlag, EtcdEnumFlag])
+	)
+	.readonly();
 export type EtcdFlag = z.infer<typeof EtcdFlag>;
 
 export { EtcdHierarchicalKey as EtcdFlagKey } from './base';

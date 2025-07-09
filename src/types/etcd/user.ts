@@ -6,11 +6,13 @@ export const EtcdUserKey = z
 		/^[\d.@a-z-]+$/,
 		"String must only contain lowercase letters, numbers, hyphens, '@', or '.'"
 	);
-export const EtcdUser = z.object({
-	name: z.string().trim(),
-	enabled: z.boolean(),
-	passwordHash: z.string(),
-	passwordExpireAt: z.number().int().positive().optional(),
-	roles: z.array(z.string())
-});
+export const EtcdUser = z
+	.object({
+		name: z.string().trim(),
+		enabled: z.boolean(),
+		passwordHash: z.string(),
+		passwordExpireAt: z.number().int().positive().optional(),
+		roles: z.array(z.string())
+	})
+	.readonly();
 export type EtcdUser = z.infer<typeof EtcdUser>;
