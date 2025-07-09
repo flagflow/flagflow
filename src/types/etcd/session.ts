@@ -6,7 +6,7 @@ export const EtcdSession = z.intersection(
 	EtcdTouchable,
 	z.object({
 		userName: z.string().trim(),
-		createdAt: z.date({ coerce: true }),
+		createdAt: z.coerce.date(),
 		roles: z.array(z.string())
 	})
 );

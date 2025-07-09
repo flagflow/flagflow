@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 import { ChangeProxy, type ProxyChanged } from './proxy';
 import type { StringKeys, TypeKeys } from './typeEx';
-import { zodFlattenError } from './zodEx';
 
 export type ValidityItem = { isError: boolean; message?: string };
 
@@ -188,7 +187,7 @@ export class StringValidator {
 	public zod(schema: z.ZodTypeAny, message?: string): StringValidator {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+			if (!isValid.success) this.updateError(message ?? isValid.error.message);
 		}
 		return this;
 	}
@@ -222,7 +221,7 @@ export class ArrayValidator<T> {
 	public zod(schema: z.ZodTypeAny, message?: string): ArrayValidator<T> {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+			if (!isValid.success) this.updateError(message ?? isValid.error.message);
 		}
 		return this;
 	}

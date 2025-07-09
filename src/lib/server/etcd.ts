@@ -70,7 +70,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			if (etcdValue === null) return undefined;
 
 			const schema = EtcdSchema[store];
-			const data = schema.parse(JSON.parse(etcdValue));
+			const data = schema.parse(JSON.parse(etcdValue)) as EtcdSchemaDataType<K>;
 			if ('expiredAt' in data && data.expiredAt < Date.now()) {
 				logger.debug({ key }, 'Expired');
 				return undefined;
@@ -202,7 +202,9 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				let failed = 0;
 				for (const key in data)
 					try {
-						result[key.slice(prefix.length)] = schema.parse(JSON.parse(data[key]));
+						result[key.slice(prefix.length)] = schema.parse(
+							JSON.parse(data[key])
+						) as EtcdSchemaDataType<K>;
 						success++;
 					} catch {
 						result[key.slice(prefix.length)] = undefined;

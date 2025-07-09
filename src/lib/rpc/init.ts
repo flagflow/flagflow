@@ -2,8 +2,6 @@ import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
-import { zodFlattenError } from '$lib/zodEx';
-
 import type { Context } from './context';
 import type { Meta } from './meta';
 import { authMiddleware } from './middleware/auth';
@@ -19,7 +17,7 @@ const t = initTRPC
 			if (error.cause instanceof ZodError)
 				return {
 					...shape,
-					message: zodFlattenError(error.cause.errors)
+					message: error.cause.message
 				};
 			return shape;
 		}
