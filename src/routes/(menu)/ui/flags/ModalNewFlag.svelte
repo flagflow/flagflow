@@ -9,18 +9,20 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import Stepper from '$components/Stepper.svelte';
-	import { focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
+	import { focusInputById, FormLogic, isValidValidator, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	//import { rpcClient } from '$lib/rpc/client';
 	import type { EtcdFlag } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
 
-	import NameAndType from './components/NameAndType.svelte';
-	import Welcome from './components/Welcome.svelte';
+	import New1Welcome from './components/New1Welcome.svelte';
+	import New2NameAndType from './components/New2NameAndType.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
 	}>();
+
+	const steps = ['Welcome', 'Name & Type', 'Schema', 'Value'];
 
 	const flag: EtcdFlag & { name: string } = {
 		name: '',
@@ -31,10 +33,13 @@
 		value: false
 	};
 
+	let currentStepIndex = $state(0);
+	const canForward = $state([true, false, false, false]);
+
 	const {
 		formData,
 		formExecute,
-		formState: { stateInProgress, stateError, stateAllValid, stateIsValid }
+		formState: { stateInProgress, stateError, stateIsValid }
 	} = new FormLogic(
 		flag,
 		async () => {
@@ -46,14 +51,19 @@
 		},
 		{
 			validator: (source) => {
+				const name = new StringValidator(source.name, 'trim')
+					.required()
+					.maxLength(128)
+					.zod(EtcdFlagKey).error;
+				const description = new StringValidator(source.description, 'trim').maxLength(128).error;
+
+				canForward[1] = isValidValidator({ name, description });
+				canForward[2] = true;
+				canForward[3] = isValidValidator({ name, description });
+
 				return {
-					flag: {
-						name: new StringValidator(source.name, 'trim')
-							.required()
-							.maxLength(128)
-							.zod(EtcdFlagKey).error,
-						description: new StringValidator(source.description, 'trim').maxLength(128).error
-					}
+					name,
+					description
 				};
 			}
 		}
@@ -82,21 +92,24 @@
 		{/snippet}
 
 		<Stepper
-			disabled={!$stateAllValid || $stateInProgress}
+			{canForward}
+			disabled={$stateInProgress}
 			finishOperation="Create flag"
 			onclose={() => dispatch('resolve', { isOk: false })}
 			onfinish={() => formExecute()}
-			steps={['Welcome', 'Name & Type', 'Schema', 'Value']}
+			{steps}
+			bind:currentStepIndex
 		>
 			{#snippet content1Welcome()}
-				{$stateAllValid}
-				<Welcome />
+				<New1Welcome />
 			{/snippet}
 
 			{#snippet content2Type()}
-				<NameAndType
-					validity={$stateIsValid?.flag}
+				{formData.type}
+				<New2NameAndType
+					validity={$stateIsValid}
 					bind:name={formData.name}
+					bind:type={formData.type}
 					bind:description={formData.description}
 				/>
 			{/snippet}

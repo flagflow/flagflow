@@ -10,8 +10,10 @@ export type ValidityItem = { isError: boolean; message?: string };
 type InputObject = Record<string, unknown>;
 
 type Validator = { [S in string]: ValidityItem | Validator };
-const allValid = (validator: Validator): boolean =>
-	Object.values(validator).every((item) => ('isError' in item ? !item.isError : allValid(item)));
+export const isValidValidator = (validator: Validator): boolean =>
+	Object.values(validator).every((item) =>
+		'isError' in item ? !item.isError : isValidValidator(item)
+	);
 
 type Action<P extends object> = (parameters?: P) => Promise<void> | void;
 
@@ -37,7 +39,7 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 	private _stateAllValid = derived(
 		this._stateIsValid,
 		// eslint-disable-next-line unicorn/consistent-function-scoping
-		($stateIsValid) => !$stateIsValid || allValid($stateIsValid)
+		($stateIsValid) => !$stateIsValid || isValidValidator($stateIsValid)
 	);
 	private _stateIsDirty = writable(false);
 	private _stateInProgress = writable(false);

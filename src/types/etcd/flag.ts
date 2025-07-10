@@ -39,5 +39,12 @@ export const EtcdFlag = z
 	)
 	.readonly();
 export type EtcdFlag = z.infer<typeof EtcdFlag>;
+export type EtcdFlagType = EtcdFlag['type'];
 
 export { EtcdHierarchicalKey as EtcdFlagKey } from './base';
+
+/*
+ * A/B
+ * A/B/C
+ * TAGS
+ */

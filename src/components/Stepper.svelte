@@ -8,41 +8,46 @@
 		steps: string[];
 		finishOperation?: string;
 		disabled?: boolean;
-		onchange?: (current: number, first: boolean, last: boolean) => void;
+		canBackward?: boolean[];
+		canForward?: boolean[];
+		currentStepIndex?: number;
 		onclose?: () => void;
 		onfinish?: () => void;
 	} & {
 		[key: `content${number}${string}`]: Snippet;
 	};
-	const {
+	let {
 		steps,
 		finishOperation,
-		onchange,
+		disabled = false,
+		canBackward = [],
+		canForward = [],
+		currentStepIndex = $bindable(0),
 		onclose,
 		onfinish,
-		disabled,
 		...restProperties
 	}: Properties = $props();
 	const contents = Object.values(restProperties).filter((v) => typeof v === 'function');
 
-	let currentStepIndex = $state(0);
 	const previous = () => {
-		if (currentStepIndex > 0) {
+		if (currentStepIndex > 0 && (canBackward[currentStepIndex] ?? true)) {
 			currentStepIndex--;
-			onchange?.(currentStepIndex, currentStepIndex === 0, currentStepIndex === steps.length - 1);
 		} else onclose?.();
 	};
 	const next = () => {
-		if (currentStepIndex < steps.length - 1) {
+		if (currentStepIndex < steps.length - 1 && (canForward[currentStepIndex] ?? true)) {
 			currentStepIndex++;
-			onchange?.(currentStepIndex, currentStepIndex === 0, currentStepIndex === steps.length - 1);
 		} else onfinish?.();
 	};
 </script>
 
 <div class="flex flex-col gap-4">
 	<div class="flex flex-row gap-4">
-		<Button color="alternative" onclick={previous}>
+		<Button
+			color="alternative"
+			disabled={disabled || !(canBackward[currentStepIndex] ?? true)}
+			onclick={previous}
+		>
 			{#if currentStepIndex === 0}
 				Close
 			{:else}
@@ -58,7 +63,7 @@
 				status: currentStepIndex >= index ? 'completed' : 'current'
 			}))}
 		/>
-		<Button disabled={!!disabled} onclick={next}>
+		<Button disabled={disabled || !(canForward[currentStepIndex] ?? true)} onclick={next}>
 			{#if currentStepIndex === steps.length - 1}
 				<span class="trimmed-content">
 					{finishOperation || 'Create'}

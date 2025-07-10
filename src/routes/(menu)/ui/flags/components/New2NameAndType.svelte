@@ -4,11 +4,12 @@
 	import FormContainer from '$components/form/FormContainer.svelte';
 	import FormInput from '$components/form/FormInput.svelte';
 	import { focusInputById, type ValidityItem } from '$lib/form.svelte';
-	import { EtcdHierarchicalKeyInputRegExp } from '$types/etcd';
+	import { type EtcdFlagType, EtcdHierarchicalKeyInputRegExp } from '$types/etcd';
 
 	interface Properties {
 		name: string;
 		description: string;
+		type: EtcdFlagType;
 		validity?:
 			| {
 					name: ValidityItem;
@@ -16,9 +17,12 @@
 			  }
 			| undefined;
 	}
-	let { name = $bindable(), description = $bindable(), validity }: Properties = $props();
-
-	let selectedValue = $state('1');
+	let {
+		name = $bindable(),
+		description = $bindable(),
+		type = $bindable(),
+		validity
+	}: Properties = $props();
 
 	focusInputById('name');
 </script>
@@ -44,22 +48,22 @@
 	</div>
 	<FormContainer class="flex flex-col gap-3 px-4" mandatory title="Type">
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="1" bind:group={selectedValue}>Boolean</Radio>
+			<Radio name="example1" value="BOOLEAN" bind:group={type}>Boolean</Radio>
 			<Helper id="helper-checkbox-text" class="ps-6">On/off functionality or kill switch</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="1" bind:group={selectedValue}>Integer</Radio>
+			<Radio name="example1" value="INTEGER" bind:group={type}>Integer</Radio>
 			<Helper id="helper-checkbox-text" class="ps-6">Integer value, can be bounded</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="1" bind:group={selectedValue}>String</Radio>
+			<Radio name="example1" value="STRING" bind:group={type}>String</Radio>
 			<Helper id="helper-checkbox-text" class="ps-6">Text value</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="1" bind:group={selectedValue}>Enum</Radio>
+			<Radio name="example1" value="ENUM" bind:group={type}>Enum</Radio>
 			<Helper id="helper-checkbox-text" class="ps-6">Select from a valueset</Helper>
 		</div>
 	</FormContainer>
