@@ -21,7 +21,6 @@
 	} from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	//import { rpcClient } from '$lib/rpc/client';
 	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
 	import {
