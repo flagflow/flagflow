@@ -25,18 +25,18 @@
 
 	let { data }: PageProperties = $props();
 
-	const addFlag = async () => {
+	const addFlag = async (groupName = '') => {
 		try {
-			const result = await showModalNewFlag();
+			const result = await showModalNewFlag(groupName);
 			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
 		}
 	};
 
-	const removeFlag = async (key: string, type: string) => {
+	const deleteFlag = async (key: string, type: string) => {
 		try {
-			const result = await showModalConfirmationDelete(`${key} (${type})`);
+			const result = await showModalConfirmationDelete(`${key} ${type.toLocaleLowerCase()} flag`);
 			if (!result.isOk) return;
 
 			await rpcClient.flag.delete.mutate({ key });
@@ -48,7 +48,7 @@
 </script>
 
 <PageTitle
-	count={data.flags.length}
+	count={data.flagCount}
 	description="Here's where you can see the registered flags. You can create, edit, and delete flags."
 	title="Flags"
 	toolbarPos="left"
@@ -58,37 +58,60 @@
 	</ButtonGroup>
 </PageTitle>
 
-{#if data.flags.length > 0}
-	<div class="grid grid-cols-3 gap-4">
-		{#key data}
-			{#each data.flags as flag (flag.key)}
-				<Card class="p-4 py-2">
-					<div class="flex flex-row items-center justify-between">
-						<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
-							<Badge class="mr-1 w-0" size="small">{flag.typeToDisplay.slice(0, 1)}</Badge>
-							<Tooltip placement="bottom-end" type="light">{flag.typeToDisplay}</Tooltip>
-							{flag.key}
-						</h5>
-						<div class="-mt-1 -mr-2">
-							<Icon id="dotsVertical" class="dots-menu  inline-flex cursor-pointer" size={24} />
-							<Dropdown simple triggeredBy=".dots-menu">
-								<DropdownItem onclick={() => removeFlag(flag.key, flag.type)}>Remove</DropdownItem>
-							</Dropdown>
+{#key data}
+	{#if data.flagCount > 0}
+		{#each Object.entries(data.flagGroups) as [group, flags]}
+			<h5 class="col-span-3 py-4 pt-8 text-xl font-semibold text-gray-700">
+				{(group || '#root').replaceAll('/', ' › ')}
+				{#if flags.length > 0}
+					<Badge color="secondary" size="small">{flags.length}</Badge>
+				{/if}
+				{#if group}
+					<AsyncButton class="ml-2" action={() => addFlag(group)} size="xs">
+						<Icon id="add" size={12} />
+					</AsyncButton>
+				{/if}
+			</h5>
+			<div class="ml-4 grid grid-cols-3 gap-4">
+				{#each flags as flag (flag.key)}
+					<Card class="p-4 py-2">
+						<div class="flex flex-row items-center justify-between">
+							<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
+								<Badge class="mr-1 w-0" color="indigo" size="small"
+									>{flag.typeToDisplay.slice(0, 1)}</Badge
+								>
+								<Tooltip placement="bottom-end" type="light">{flag.typeToDisplay}</Tooltip>
+								{flag.flagName}
+							</h5>
+							<div class="-mt-1 -mr-2">
+								<Icon
+									id="dotsVertical"
+									class="dots-menu inline-flex cursor-pointer"
+									color="gray"
+									size={24}
+								/>
+								<Dropdown simple>
+									<DropdownItem onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+										>Delete</DropdownItem
+									>
+								</Dropdown>
+							</div>
 						</div>
-					</div>
-					<Hr class="-mx-4 my-1" />
-					<div class="mt-2 flex flex-row items-center justify-between">
-						<Kbd class={flag.valueExists ? '' : 'italic'}>
-							{#if !flag.valueExists}default:{/if}
-							{flag.valueToDisplay}</Kbd
-						>
-					</div>
-					<p class="mt-2 text-justify text-xs font-light text-gray-500">{flag.description}</p>
-				</Card>
-			{/each}
-		{/key}
-	</div>
-{:else}
-	<EmptyListBanner icon="flag" title="There are no flags yet" />
-{/if}
+						<Hr class="-mx-4 my-1" />
+						<div class="mt-2 flex flex-row items-center justify-between">
+							<Kbd class={flag.valueExists ? '' : 'italic'}>
+								{#if !flag.valueExists}default:{/if}
+								{flag.valueToDisplay}</Kbd
+							>
+						</div>
+						<p class="mt-2 text-justify text-xs font-light text-gray-500">{flag.description}</p>
+					</Card>
+				{/each}
+			</div>
+		{/each}
+	{:else}
+		<EmptyListBanner icon="flag" title="There are no flags yet" />
+	{/if}
+{/key}
+
 <ScrollToTop />

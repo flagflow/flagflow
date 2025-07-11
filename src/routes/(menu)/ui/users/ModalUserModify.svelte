@@ -39,7 +39,6 @@
 			roles: UserRole[];
 		};
 	}
-
 	const { user }: Properties = $props();
 
 	const {

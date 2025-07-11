@@ -28,6 +28,7 @@ export const IconIds = {
 	arrowDownCircleOutline: 'mdi:arrow-down-drop-circle-outline',
 	scrollToTop: 'mdi:arrow-up-bold-circle-outline',
 
+	add: 'mdi:plus',
 	edit: 'mdi:edit',
 	delete: 'mdi:delete',
 	close: 'mdi:close',

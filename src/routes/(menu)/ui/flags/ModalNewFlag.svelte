@@ -1,7 +1,8 @@
 <script lang="ts" module>
 	import ModalNewFlag from './ModalNewFlag.svelte';
 
-	export const showModalNewFlag = async () => modalHandler.show({ component: ModalNewFlag });
+	export const showModalNewFlag = async (groupName = '') =>
+		modalHandler.show({ component: ModalNewFlag, props: { groupName } });
 </script>
 
 <script lang="ts">
@@ -38,6 +39,11 @@
 		resolve: { isOk: boolean };
 	}>();
 
+	interface Properties {
+		groupName: string;
+	}
+	const { groupName }: Properties = $props();
+
 	const steps = ['Welcome', 'Name & Type', 'Schema & Value'];
 	let currentStepIndex = $state(0);
 	const canForwardStep = $state([true, false, false]);
@@ -48,7 +54,7 @@
 		description: string;
 		type: EtcdFlagType;
 	} = {
-		name: '',
+		name: groupName ? groupName + '/' : '',
 		description: '',
 		type: 'BOOLEAN'
 	};
