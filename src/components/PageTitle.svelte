@@ -9,9 +9,10 @@
 		status?: string;
 		description?: string;
 		titleLineThrough?: boolean;
+		hr?: boolean;
 
-		toolbarPos?: 'left' | 'right';
 		children?: Snippet;
+		rightToolbar?: Snippet;
 	}
 
 	const {
@@ -20,8 +21,9 @@
 		status,
 		description,
 		titleLineThrough,
-		toolbarPos = 'right',
-		children
+		hr,
+		children,
+		rightToolbar
 	}: Properties = $props();
 </script>
 
@@ -40,9 +42,15 @@
 	{/if}
 
 	{#if children}
-		<div class="flex gap-4" class:ml-auto={toolbarPos === 'right'}>{@render children()}</div>
+		<div class="flex gap-4">{@render children()}</div>
+	{/if}
+	{#if rightToolbar}
+		<div class="ml-auto flex gap-4">{@render rightToolbar()}</div>
 	{/if}
 </div>
+
 {#if description}
 	<div class="m-0 my-6 -mt-2 text-xs font-light">{description}</div>
 {/if}
+
+{#if hr}<hr class="text-gray-200" />{/if}

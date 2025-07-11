@@ -1,14 +1,16 @@
 <script lang="ts">
+	import clsx from 'clsx';
 	import {
 		Badge,
 		ButtonGroup,
 		Card,
 		Dropdown,
 		DropdownItem,
-		Hr,
 		Kbd,
+		RadioButton,
 		Tooltip
 	} from 'flowbite-svelte';
+	import { persisted } from 'svelte-persisted-store';
 
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
@@ -24,6 +26,8 @@
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
 
 	let { data }: PageProperties = $props();
+
+	const listSettings = persisted<{ gridMode: boolean }>('flag-list', { gridMode: true });
 
 	const addFlag = async (groupName = '') => {
 		try {
@@ -50,12 +54,35 @@
 <PageTitle
 	count={data.flagCount}
 	description="Here's where you can see the registered flags. You can create, edit, and delete flags."
+	hr
 	title="Flags"
-	toolbarPos="left"
 >
 	<ButtonGroup size="md">
 		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
 	</ButtonGroup>
+
+	{#snippet rightToolbar()}
+		<div>
+			<RadioButton
+				checkedClass="border-2 border-gray-300"
+				color="alternative"
+				size="xs"
+				value={true}
+				bind:group={$listSettings['gridMode']}
+			>
+				<Icon id="formatGrid" />
+			</RadioButton>
+			<RadioButton
+				checkedClass="border-2 border-gray-300"
+				color="alternative"
+				size="xs"
+				value={false}
+				bind:group={$listSettings['gridMode']}
+			>
+				<Icon id="formatListGroup" />
+			</RadioButton>
+		</div>
+	{/snippet}
 </PageTitle>
 
 {#key data}
@@ -72,9 +99,11 @@
 					</AsyncButton>
 				{/if}
 			</h5>
-			<div class="ml-4 grid grid-cols-3 gap-4">
+			<div
+				class={clsx('ml-4 grid gap-4', $listSettings['gridMode'] ? 'grid-cols-3' : 'grid-cols-1')}
+			>
 				{#each flags as flag (flag.key)}
-					<Card class="p-4 py-2">
+					<Card class="max-w-full p-4 py-2">
 						<div class="flex flex-row items-center justify-between">
 							<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
 								<Badge class="mr-1 w-0" color="indigo" size="small"
@@ -97,10 +126,9 @@
 								</Dropdown>
 							</div>
 						</div>
-						<Hr class="-mx-4 my-1" />
+						<hr class="-mx-4 my-1 text-gray-200" />
 						<div class="mt-2 flex flex-row items-center justify-between">
 							<Kbd class={flag.valueExists ? '' : 'italic'}>
-								{#if !flag.valueExists}default:{/if}
 								{flag.valueToDisplay}</Kbd
 							>
 						</div>

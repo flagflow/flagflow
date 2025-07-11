@@ -27,6 +27,11 @@ export const IconIds = {
 	arrowUpCircleOutline: 'mdi:arrow-up-drop-circle-outline',
 	arrowDownCircleOutline: 'mdi:arrow-down-drop-circle-outline',
 	scrollToTop: 'mdi:arrow-up-bold-circle-outline',
+	formatListGroup: 'mdi:format-list-group',
+	formatListBulleted: 'mdi:format-list-bulleted',
+	formatListNumbered: 'mdi:format-list-numbered',
+	formatGrid: 'mdi:grid',
+	formatGridOutline: 'mdi:view-grid-outline',
 
 	add: 'mdi:plus',
 	edit: 'mdi:edit',
