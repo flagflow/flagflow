@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
-import { ZNonEmptryString } from '$rpc/zodTypes';
+import { ZNonEmptyString } from '$rpc/zodTypes';
 import type { EtcdUser } from '$types/etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
 import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
@@ -36,7 +36,7 @@ export const userRpc = createRpcRouter({
 			z.object({
 				key: EtcdUserKey.trim(),
 				name: z.string().trim(),
-				password: ZNonEmptryString(),
+				password: ZNonEmptyString(),
 				roles: z.array(UserRoleZodEnum),
 				mustChangePassword: z.boolean()
 			})
@@ -71,7 +71,7 @@ export const userRpc = createRpcRouter({
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
-				password: ZNonEmptryString(),
+				password: ZNonEmptyString(),
 				mustChangePassword: z.boolean()
 			})
 		)
