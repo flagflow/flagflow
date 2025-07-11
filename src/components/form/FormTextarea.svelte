@@ -7,6 +7,7 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		title?: string;
 		mandatory?: boolean;
 		placeholder?: string;
@@ -18,6 +19,7 @@
 
 	let {
 		class: aClass = '',
+		id = '',
 		title = '',
 		mandatory = false,
 		placeholder = '',
@@ -30,7 +32,7 @@
 
 <FormContainer class={aClass} {mandatory} {title} {validity}>
 	<Textarea
-		id={title}
+		id={id || title}
 		class={validity?.isError ? 'bg-red-100' : ''}
 		disabled={inProgress}
 		{placeholder}

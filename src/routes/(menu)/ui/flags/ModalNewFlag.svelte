@@ -7,41 +7,133 @@
 <script lang="ts">
 	import { Badge, Modal } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	import Stepper from '$components/Stepper.svelte';
-	import { focusInputById, FormLogic, isValidValidator, StringValidator } from '$lib/form.svelte';
+	import { flagSchemaValidator, flagValueValidator } from '$lib/flagValidator';
+	import {
+		ExternalValidator,
+		FormLogic,
+		isValidValidator,
+		StringValidator,
+		type Validator,
+		type ValidityItem
+	} from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	//import { rpcClient } from '$lib/rpc/client';
-	import type { EtcdFlag } from '$types/etcd';
+	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
+	import {
+		EMPTY_BOOLEAN_FLAG,
+		EMPTY_ENUM_FLAG,
+		EMPTY_INTEGER_FLAG,
+		EMPTY_STRING_FLAG
+	} from '$types/etcd/flagEmptyInstance';
 
-	import New1Welcome from './components/New1Welcome.svelte';
-	import New2NameAndType from './components/New2NameAndType.svelte';
+	import StepNameAndType from './components/StepNameAndType.svelte';
+	import StepNewWelcome from './components/StepNewWelcome.svelte';
+	import StepSchemaAndValue from './components/StepSchemaAndValue.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
 	}>();
 
-	const steps = ['Welcome', 'Name & Type', 'Schema', 'Value'];
+	const steps = ['Welcome', 'Name & Type', 'Schema & Value'];
+	let currentStepIndex = $state(0);
+	const canForwardStep = $state([true, false, false]);
 
-	const flag: EtcdFlag & { name: string } = {
+	// Flag states
+	const flagCommon: {
+		name: string;
+		description: string;
+		type: EtcdFlagType;
+	} = {
 		name: '',
 		description: '',
-		type: 'BOOLEAN',
-		defaultValue: false,
-		isKillSwitch: false,
-		value: false
+		type: 'BOOLEAN'
 	};
 
-	let currentStepIndex = $state(0);
-	const canForward = $state([true, false, false, false]);
+	let flagSpecific: EtcdFlag | undefined;
+	let formSpecific:
+		| FormLogic<
+				EtcdFlag,
+				{
+					schema: Validator | ValidityItem;
+					value: Validator | ValidityItem;
+				},
+				object
+		  >
+		| undefined = $state();
+	let formStateIsvalid: Writable<
+		| {
+				schema: Validator | ValidityItem;
+				value: Validator | ValidityItem;
+		  }
+		| undefined
+	>;
+
+	// Create flag
+	const createSpecificFlag = (flagType: EtcdFlagType) => {
+		flagSpecific = undefined;
+		switch (flagType) {
+			case 'BOOLEAN':
+				{
+					flagSpecific = {
+						...EMPTY_BOOLEAN_FLAG,
+						description: flagCommon.description
+					};
+				}
+				break;
+			case 'INTEGER':
+				{
+					flagSpecific = {
+						...EMPTY_INTEGER_FLAG,
+						description: flagCommon.description
+					};
+				}
+				break;
+			case 'STRING':
+				{
+					flagSpecific = {
+						...EMPTY_STRING_FLAG,
+						description: flagCommon.description
+					};
+				}
+				break;
+			case 'ENUM':
+				{
+					flagSpecific = {
+						...EMPTY_ENUM_FLAG,
+						enumValues: [],
+						description: flagCommon.description
+					};
+				}
+				break;
+			default:
+				throw new Error(`Unsupported flag type: ${flagType}`);
+		}
+		formSpecific = new FormLogic(flagSpecific, async () => {}, {
+			validator: (source) => {
+				const schema = new ExternalValidator(flagSchemaValidator(source)).error;
+				const value = new ExternalValidator(flagValueValidator(source)).error;
+
+				canForwardStep[2] = stateAllValid && isValidValidator({ schema, value });
+
+				return {
+					schema,
+					value
+				};
+			}
+		});
+		formStateIsvalid = formSpecific.formState.stateIsValid;
+	};
 
 	const {
 		formData,
 		formExecute,
-		formState: { stateInProgress, stateError, stateIsValid }
+		formState: { stateInProgress, stateError, stateIsValid, stateAllValid }
 	} = new FormLogic(
-		flag,
+		flagCommon,
 		async () => {
 			// await rpcClient.user.create.mutate({
 			// 	key: formData.userName,
@@ -57,24 +149,25 @@
 					.zod(EtcdFlagKey).error;
 				const description = new StringValidator(source.description, 'trim').maxLength(128).error;
 
-				canForward[1] = isValidValidator({ name, description });
-				canForward[2] = true;
-				canForward[3] = isValidValidator({ name, description });
+				canForwardStep[1] = isValidValidator({ name, description });
 
 				return {
 					name,
 					description
 				};
+			},
+			changed: (target, property: string) => {
+				if (property === 'type') createSpecificFlag(target.type);
 			}
 		}
 	);
 
-	focusInputById('userName');
+	createSpecificFlag(flagCommon.type);
 </script>
 
 <form onsubmit={formExecute}>
 	<Modal
-		class="min-h-[600px]"
+		class="min-h-[570px]"
 		dismissable={false}
 		onclose={() => dispatch('resolve', { isOk: false })}
 		permanent
@@ -92,7 +185,7 @@
 		{/snippet}
 
 		<Stepper
-			{canForward}
+			canForward={canForwardStep}
 			disabled={$stateInProgress}
 			finishOperation="Create flag"
 			onclose={() => dispatch('resolve', { isOk: false })}
@@ -101,12 +194,11 @@
 			bind:currentStepIndex
 		>
 			{#snippet content1Welcome()}
-				<New1Welcome />
+				<StepNewWelcome />
 			{/snippet}
 
 			{#snippet content2Type()}
-				{formData.type}
-				<New2NameAndType
+				<StepNameAndType
 					validity={$stateIsValid}
 					bind:name={formData.name}
 					bind:type={formData.type}
@@ -115,10 +207,13 @@
 			{/snippet}
 
 			{#snippet content3Schema()}
-				C
-			{/snippet}
-			{#snippet content4Value()}
-				C
+				{#if formSpecific}
+					<StepSchemaAndValue
+						name={formData.name}
+						flag={formSpecific.formData}
+						validity={$formStateIsvalid}
+					/>
+				{/if}
 			{/snippet}
 		</Stepper>
 	</Modal>

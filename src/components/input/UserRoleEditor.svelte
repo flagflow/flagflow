@@ -7,11 +7,12 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		roles: UserRole[];
 		disabled?: boolean;
 	}
 
-	let { class: aClass = '', roles = $bindable(), disabled }: Properties = $props();
+	let { class: aClass = '', id = '', roles = $bindable(), disabled }: Properties = $props();
 
 	const descriptors = USER_ROLES_DESCRIPTOR;
 
@@ -23,6 +24,7 @@
 <div class={clsx('flex flex-col gap-2', aClass)}>
 	{#each Object.keys(descriptors) as key}
 		<Toggle
+			id={`${id}-${key}`}
 			checked={roles.includes(key as UserRole)}
 			disabled={!!disabled}
 			onchange={() => toggleRole(key as UserRole)}

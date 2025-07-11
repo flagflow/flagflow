@@ -9,7 +9,7 @@ export type ValidityItem = { isError: boolean; message?: string };
 
 type InputObject = Record<string, unknown>;
 
-type Validator = { [S in string]: ValidityItem | Validator };
+export type Validator = { [S in string]: ValidityItem | Validator };
 export const isValidValidator = (validator: Validator): boolean =>
 	Object.values(validator).every((item) =>
 		'isError' in item ? !item.isError : isValidValidator(item)
@@ -103,6 +103,16 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 			stateInProgress: this._stateInProgress,
 			stateError: this._stateError
 		};
+	}
+}
+
+export class ExternalValidator {
+	private _error: ValidityItem = { isError: false };
+	constructor(errorMessage: string | undefined) {
+		this._error = errorMessage ? { isError: true, message: errorMessage } : { isError: false };
+	}
+	public get error() {
+		return this._error;
 	}
 }
 

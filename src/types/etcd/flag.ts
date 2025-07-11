@@ -6,38 +6,41 @@ const EtcdBaseFlag = z.object({
 
 const EtcdBooleanFlag = z.object({
 	type: z.literal('BOOLEAN'),
-	value: z.boolean(),
 	defaultValue: z.boolean(),
+	isKillSwitch: z.boolean(),
 
-	isKillSwitch: z.boolean()
+	valueExists: z.boolean(),
+	value: z.boolean()
 });
 const EtcdIntegerFlag = z.object({
 	type: z.literal('INTEGER'),
-	value: z.number().int(),
 	defaultValue: z.number().int(),
+	minValue: z.number().int(),
+	maxValue: z.number().int(),
 
-	minValue: z.number().int().optional(),
-	maxValue: z.number().int().optional()
+	valueExists: z.boolean(),
+	value: z.number().int()
 });
 const EtcdStringFlag = z.object({
 	type: z.literal('STRING'),
-	value: z.string().trim(),
-	defaultValue: z.string().trim()
+	defaultValue: z.string().trim(),
+
+	valueExists: z.boolean(),
+	value: z.string().trim()
 });
 const EtcdEnumFlag = z.object({
 	type: z.literal('ENUM'),
-	value: z.string().trim(),
 	defaultValue: z.string().trim(),
+	enumValues: z.array(z.string().trim()),
 
-	enumValues: z.array(z.string().trim())
+	valueExists: z.boolean(),
+	value: z.string().trim()
 });
 
-export const EtcdFlag = z
-	.intersection(
-		EtcdBaseFlag,
-		z.discriminatedUnion('type', [EtcdBooleanFlag, EtcdIntegerFlag, EtcdStringFlag, EtcdEnumFlag])
-	)
-	.readonly();
+export const EtcdFlag = z.intersection(
+	EtcdBaseFlag,
+	z.discriminatedUnion('type', [EtcdBooleanFlag, EtcdIntegerFlag, EtcdStringFlag, EtcdEnumFlag])
+);
 export type EtcdFlag = z.infer<typeof EtcdFlag>;
 export type EtcdFlagType = EtcdFlag['type'];
 

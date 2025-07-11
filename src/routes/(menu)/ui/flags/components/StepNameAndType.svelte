@@ -3,6 +3,7 @@
 
 	import FormContainer from '$components/form/FormContainer.svelte';
 	import FormInput from '$components/form/FormInput.svelte';
+	import FormTextarea from '$components/form/FormTextarea.svelte';
 	import { focusInputById, type ValidityItem } from '$lib/form.svelte';
 	import { type EtcdFlagType, EtcdHierarchicalKeyInputRegExp } from '$types/etcd';
 
@@ -38,9 +39,9 @@
 			validity={validity?.name}
 			bind:value={name}
 		/>
-		<FormInput
+		<FormTextarea
 			id="description"
-			maxLength={128}
+			rows={8}
 			title="Description"
 			validity={validity?.description}
 			bind:value={description}
@@ -48,23 +49,23 @@
 	</div>
 	<FormContainer class="flex flex-col gap-3 px-4" mandatory title="Type">
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="BOOLEAN" bind:group={type}>Boolean</Radio>
-			<Helper id="helper-checkbox-text" class="ps-6">On/off functionality or kill switch</Helper>
+			<Radio value="BOOLEAN" bind:group={type}>Boolean</Radio>
+			<Helper class="ps-6">On/off functionality or kill switch</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="INTEGER" bind:group={type}>Integer</Radio>
-			<Helper id="helper-checkbox-text" class="ps-6">Integer value, can be bounded</Helper>
+			<Radio value="INTEGER" bind:group={type}>Integer</Radio>
+			<Helper class="ps-6">Integer value, can be bounded</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="STRING" bind:group={type}>String</Radio>
-			<Helper id="helper-checkbox-text" class="ps-6">Text value</Helper>
+			<Radio value="STRING" bind:group={type}>String</Radio>
+			<Helper class="ps-6">Text value</Helper>
 		</div>
 
 		<div class="ml-2 flex flex-col">
-			<Radio name="example1" value="ENUM" bind:group={type}>Enum</Radio>
-			<Helper id="helper-checkbox-text" class="ps-6">Select from a valueset</Helper>
+			<Radio value="ENUM" bind:group={type}>Enum</Radio>
+			<Helper class="ps-6">Select from a valueset</Helper>
 		</div>
 	</FormContainer>
 </div>

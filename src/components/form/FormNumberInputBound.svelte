@@ -6,6 +6,7 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		title: string;
 		mandatory?: boolean;
 		inProgress?: boolean;
@@ -19,6 +20,7 @@
 
 	let {
 		class: aClass = '',
+		id = '',
 		title,
 		mandatory = false,
 		inProgress = false,
@@ -32,5 +34,13 @@
 </script>
 
 <FormContainer class={aClass} {mandatory} {title} {validity}>
-	<NumberInputBound id={title} {allowNull} {digits} disabled={inProgress} {max} {min} bind:value />
+	<NumberInputBound
+		id={id || title}
+		{allowNull}
+		{digits}
+		disabled={inProgress}
+		{max}
+		{min}
+		bind:value
+	/>
 </FormContainer>

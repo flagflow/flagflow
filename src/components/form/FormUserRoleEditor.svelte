@@ -7,6 +7,7 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		title?: string;
 		roles: UserRole[];
 		mandatory?: boolean;
@@ -16,6 +17,7 @@
 
 	let {
 		class: aClass = '',
+		id = '',
 		title = '',
 		roles = $bindable(),
 		mandatory = false,
@@ -25,5 +27,5 @@
 </script>
 
 <FormContainer class={aClass} {mandatory} {title} {validity}>
-	<UserRoleEditor class="m-4 gap-4" disabled={inProgress} bind:roles />
+	<UserRoleEditor id={id || title} class="m-4 gap-4" disabled={inProgress} bind:roles />
 </FormContainer>

@@ -7,7 +7,9 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		title: string;
+		mandatory?: boolean;
 		checked: boolean;
 		inline?: boolean;
 		inProgress?: boolean;
@@ -16,10 +18,12 @@
 
 	let {
 		class: aClass = '',
+		id = '',
 		title,
+		mandatory = false,
 		checked = $bindable(),
 		inline = false,
-		inProgress = true,
+		inProgress = false,
 		validity = { isError: false }
 	}: Properties = $props();
 </script>
@@ -27,7 +31,7 @@
 {#if inline}
 	<Toggle class={aClass} disabled={inProgress} bind:checked>{title}</Toggle>
 {:else}
-	<FormContainer class={aClass} {title} {validity}>
-		<Toggle class="mt-3" disabled={inProgress} bind:checked />
+	<FormContainer class={aClass} {mandatory} {title} {validity}>
+		<Toggle id={id || title} class="mt-3 ml-2" disabled={inProgress} bind:checked />
 	</FormContainer>
 {/if}
