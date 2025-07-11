@@ -31,7 +31,7 @@
 			<FormToggle id="default" mandatory title="Default value" bind:checked={flag.defaultValue} />
 			<FormToggle title="Kill switch" bind:checked={flag.isKillSwitch} />
 		{:else if flag.type === 'INTEGER'}
-			<FormInput id="default" title="Default value" bind:value={flag.defaultValue} />
+			<FormInput id="default" title="Default value" type="number" bind:value={flag.defaultValue} />
 			<div class="grid grid-cols-2 gap-4">
 				<FormInput title="Minimum value" type="number" bind:value={flag.minValue} />
 				<FormInput title="Maximum value" type="number" bind:value={flag.maxValue} />

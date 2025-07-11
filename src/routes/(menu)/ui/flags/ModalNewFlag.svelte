@@ -30,9 +30,9 @@
 		EMPTY_STRING_FLAG
 	} from '$types/etcd/flagEmptyInstance';
 
-	import StepNameAndType from './components/StepNameAndType.svelte';
-	import StepNewWelcome from './components/StepNewWelcome.svelte';
-	import StepSchemaAndValue from './components/StepSchemaAndValue.svelte';
+	import StepSchemaAndValue from './/StepSchemaAndValue.svelte';
+	import StepNameAndType from './StepNameAndType.svelte';
+	import StepNewWelcome from './StepNewWelcome.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -134,10 +134,13 @@
 	} = new FormLogic(
 		flagCommon,
 		async () => {
-			if (!flagSpecific) throw new Error('Flag data is not initialized');
+			if (!formSpecific) throw new Error('Flag data is not initialized');
 			await rpcClient.flag.create.mutate({
 				key: formData.name,
-				flag: flagSpecific
+				flag: {
+					...formSpecific.formData,
+					description: formData.description
+				}
 			});
 			dispatch('resolve', { isOk: true });
 		},
@@ -147,7 +150,7 @@
 					.required()
 					.maxLength(128)
 					.zod(EtcdFlagKey).error;
-				const description = new StringValidator(source.description, 'trim').maxLength(128).error;
+				const description = new StringValidator(source.description, 'trim').maxLength(512).error;
 
 				canForwardStep[1] = isValidValidator({ name, description });
 

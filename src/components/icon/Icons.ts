@@ -31,6 +31,8 @@ export const IconIds = {
 	edit: 'mdi:edit',
 	delete: 'mdi:delete',
 	close: 'mdi:close',
+	dots: 'mdi:dots-horizontal',
+	dotsVertical: 'mdi:dots-vertical',
 
 	error: 'mdi:error',
 	warning: 'mdi:warning',

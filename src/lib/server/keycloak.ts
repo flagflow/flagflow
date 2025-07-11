@@ -3,7 +3,7 @@ import { JwksClient } from 'jwks-rsa';
 
 import { combineUrls } from '$lib/urlEx';
 import { JwtAccessToken, type KeycloakJwtString } from '$types/jwt';
-import { KeycloakTokenResponse } from '$types/keycloak';
+import { KeycloakTokenResponse } from '$types/Keycloak';
 
 import { config } from './config';
 
