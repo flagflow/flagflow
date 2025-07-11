@@ -5,4 +5,6 @@ export type EtcdWithKey<T extends EtcdAnyObject> = { key: string } & T;
 export const etcdRecordToArray = <T extends EtcdAnyObject>(
 	record: EtcdRecord<T>
 ): EtcdWithKey<T>[] =>
-	Object.entries(record).map(([key, value]) => ({ key, ...value }) as EtcdWithKey<T>);
+	Object.entries(record)
+		.filter(([, value]) => value !== undefined)
+		.map(([key, value]) => ({ key, ...value }) as EtcdWithKey<T>);
