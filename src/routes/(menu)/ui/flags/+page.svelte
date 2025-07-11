@@ -21,21 +21,15 @@
 
 	const createDescriptor = () =>
 		configAutoTable({
-			data: data.sessions,
+			data: data.flags,
 			columns: [
 				{
 					title: 'User',
-					property: 'userName'
-				},
-				{
-					title: 'Created at',
-					property: 'createdAt',
-					dateFormat: 'YYYY-MM-DD HH:mm:ss',
-					subProperty: 'createdAtElapsed'
-				},
-				{
-					title: 'Session',
 					property: 'key'
+				},
+				{
+					title: 'Type',
+					property: 'type'
 				},
 				{
 					align: 'right',
@@ -43,14 +37,14 @@
 						{
 							icon: 'delete',
 							color: 'red',
-							tooltip: 'Delete session',
-							onCommand: async (row) => await removeSession(row.key, row.userName)
+							tooltip: 'Delete flag',
+							onCommand: async (row) => await removeFlag(row.key, row.type)
 						}
 					]
 				}
 			],
-			primary: 'userName',
-			sortables: ['userName', 'key', 'createdAt']
+			primary: 'key',
+			sortables: ['key', 'type']
 		}) as AutoTableDescriptor;
 
 	const addFlag = async () => {
@@ -62,12 +56,12 @@
 		}
 	};
 
-	const removeSession = async (sessionId: string, name: string) => {
+	const removeFlag = async (key: string, type: string) => {
 		try {
-			const result = await showModalConfirmationDelete(`session of ${name}`);
+			const result = await showModalConfirmationDelete(`${key} (${type})`);
 			if (!result.isOk) return;
 
-			await rpcClient.session.delete.mutate({ sessionId });
+			await rpcClient.flag.delete.mutate({ key });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -76,9 +70,9 @@
 </script>
 
 <PageTitle
-	count={data.sessions.length}
-	description="Here's where you can see the active sessions for your built-in users, along with their login times. You also have the power to terminate a session, which will log that user out."
-	title="Sessions"
+	count={data.flags.length}
+	description="Here's where you can see the registered flags. You can create, edit, and delete flags."
+	title="Flags"
 	toolbarPos="left"
 >
 	<ButtonGroup size="md">
@@ -86,11 +80,11 @@
 	</ButtonGroup>
 </PageTitle>
 
-{#if data.sessions.length > 0}
+{#if data.flags.length > 0}
 	{#key data}
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="session" title="There are no sessions yet" />
+	<EmptyListBanner icon="flag" title="There are no flags yet" />
 {/if}
 <ScrollToTop />

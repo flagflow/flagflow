@@ -1,4 +1,6 @@
-export const EMPTY_BOOLEAN_FLAG = {
+import type { EtcdFlag } from './flag';
+
+export const EMPTY_BOOLEAN_FLAG: EtcdFlag = {
 	description: '',
 	type: 'BOOLEAN',
 	defaultValue: false,
@@ -7,7 +9,7 @@ export const EMPTY_BOOLEAN_FLAG = {
 	value: false
 } as const;
 
-export const EMPTY_INTEGER_FLAG = {
+export const EMPTY_INTEGER_FLAG: EtcdFlag = {
 	description: '',
 	type: 'INTEGER',
 	defaultValue: 0,
@@ -17,7 +19,7 @@ export const EMPTY_INTEGER_FLAG = {
 	value: 0
 } as const;
 
-export const EMPTY_STRING_FLAG = {
+export const EMPTY_STRING_FLAG: EtcdFlag = {
 	description: '',
 	type: 'STRING',
 	defaultValue: '',
@@ -25,7 +27,7 @@ export const EMPTY_STRING_FLAG = {
 	value: ''
 } as const;
 
-export const EMPTY_ENUM_FLAG = {
+export const EMPTY_ENUM_FLAG: EtcdFlag = {
 	description: '',
 	type: 'ENUM',
 	enumValues: [],

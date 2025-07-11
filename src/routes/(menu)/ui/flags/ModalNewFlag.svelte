@@ -20,6 +20,7 @@
 		type ValidityItem
 	} from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
+	import { rpcClient } from '$lib/rpc/client';
 	//import { rpcClient } from '$lib/rpc/client';
 	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
@@ -104,7 +105,6 @@
 				{
 					flagSpecific = {
 						...EMPTY_ENUM_FLAG,
-						enumValues: [],
 						description: flagCommon.description
 					};
 				}
@@ -135,10 +135,11 @@
 	} = new FormLogic(
 		flagCommon,
 		async () => {
-			// await rpcClient.user.create.mutate({
-			// 	key: formData.userName,
-			// 	...formData
-			// });
+			if (!flagSpecific) throw new Error('Flag data is not initialized');
+			await rpcClient.flag.create.mutate({
+				key: formData.name,
+				flag: flagSpecific
+			});
 			dispatch('resolve', { isOk: true });
 		},
 		{
