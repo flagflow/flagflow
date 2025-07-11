@@ -8,8 +8,8 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
 
@@ -37,7 +37,7 @@
 					align: 'right',
 					commands: [
 						{
-							icon: 'mdi:delete',
+							icon: 'delete',
 							color: 'red',
 							tooltip: 'Delete session',
 							onCommand: async (row) => await removeSession(row.key, row.userName)
@@ -54,7 +54,7 @@
 			const result = await showModalConfirmationDelete(`session of ${name}`);
 			if (!result.isOk) return;
 
-			await apiClient.session.delete.mutate({ sessionId });
+			await rpcClient.session.delete.mutate({ sessionId });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -73,6 +73,6 @@
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:users-group" title="There are no sessions yet" />
+	<EmptyListBanner icon="session" title="There are no sessions yet" />
 {/if}
 <ScrollToTop />

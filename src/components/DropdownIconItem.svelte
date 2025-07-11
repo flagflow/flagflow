@@ -1,12 +1,14 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import { DropdownItem } from 'flowbite-svelte';
 	import type { Snippet } from 'svelte';
+
+	import Icon from './icon/Icon.svelte';
+	import type { IconId } from './icon/Icons';
 
 	interface Properties {
 		href?: string;
 		onclick?: () => void;
-		icon?: string;
+		icon?: IconId;
 		children: Snippet;
 	}
 
@@ -15,7 +17,7 @@
 
 <DropdownItem href={href ?? ''} onclick={() => onclick?.()}>
 	{#if icon}
-		<Icon class="mr-1 -ml-1 inline-flex text-purple-500" {icon} width={20} />
+		<Icon id={icon} class="mr-1 -ml-1 inline-flex text-purple-500" />
 	{/if}
 	{@render children()}</DropdownItem
 >

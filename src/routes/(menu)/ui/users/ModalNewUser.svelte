@@ -1,23 +1,7 @@
 <script lang="ts" module>
 	import ModalNewUser from './ModalNewUser.svelte';
 
-	export const showModalNewUser = async () => {
-		const user = {
-			userName: 'user@company.com',
-			name: 'John Doe',
-			password: '',
-			password2: '',
-			roles: ['flagflow-viewer'] as UserRole[],
-			mustChangePassword: true
-		};
-
-		return modalHandler.show({
-			component: ModalNewUser,
-			props: {
-				user
-			}
-		});
-	};
+	export const showModalNewUser = async () => modalHandler.show({ component: ModalNewUser });
 </script>
 
 <script lang="ts">
@@ -30,29 +14,25 @@
 	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
-	import { EtcdUserKey } from '$types/Etcd';
-	import { type UserRole } from '$types/UserRoles';
+	import { rpcClient } from '$lib/rpc/client';
+	import { EtcdUserKey } from '$types/etcd';
+	import { type UserRole } from '$types/userRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
 	}>();
 
-	interface Properties {
-		user: {
-			userName: string;
-			name: string;
-			password: string;
-			password2: string;
-			roles: UserRole[];
-			mustChangePassword: boolean;
-		};
-	}
-
-	const { user }: Properties = $props();
+	const user = {
+		userName: 'user@company.com',
+		name: 'John Doe',
+		password: '',
+		password2: '',
+		roles: ['flagflow-viewer'] as UserRole[],
+		mustChangePassword: true
+	};
 
 	const {
 		formData,
@@ -61,7 +41,7 @@
 	} = new FormLogic(
 		user,
 		async () => {
-			await apiClient.user.create.mutate({
+			await rpcClient.user.create.mutate({
 				key: formData.userName,
 				...formData
 			});
@@ -98,7 +78,7 @@
 
 		await showModalInformation(
 			'Generated password',
-			`The generated password is: <strong>${password}</strong>
+			`The generated password is: **${password}**
 			<br/><br/>
 			Warning! Keep it safe and send it to the user after user creation!`
 		);
@@ -185,7 +165,7 @@
 			<Button
 				class="w-20"
 				disabled={!$stateAllValid || $stateInProgress}
-				onclick={() => formExecute({})}
+				onclick={() => formExecute()}
 			>
 				Create</Button
 			>

@@ -31,6 +31,6 @@ export const config = {
 		enabled: envVar.get('METRICS_ENABLED').asBool() || defaults.MetricsEnabled
 	},
 	dev: {
-		apiSlowdownMs: envVar.get('DEV_API_SLOWDOWN_MS').asIntPositive()
+		rpcSlowdownMs: envVar.get('DEV_RPC_SLOWDOWN_MS').asIntPositive()
 	}
 };

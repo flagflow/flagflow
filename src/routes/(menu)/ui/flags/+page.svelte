@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { ButtonGroup } from 'flowbite-svelte';
+
+	import AsyncButton from '$components/AsyncButton.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
@@ -8,53 +11,57 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
+	import { showModalNewFlag } from './ModalNewFlag.svelte';
 
 	let { data }: PageProperties = $props();
 
 	const createDescriptor = () =>
 		configAutoTable({
-			data: data.sessions,
+			data: data.flags,
 			columns: [
 				{
 					title: 'User',
-					property: 'userName'
-				},
-				{
-					title: 'Created at',
-					property: 'createdAt',
-					dateFormat: 'YYYY-MM-DD HH:mm:ss',
-					subProperty: 'createdAtElapsed'
-				},
-				{
-					title: 'Session',
 					property: 'key'
+				},
+				{
+					title: 'Type',
+					property: 'type'
 				},
 				{
 					align: 'right',
 					commands: [
 						{
-							icon: 'mdi:delete',
+							icon: 'delete',
 							color: 'red',
-							tooltip: 'Delete session',
-							onCommand: async (row) => await removeSession(row.key, row.userName)
+							tooltip: 'Delete flag',
+							onCommand: async (row) => await removeFlag(row.key, row.type)
 						}
 					]
 				}
 			],
-			primary: 'userName',
-			sortables: ['userName', 'key', 'createdAt']
+			primary: 'key',
+			sortables: ['key', 'type']
 		}) as AutoTableDescriptor;
 
-	const removeSession = async (sessionId: string, name: string) => {
+	const addFlag = async () => {
 		try {
-			const result = await showModalConfirmationDelete(`session of ${name}`);
+			const result = await showModalNewFlag();
+			if (result.isOk) await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const removeFlag = async (key: string, type: string) => {
+		try {
+			const result = await showModalConfirmationDelete(`${key} (${type})`);
 			if (!result.isOk) return;
 
-			await apiClient.session.delete.mutate({ sessionId });
+			await rpcClient.flag.delete.mutate({ key });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -63,16 +70,21 @@
 </script>
 
 <PageTitle
-	count={data.sessions.length}
-	description="Here's where you can see the active sessions for your built-in users, along with their login times. You also have the power to terminate a session, which will log that user out."
-	title="Sessions"
-/>
+	count={data.flags.length}
+	description="Here's where you can see the registered flags. You can create, edit, and delete flags."
+	title="Flags"
+	toolbarPos="left"
+>
+	<ButtonGroup size="md">
+		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
+	</ButtonGroup>
+</PageTitle>
 
-{#if data.sessions.length > 0}
+{#if data.flags.length > 0}
 	{#key data}
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:users-group" title="There are no sessions yet" />
+	<EmptyListBanner icon="flag" title="There are no flags yet" />
 {/if}
 <ScrollToTop />

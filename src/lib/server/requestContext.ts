@@ -3,13 +3,18 @@ import { parse as parseCookie } from 'cookie';
 
 import { JWT_COOKIE_NAMES, SESSION_COOKIE_NAME } from '$lib/cookies';
 import { generateTraceId } from '$lib/genId';
-import type { Authentication } from '$types/Auth';
+import type { Authentication } from '$types/auth';
 
 import { config } from './config';
-import { asValue, container } from './container';
+import { asValue, type Container, container } from './container';
 import { verifyKeycloakAccessToken } from './keycloak';
 
-export const createRequestContext = async (request: Request) => {
+export const createRequestContext = async (
+	request: Request
+): Promise<{
+	container: Container;
+	authentication: Authentication;
+}> => {
 	const scope = container.createScope();
 	scope.register({
 		traceId: asValue(generateTraceId())

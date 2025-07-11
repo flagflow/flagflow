@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import { ButtonGroup, Input, InputAddon, type InputValue } from 'flowbite-svelte';
 	import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
-	import { Icons } from '$components/Icons';
+	import Icon from '$components/icon/Icon.svelte';
+	import { type IconId } from '$components/icon/Icons';
 	import type { ValidityItem } from '$lib/form.svelte';
 
 	import FormContainer from './FormContainer.svelte';
@@ -13,7 +13,7 @@
 		class?: string;
 		id?: string;
 		title: string;
-		icon?: string;
+		icon?: IconId;
 		maxLength?: number;
 		regexp?: RegExp;
 		mandatory?: boolean;
@@ -49,15 +49,14 @@
 		{#if type === 'password'}
 			<InputAddon>
 				<Icon
+					id={showPassword ? 'passwordVisible' : 'password'}
 					class="cursor-pointer"
-					icon={showPassword ? Icons.passwordVisible : Icons.password}
 					onclick={() => (showPassword = !showPassword)}
-					width={20}
 				/>
 			</InputAddon>
 		{:else if icon}
 			<InputAddon>
-				<Icon {icon} width={20} />
+				<Icon id={icon} />
 			</InputAddon>
 		{/if}
 		<Input

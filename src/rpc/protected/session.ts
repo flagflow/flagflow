@@ -1,22 +1,21 @@
 import { z } from 'zod';
 
-import { ZNonEmptryString } from '$api/zodTypes';
-import { apiProcedure, createApiRouter } from '$lib/api/init';
-import type { EtcdSession } from '$types/Etcd';
-import { etcdRecordToArray } from '$types/Etcd';
+import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
+import type { EtcdSession } from '$types/etcd';
+import { etcdRecordToArray, EtcdSessionKey } from '$types/etcd';
 
-export const sessionApi = createApiRouter({
-	getList: apiProcedure.query(async ({ ctx }) => {
+export const sessionRpc = createRpcRouter({
+	getList: rpcProcedure.query(async ({ ctx }) => {
 		const etcdService = ctx.container.resolve('etcdService');
 		const sessionRecords = await etcdService.list('session');
 		const sessions = etcdRecordToArray<EtcdSession>(sessionRecords);
 
 		return sessions;
 	}),
-	delete: apiProcedure
+	delete: rpcProcedure
 		.input(
 			z.object({
-				sessionId: ZNonEmptryString()
+				sessionId: EtcdSessionKey
 			})
 		)
 		.mutation(async ({ ctx, input }) => {

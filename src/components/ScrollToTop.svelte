@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
+	import Icon from './icon/Icon.svelte';
 
 	interface Properties {
 		sensitivity?: number;
@@ -24,7 +24,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="back-to-top flex cursor-pointer" class:hidden onclick={goTop}>
 	Scroll to top
-	<Icon class="ml-2" icon="mdi:arrow-up-bold-circle-outline" width="24" />
+	<Icon id="scrollToTop" align="right" />
 </div>
 
 <style>

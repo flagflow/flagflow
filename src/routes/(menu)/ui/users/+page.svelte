@@ -11,8 +11,8 @@
 		type AutoTableDescriptor,
 		configAutoTable
 	} from '$components/table/AutoTable.svelte';
-	import { apiClient } from '$lib/api/client';
 	import { invalidatePage } from '$lib/navigationEx';
+	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalNewUser } from './ModalNewUser.svelte';
@@ -41,13 +41,13 @@
 					align: 'right',
 					commands: [
 						{
-							icon: 'mdi:edit',
+							icon: 'edit',
 							color: 'black',
 							tooltip: 'Modify user',
 							onCommand: async (row) => await modifyUser(row.key)
 						},
 						{
-							icon: 'mdi:delete',
+							icon: 'delete',
 							color: 'red',
 							tooltip: 'Delete user',
 							onCommand: async (row) => await removeUser(row.key, row.name)
@@ -83,7 +83,7 @@
 			const result = await showModalConfirmationDelete(name);
 			if (!result.isOk) return;
 
-			await apiClient.user.delete.mutate({ key: userName });
+			await rpcClient.user.delete.mutate({ key: userName });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -107,6 +107,6 @@
 		<AutoTable descriptor={createDescriptor()} />
 	{/key}
 {:else}
-	<EmptyListBanner icon="mdi:user" title="There are no users yet" />
+	<EmptyListBanner icon="user" title="There are no users yet" />
 {/if}
 <ScrollToTop />

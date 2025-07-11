@@ -1,32 +1,41 @@
-import type { AnyTRPCMiddlewareFunction } from '@trpc/server';
+import type { MiddlewareFunction } from '@trpc/server/unstable-core-do-not-import';
 
 import { createCounter, METRICS_ENABLED } from '$lib/server/svelteMiddleware/metrics';
 
-const metricApi = METRICS_ENABLED
+import type { Context } from '../context';
+import type { Meta } from '../meta';
+
+const metricRpc = METRICS_ENABLED
 	? createCounter({
-			name: 'api',
-			help: 'API call',
+			name: 'rpc',
+			help: 'RPC call',
 			labelNames: ['method', 'path', 'error']
 		})
 	: undefined;
 
-export const logMiddleware: AnyTRPCMiddlewareFunction = async ({ type, path, ctx, next }) => {
-	const logService = ctx.container.resolve('logService')('api');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const logMiddleware: MiddlewareFunction<Context, Meta, void, void, any> = async ({
+	type,
+	path,
+	ctx,
+	next
+}) => {
+	const logService = ctx.container.resolve('logService')('rpc');
 	const configService = ctx.container.resolve('configService');
 
 	const metaRequest = { method: type, path };
 	logService.debug(metaRequest, 'Request');
 
 	const start = Date.now();
-	if (configService.dev.apiSlowdownMs)
-		await new Promise((r) => setTimeout(r, configService.dev.apiSlowdownMs));
+	if (configService.dev.rpcSlowdownMs)
+		await new Promise((r) => setTimeout(r, configService.dev.rpcSlowdownMs));
 	const result = await next();
 	const elapsedMs = Date.now() - start;
 
 	const metaResponse = { ...metaRequest, elapsed: elapsedMs };
 	if (result.ok) {
 		logService.debug(metaResponse, 'Response');
-		metricApi?.inc({ method: type, path });
+		metricRpc?.inc({ method: type, path });
 	} else {
 		logService.error(
 			{
@@ -39,7 +48,7 @@ export const logMiddleware: AnyTRPCMiddlewareFunction = async ({ type, path, ctx
 			},
 			result.error.message
 		);
-		metricApi?.inc({ method: type, path, error: result.error.code });
+		metricRpc?.inc({ method: type, path, error: result.error.code });
 	}
 	return result;
 };

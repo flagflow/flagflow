@@ -4,19 +4,18 @@ import { z } from 'zod';
 
 import { ChangeProxy, type ProxyChanged } from './proxy';
 import type { StringKeys, TypeKeys } from './typeEx';
-import { zodFlattenError } from './zodEx';
 
 export type ValidityItem = { isError: boolean; message?: string };
 
 type InputObject = Record<string, unknown>;
 
-type Validator = { [S in string]: ValidityItem | Validator };
-const allValid = (validator: Validator): boolean =>
-	Object.values(validator).every((item) => ('isError' in item ? !item.isError : allValid(item)));
+export type Validator = { [S in string]: ValidityItem | Validator };
+export const isValidValidator = (validator: Validator): boolean =>
+	Object.values(validator).every((item) =>
+		'isError' in item ? !item.isError : isValidValidator(item)
+	);
 
-type Action<P extends object> =
-	| ((parameters: P) => Promise<void> | void)
-	| (() => Promise<void> | void);
+type Action<P extends object> = (parameters?: P) => Promise<void> | void;
 
 type Actuators<T extends InputObject, V extends Validator> = {
 	validator?: (source: T) => V;
@@ -40,7 +39,7 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 	private _stateAllValid = derived(
 		this._stateIsValid,
 		// eslint-disable-next-line unicorn/consistent-function-scoping
-		($stateIsValid) => !$stateIsValid || allValid($stateIsValid)
+		($stateIsValid) => !$stateIsValid || isValidValidator($stateIsValid)
 	);
 	private _stateIsDirty = writable(false);
 	private _stateInProgress = writable(false);
@@ -49,7 +48,7 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 	private _action: Action<P>;
 	private _actuators?: Actuators<T, V> | undefined;
 
-	private _formExecute = async (parameters: P) => {
+	private _formExecute = async (parameters?: P) => {
 		this._stateError.set(undefined);
 		this._stateInProgress.set(true);
 		try {
@@ -104,6 +103,16 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 			stateInProgress: this._stateInProgress,
 			stateError: this._stateError
 		};
+	}
+}
+
+export class ExternalValidator {
+	private _error: ValidityItem = { isError: false };
+	constructor(errorMessage: string | undefined) {
+		this._error = errorMessage ? { isError: true, message: errorMessage } : { isError: false };
+	}
+	public get error() {
+		return this._error;
 	}
 }
 
@@ -190,7 +199,7 @@ export class StringValidator {
 	public zod(schema: z.ZodTypeAny, message?: string): StringValidator {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+			if (!isValid.success) this.updateError(message ?? isValid.error.issues[0].message);
 		}
 		return this;
 	}
@@ -224,7 +233,7 @@ export class ArrayValidator<T> {
 	public zod(schema: z.ZodTypeAny, message?: string): ArrayValidator<T> {
 		if (this.s) {
 			const isValid = schema.safeParse(this.s);
-			if (!isValid.success) this.updateError(message ?? zodFlattenError(isValid.error.errors));
+			if (!isValid.success) this.updateError(message ?? isValid.error.issues[0].message);
 		}
 		return this;
 	}

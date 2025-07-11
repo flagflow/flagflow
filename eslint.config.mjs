@@ -109,7 +109,7 @@ export default [
 			'vitest/no-standalone-expect': [
 				'warn',
 				{
-					additionalTestBlockFunctions: ['apiCallerTest']
+					additionalTestBlockFunctions: ['rpcCallerTest']
 				}
 			]
 		},
