@@ -45,7 +45,7 @@
 	const { groupName }: Properties = $props();
 
 	const steps = ['Welcome', 'Name & Type', 'Schema & Value'];
-	let currentStepIndex = $state(0);
+	let currentStepIndex = $state(groupName ? 1 : 0);
 	const canForwardStep = $state([true, false, false]);
 
 	// Flag states

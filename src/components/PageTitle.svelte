@@ -29,7 +29,7 @@
 
 <HtmlTitle {title} />
 
-<div class="mb-4 flex min-h-10 flex-row items-center gap-4">
+<div class="mb-4 flex min-h-10 items-center gap-4">
 	<span class:line-through={titleLineThrough}>
 		<span class="text-xl font-medium">{title}</span>
 		{#if count}

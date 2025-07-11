@@ -1,14 +1,12 @@
 <script lang="ts">
 	import {
 		Avatar,
-		Button,
 		Dropdown,
 		DropdownGroup,
 		DropdownHeader,
 		DropdownItem,
 		Navbar,
 		NavBrand,
-		Search,
 		Sidebar,
 		SidebarDropdownWrapper,
 		SidebarGroup,
@@ -74,16 +72,6 @@
 			for (const unmount of unmounts) unmount();
 		};
 	});
-
-	let searchText = $state('');
-
-	const doSearch = () => {
-		if (searchText.trim() === '') return;
-
-		const searchUrl = new URL('/ui/search', window.location.origin);
-		searchUrl.searchParams.set('q', searchText.trim());
-		window.location.href = searchUrl.toString();
-	};
 </script>
 
 <Navbar class="bg-gray-50" fluid>
@@ -93,11 +81,6 @@
 			FlagFlow admin
 		</span>
 	</NavBrand>
-	<div class="items-cemter flex cursor-pointer md:order-1">
-		<Search placeholder="Flags, users..." size="md" bind:value={searchText}>
-			<Button class="me-1" onclick={doSearch} size="xs">Search</Button>
-		</Search>
-	</div>
 	<div class="flex cursor-pointer items-center md:order-2">
 		<Avatar id="avatar" class="bg-orange-100 p-4" border>{userNameInitials}</Avatar>
 	</div>

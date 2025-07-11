@@ -39,6 +39,7 @@ export const IconIds = {
 	close: 'mdi:close',
 	dots: 'mdi:dots-horizontal',
 	dotsVertical: 'mdi:dots-vertical',
+	search: 'mdi:search',
 
 	error: 'mdi:error',
 	warning: 'mdi:warning',

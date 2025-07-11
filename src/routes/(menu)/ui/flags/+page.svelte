@@ -6,8 +6,11 @@
 		Card,
 		Dropdown,
 		DropdownItem,
+		Input,
+		InputAddon,
 		Kbd,
 		RadioButton,
+		Select,
 		Tooltip
 	} from 'flowbite-svelte';
 	import { persisted } from 'svelte-persisted-store';
@@ -19,15 +22,27 @@
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
 	import ScrollToTop from '$components/ScrollToTop.svelte';
+	import { focusInputById } from '$lib/form.svelte';
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
+	import { urlParameterStore } from '$lib/stores/urlParameterStore';
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
 
 	let { data }: PageProperties = $props();
 
+	const GROUP_GENERAL_NAME = '#root';
+
 	const listSettings = persisted<{ gridMode: boolean }>('flag-list', { gridMode: true });
+	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
+	const searchFilter = urlParameterStore({ key: 'search', defaultValue: '', debounce: 350 });
+
+	const filterItemGroup = data.flagGroupKeys.map((k) => ({
+		value: k || GROUP_GENERAL_NAME,
+		name: (k || GROUP_GENERAL_NAME).replaceAll('/', ' › ')
+	}));
+	filterItemGroup.unshift({ value: '', name: 'All' });
 
 	const addFlag = async (groupName = '') => {
 		try {
@@ -49,16 +64,32 @@
 			await showModalError(error);
 		}
 	};
+
+	focusInputById('search');
 </script>
 
-<PageTitle
-	count={data.flagCount}
-	description="Here's where you can see the registered flags. You can create, edit, and delete flags."
-	hr
-	title="Flags"
->
+<PageTitle count={data.flagCount} hr title="Flags">
 	<ButtonGroup size="md">
 		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
+	</ButtonGroup>
+	{#if filterItemGroup.length > 2}
+		<Select
+			class="unfocused ml-4 w-64"
+			items={filterItemGroup}
+			placeholder="Group filter"
+			bind:value={$groupFilter}
+		/>
+	{/if}
+	<ButtonGroup class="w-72">
+		<InputAddon><Icon id="search" /></InputAddon>
+		<Input
+			id="search"
+			class="unfocused"
+			placeholder="Search flags..."
+			size="md"
+			type="search"
+			bind:value={$searchFilter}
+		/>
 	</ButtonGroup>
 
 	{#snippet rightToolbar()}
@@ -87,55 +118,62 @@
 
 {#key data}
 	{#if data.flagCount > 0}
-		{#each Object.entries(data.flagGroups) as [group, flags]}
-			<h5 class="col-span-3 py-4 pt-8 text-xl font-semibold text-gray-700">
-				{(group || '#root').replaceAll('/', ' › ')}
-				{#if flags.length > 0}
-					<Badge color="secondary" size="small">{flags.length}</Badge>
-				{/if}
-				{#if group}
-					<AsyncButton class="ml-2" action={() => addFlag(group)} size="xs">
-						<Icon id="add" size={12} />
-					</AsyncButton>
-				{/if}
-			</h5>
-			<div
-				class={clsx('ml-4 grid gap-4', $listSettings['gridMode'] ? 'grid-cols-3' : 'grid-cols-1')}
-			>
-				{#each flags as flag (flag.key)}
-					<Card class="max-w-full p-4 py-2">
-						<div class="flex flex-row items-center justify-between">
-							<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
-								<Badge class="mr-1 w-0" color="indigo" size="small"
-									>{flag.typeToDisplay.slice(0, 1)}</Badge
-								>
-								<Tooltip placement="bottom-end" type="light">{flag.typeToDisplay}</Tooltip>
-								{flag.flagName}
-							</h5>
-							<div class="-mt-1 -mr-2">
-								<Icon
-									id="dotsVertical"
-									class="dots-menu inline-flex cursor-pointer"
-									color="gray"
-									size={24}
-								/>
-								<Dropdown simple>
-									<DropdownItem onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-										>Delete</DropdownItem
+		{#each data.flagGroups as [group, flags]}
+			{#if !$groupFilter || $groupFilter === (group || GROUP_GENERAL_NAME)}
+				<h5 class="col-span-3 py-4 pt-8 text-lg font-normal text-gray-700">
+					{(group || GROUP_GENERAL_NAME).replaceAll('/', ' › ')}
+					{#if flags.length > 0}
+						<Badge color="secondary" size="small">{flags.length}</Badge>
+					{/if}
+					{#if group}
+						<AsyncButton class="ml-2" action={() => addFlag(group)} size="xs">
+							<Icon id="add" size={12} />
+						</AsyncButton>
+						<Tooltip placement="bottom-start" type="light">Add flag to this group</Tooltip>
+					{/if}
+				</h5>
+				<div
+					class={clsx('ml-4 grid gap-4', $listSettings['gridMode'] ? 'grid-cols-3' : 'grid-cols-1')}
+				>
+					{#each flags as flag (flag.key)}
+						{#if !$searchFilter || flag.flagName
+								.toLowerCase()
+								.includes($searchFilter.toLowerCase())}
+							<Card class="max-w-full p-4 py-2">
+								<div class="flex flex-row items-center justify-between">
+									<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
+										<Badge class="mr-1 w-0" color="indigo" size="small"
+											>{flag.typeToDisplay.slice(0, 1)}</Badge
+										>
+										<Tooltip placement="bottom-start" type="light">{flag.typeToDisplay}</Tooltip>
+										{flag.flagName}
+									</h5>
+									<div class="-mt-1 -mr-2">
+										<Icon
+											id="dotsVertical"
+											class="dots-menu inline-flex cursor-pointer"
+											color="gray"
+											size={24}
+										/>
+										<Dropdown simple>
+											<DropdownItem onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+												>Delete</DropdownItem
+											>
+										</Dropdown>
+									</div>
+								</div>
+								<hr class="-mx-4 my-1 text-gray-200" />
+								<div class="mt-2 flex flex-row items-center justify-between">
+									<Kbd class={flag.valueExists ? '' : 'italic'}>
+										{flag.valueToDisplay}</Kbd
 									>
-								</Dropdown>
-							</div>
-						</div>
-						<hr class="-mx-4 my-1 text-gray-200" />
-						<div class="mt-2 flex flex-row items-center justify-between">
-							<Kbd class={flag.valueExists ? '' : 'italic'}>
-								{flag.valueToDisplay}</Kbd
-							>
-						</div>
-						<p class="mt-2 text-justify text-xs font-light text-gray-500">{flag.description}</p>
-					</Card>
-				{/each}
-			</div>
+								</div>
+								<p class="mt-2 text-justify text-xs font-light text-gray-500">{flag.description}</p>
+							</Card>
+						{/if}
+					{/each}
+				</div>
+			{/if}
 		{/each}
 	{:else}
 		<EmptyListBanner icon="flag" title="There are no flags yet" />
