@@ -115,6 +115,7 @@
 				<SidebarItem href="/ui/flags" label="Flags" {spanClass} />
 				<SidebarItem href="/ui/flags?inconsistencies" label="Inconsistencies" {spanClass} />
 				<SidebarItem href="/ui/flags?deprecated" label="Deprecated" {spanClass} />
+				<SidebarItem href="/ui/flags/depgraph" label="Dependency graph" {spanClass} />
 				<SidebarItem href="/ui/flags/urls" label="URL info" {spanClass} />
 			</SidebarDropdownWrapper>
 		</SidebarGroup>

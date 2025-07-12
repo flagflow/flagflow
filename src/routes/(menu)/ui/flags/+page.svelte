@@ -29,6 +29,7 @@
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
+	import { showModalRenameFlag } from './ModalRenameFlag.svelte';
 
 	let { data }: PageProperties = $props();
 
@@ -39,16 +40,29 @@
 	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
 	const searchFilter = urlParameterStore({ key: 'search', defaultValue: '', debounce: 350 });
 
-	const filterItemGroup = data.flagGroupKeys.map((k) => ({
-		value: k || GROUP_GENERAL_NAME,
-		name: groupNameDecorator(k || GROUP_GENERAL_NAME)
-	}));
+	const filterItemGroup = $state(
+		data.flagGroupKeys.map((k) => ({
+			value: k || GROUP_GENERAL_NAME,
+			name: groupNameDecorator(k || GROUP_GENERAL_NAME)
+		}))
+	);
 	filterItemGroup.unshift({ value: '', name: 'All' });
 
 	const addFlag = async (groupName = '') => {
 		try {
 			const result = await showModalNewFlag(groupName);
-			if (result.isOk) await invalidatePage();
+			if (result.isOk) await invalidatePage(); //window.location.reload();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const renameFlag = async (key: string) => {
+		try {
+			const result = await showModalRenameFlag(key);
+			if (!result || !result.isOk) return;
+
+			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
 		}
@@ -175,6 +189,19 @@
 												size={24}
 											/>
 											<Dropdown simple transitionParams={{ duration: 0 }}>
+												<DropdownItem
+													href="#"
+													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+													>Set value</DropdownItem
+												>
+												<DropdownItem
+													href="#"
+													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+													>Set schema</DropdownItem
+												>
+												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
+													>Rename</DropdownItem
+												>
 												<DropdownItem
 													href="#"
 													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}

@@ -5,12 +5,17 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormTextarea from '$components/form/FormTextarea.svelte';
 	import { focusInputById, type ValidityItem } from '$lib/form.svelte';
-	import { type EtcdFlagType, EtcdHierarchicalKeyInputRegExp } from '$types/etcd';
+	import {
+		type EtcdFlagType,
+		EtcdFlagTypeDescription,
+		EtcdHierarchicalKeyInputRegExp
+	} from '$types/etcd';
 
 	interface Properties {
 		name: string;
 		description: string;
 		type: EtcdFlagType;
+		typeEnabled?: boolean;
 		validity?:
 			| {
 					name: ValidityItem;
@@ -22,6 +27,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		type = $bindable(),
+		typeEnabled = true,
 		validity
 	}: Properties = $props();
 
@@ -48,24 +54,13 @@
 		/>
 	</div>
 	<FormContainer class="flex flex-col gap-3 px-4" mandatory title="Type">
-		<div class="ml-2 flex flex-col">
-			<Radio value="BOOLEAN" bind:group={type}>Boolean</Radio>
-			<Helper class="ps-6">On/off functionality or kill switch</Helper>
-		</div>
-
-		<div class="ml-2 flex flex-col">
-			<Radio value="INTEGER" bind:group={type}>Integer</Radio>
-			<Helper class="ps-6">Integer value, can be bounded</Helper>
-		</div>
-
-		<div class="ml-2 flex flex-col">
-			<Radio value="STRING" bind:group={type}>String</Radio>
-			<Helper class="ps-6">Text value</Helper>
-		</div>
-
-		<div class="ml-2 flex flex-col">
-			<Radio value="ENUM" bind:group={type}>Enum</Radio>
-			<Helper class="ps-6">Select from a valueset</Helper>
-		</div>
+		{#each Object.entries(EtcdFlagTypeDescription) as [flagType, description]}
+			{#if typeEnabled || flagType === type}
+				<div class="ml-2 flex flex-col">
+					<Radio value={flagType} bind:group={type}>{flagType}</Radio>
+					<Helper class="ps-6">{description}</Helper>
+				</div>
+			{/if}
+		{/each}
 	</FormContainer>
 </div>
