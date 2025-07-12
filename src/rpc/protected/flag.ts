@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { updateFlag } from '$lib/flagUpdater';
+import { flagSchemaValidator, flagValueValidator } from '$lib/flagValidator';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { EtcdFlag } from '$types/etcd';
 import { EtcdFlagKey, etcdRecordToArray } from '$types/etcd';
@@ -33,7 +34,30 @@ export const flagRpc = createRpcRouter({
 		.mutation(async ({ ctx, input }) => {
 			const etcdService = ctx.container.resolve('etcdService');
 			await etcdService.throwIfExists('flag', input.key);
+
+			const schemaError = flagSchemaValidator(input.flag);
+			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
+			const valueError = flagValueValidator(input.flag);
+			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
+
 			await etcdService.put('flag', input.key, input.flag);
+		}),
+	rename: rpcProcedure
+		.input(
+			z.object({
+				oldKey: EtcdFlagKey.trim(),
+				recentKey: EtcdFlagKey.trim(),
+				description: z.string()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const etcdService = ctx.container.resolve('etcdService');
+			const flag = await etcdService.getOrThrow('flag', input.oldKey);
+			flag.description = input.description;
+			await etcdService.throwIfExists('flag', input.recentKey);
+
+			await etcdService.put('flag', input.recentKey, flag);
+			await etcdService.delete('flag', input.oldKey);
 		}),
 	update: rpcProcedure
 		.input(
