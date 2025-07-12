@@ -108,11 +108,15 @@
 					<Icon id="dashboard" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarItem href="/ui/flags" label="Flags" {spanClass}>
+			<SidebarDropdownWrapper btnClass="p-2" label="Flags">
 				{#snippet icon()}
 					<Icon id="flag" />
 				{/snippet}
-			</SidebarItem>
+				<SidebarItem href="/ui/flags" label="Flags" {spanClass} />
+				<SidebarItem href="/ui/flags?inconsistencies" label="Inconsistencies" {spanClass} />
+				<SidebarItem href="/ui/flags?deprecated" label="Deprecated" {spanClass} />
+				<SidebarItem href="/ui/flags/urls" label="URL info" {spanClass} />
+			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
 			<SidebarItem href="/ui/export" label="Export / import" {spanClass}>
@@ -136,7 +140,7 @@
 			</SidebarItem>
 		</SidebarGroup>
 	</Sidebar>
-	<div class="h-[calc(100svh-64px)] overflow-auto p-4 md:ml-64">
+	<div class="h-[calc(100svh-64px)] overflow-auto p-0 md:ml-64">
 		{@render children()}
 	</div>
 </div>

@@ -2,8 +2,8 @@
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
+	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
-	import ScrollToTop from '$components/ScrollToTop.svelte';
 	import AutoTable, {
 		type AutoTableDescriptor,
 		configAutoTable
@@ -69,10 +69,11 @@
 />
 
 {#if data.sessions.length > 0}
-	{#key data}
-		<AutoTable descriptor={createDescriptor()} />
-	{/key}
+	<PageContainer>
+		{#key data}
+			<AutoTable descriptor={createDescriptor()} />
+		{/key}
+	</PageContainer>
 {:else}
 	<EmptyListBanner icon="session" title="There are no sessions yet" />
 {/if}
-<ScrollToTop />

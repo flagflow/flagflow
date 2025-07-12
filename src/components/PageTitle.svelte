@@ -29,28 +29,30 @@
 
 <HtmlTitle {title} />
 
-<div class="mb-4 flex min-h-10 items-center gap-4">
-	<span class:line-through={titleLineThrough}>
-		<span class="text-xl font-medium">{title}</span>
-		{#if count}
-			<span class="text-sm font-light"> ({count})</span>
+<div class="sticky top-0 mb-4 flex min-h-10 flex-col gap-4 bg-white p-4 pb-0">
+	<div class="flex flex-row items-center gap-4">
+		<span class:line-through={titleLineThrough}>
+			<span class="text-xl font-medium">{title}</span>
+			{#if count}
+				<span class="text-sm font-light"> ({count})</span>
+			{/if}
+		</span>
+
+		{#if status}
+			<div class="text-sm font-light">{status}</div>
 		{/if}
-	</span>
 
-	{#if status}
-		<div class="text-sm font-light">{status}</div>
+		{#if children}
+			<div class="flex gap-4">{@render children()}</div>
+		{/if}
+		{#if rightToolbar}
+			<div class="ml-auto flex gap-4">{@render rightToolbar()}</div>
+		{/if}
+	</div>
+
+	{#if description}
+		<div class="m-0 -mt-2 text-xs font-light">{description}</div>
 	{/if}
 
-	{#if children}
-		<div class="flex gap-4">{@render children()}</div>
-	{/if}
-	{#if rightToolbar}
-		<div class="ml-auto flex gap-4">{@render rightToolbar()}</div>
-	{/if}
+	{#if hr}<hr class="text-gray-200" />{/if}
 </div>
-
-{#if description}
-	<div class="m-0 my-6 -mt-2 text-xs font-light">{description}</div>
-{/if}
-
-{#if hr}<hr class="text-gray-200" />{/if}
