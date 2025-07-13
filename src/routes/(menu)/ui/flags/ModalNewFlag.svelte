@@ -32,8 +32,9 @@
 	} from '$types/etcd/flagEmptyInstance';
 
 	import StepSchemaAndValue from './/StepSchemaAndValue.svelte';
-	import StepNameAndType from './StepNameAndType.svelte';
+	import StepName from './StepName.svelte';
 	import StepNewWelcome from './StepNewWelcome.svelte';
+	import StepType from './StepType.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -207,12 +208,14 @@
 			{/snippet}
 
 			{#snippet content2Type()}
-				<StepNameAndType
-					validity={$stateIsValid}
-					bind:name={formData.name}
-					bind:type={formData.type}
-					bind:description={formData.description}
-				/>
+				<div class="grid grid-cols-2 gap-4">
+					<StepName
+						validity={$stateIsValid}
+						bind:name={formData.name}
+						bind:description={formData.description}
+					/>
+					<StepType bind:type={formData.type} />
+				</div>
 			{/snippet}
 
 			{#snippet content3Schema()}

@@ -5,6 +5,7 @@
 		ButtonGroup,
 		Card,
 		Dropdown,
+		DropdownDivider,
 		DropdownItem,
 		Input,
 		InputAddon,
@@ -159,6 +160,10 @@
 						<Icon id="dots" class="dots-menu inline-flex cursor-pointer" color="gray" size={24} />
 						<Dropdown simple transitionParams={{ duration: 0 }}>
 							<DropdownItem href="#" onclick={() => addFlag(groupName)}>Add flag</DropdownItem>
+							<DropdownDivider />
+							<DropdownItem href="#">Rename group</DropdownItem>
+							<DropdownItem href="#">Delete group</DropdownItem>
+							<DropdownDivider />
 							<DropdownItem href="#">Show URLs</DropdownItem>
 						</Dropdown>
 					</h5>
@@ -189,24 +194,19 @@
 												size={24}
 											/>
 											<Dropdown simple transitionParams={{ duration: 0 }}>
-												<DropdownItem
-													href="#"
-													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-													>Set value</DropdownItem
-												>
-												<DropdownItem
-													href="#"
-													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-													>Set schema</DropdownItem
-												>
+												<DropdownItem href="#">Set value</DropdownItem>
+												<DropdownItem href="#">Modify schema</DropdownItem>
+												<DropdownDivider />
 												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
-													>Rename</DropdownItem
+													>Rename flag</DropdownItem
 												>
 												<DropdownItem
 													href="#"
 													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-													>Delete</DropdownItem
+													>Delete flag</DropdownItem
 												>
+												<DropdownDivider />
+												<DropdownItem href="#">Show URLs</DropdownItem>
 											</Dropdown>
 										</div>
 									</div>

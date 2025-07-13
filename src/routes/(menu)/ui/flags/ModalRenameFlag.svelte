@@ -22,7 +22,7 @@
 	import type { EtcdSchemaDataTypeWithKey } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
 
-	import StepNameAndType from './StepNameAndType.svelte';
+	import StepName from './StepName.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -70,7 +70,7 @@
 		dismissable={false}
 		onclose={() => dispatch('resolve', { isOk: false })}
 		permanent
-		size="md"
+		size="sm"
 	>
 		{#snippet header()}
 			<div class="flex justify-between">
@@ -83,11 +83,9 @@
 			</div>
 		{/snippet}
 
-		<StepNameAndType
-			typeEnabled={false}
+		<StepName
 			validity={$stateIsValid}
 			bind:name={formData.key}
-			bind:type={formData.type}
 			bind:description={formData.description}
 		/>
 
