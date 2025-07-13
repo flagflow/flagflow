@@ -8,8 +8,8 @@ import { EtcdFlagKey, etcdRecordToArray } from '$types/etcd';
 
 export const flagRpc = createRpcRouter({
 	getList: rpcProcedure.query(async ({ ctx }) => {
-		const etcdService = ctx.container.resolve('etcdService');
-		const flagsAsRecord = await etcdService.list('flag');
+		const flagService = ctx.container.resolve('flagService');
+		const flagsAsRecord = await flagService.list();
 		const flags = etcdRecordToArray<EtcdFlag>(flagsAsRecord);
 
 		return flags;

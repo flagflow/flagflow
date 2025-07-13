@@ -10,7 +10,7 @@ import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
 export const userRpc = createRpcRouter({
 	getList: rpcProcedure.query(async ({ ctx }) => {
 		const etcdService = ctx.container.resolve('etcdService');
-		const usersAsRecord = await etcdService.list('user');
+		const { list: usersAsRecord } = await etcdService.list('user');
 		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
 
 		return users;
