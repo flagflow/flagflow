@@ -54,10 +54,14 @@ export const flagRpc = createRpcRouter({
 			const etcdService = ctx.container.resolve('etcdService');
 			const flag = await etcdService.getOrThrow('flag', input.oldKey);
 			flag.description = input.description;
-			await etcdService.throwIfExists('flag', input.recentKey);
 
-			await etcdService.put('flag', input.recentKey, flag);
-			await etcdService.delete('flag', input.oldKey);
+			if (input.oldKey === input.recentKey) await etcdService.put('flag', input.recentKey, flag);
+			else {
+				await etcdService.throwIfExists('flag', input.recentKey);
+
+				await etcdService.put('flag', input.recentKey, flag);
+				await etcdService.delete('flag', input.oldKey);
+			}
 		}),
 	update: rpcProcedure
 		.input(
