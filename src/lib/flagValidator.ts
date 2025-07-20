@@ -18,6 +18,7 @@ export const flagSchemaValidator = (flag: EtcdFlag): string => {
 };
 
 export const flagValueValidator = (flag: EtcdFlag): string => {
+	if (!flag.valueExists) return '';
 	switch (flag.type) {
 		case 'BOOLEAN':
 			return '';
