@@ -54,7 +54,7 @@
 		"eslint-plugin-svelte": "^3.11.0",
 		"eslint-plugin-unicorn": "^59.0.1",
 		"flowbite": "^3.1.2",
-		"flowbite-svelte": "1.10.13",
+		"flowbite-svelte": "1.8.3",
 		"globals": "^16.3.0",
 		"mermaid": "^11.9.0",
 		"pino-pretty": "^13.0.0",
