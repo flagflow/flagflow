@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserRoleEditor from '$components/input/UserRoleEditor.svelte';
 	import type { ValidityItem } from '$lib/form.svelte';
-	import type { UserRole } from '$types/userRoles';
+	import type { UserRole } from '$types/UserRoles';
 
 	import FormContainer from './FormContainer.svelte';
 

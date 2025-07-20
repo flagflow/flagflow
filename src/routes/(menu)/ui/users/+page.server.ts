@@ -3,7 +3,7 @@ import {
 	USER_ROLES_PREFIX,
 	type UserRole,
 	UserRolePostfixToColor
-} from '$types/userRoles';
+} from '$types/UserRoles';
 
 import type { PageServerLoad } from './$types';
 

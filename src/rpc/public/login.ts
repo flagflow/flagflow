@@ -18,6 +18,7 @@ export const loginRpc = createRpcRouter({
 
 			const sessionService = ctx.container.resolve('sessionService');
 			const sessionId = await sessionService.createSession({
+				userKey: user?.username || username,
 				userName: user?.name || username,
 				createdAt: new Date(),
 				roles: user?.roles || []

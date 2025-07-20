@@ -19,7 +19,7 @@
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
 	import { EtcdUserKey } from '$types/etcd';
-	import { type UserRole } from '$types/userRoles';
+	import { type UserRole } from '$types/UserRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

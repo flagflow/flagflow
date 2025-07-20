@@ -1,4 +1,4 @@
-import type { JwtTokens } from './jwt';
+import type { JwtTokens } from './Jwt';
 
 export type Authentication =
 	| {

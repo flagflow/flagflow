@@ -5,7 +5,7 @@ import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import { ZNonEmptyString } from '$rpc/zodTypes';
 import type { EtcdUser } from '$types/etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
-import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
+import { type UserRole, UserRoleZodEnum } from '$types/UserRoles';
 
 export const userRpc = createRpcRouter({
 	getList: rpcProcedure.query(async ({ ctx }) => {

@@ -28,23 +28,21 @@
 
 	const { data, children }: LayoutProperties = $props();
 
-	const userName = data.authentication.success?.userName || '';
+	const userName = data.authenticationContext.userName;
 	const userNameInitials =
 		userName.split(' ').length > 1
 			? userName.split(' ')[0].slice(0, 1) + userName.split(' ')[1].slice(0, 1)
 			: userName.slice(0, 2);
 
 	const logout = async () => {
-		if (data.authentication.type === 'JWT') deleteTokensCookies();
-		if (data.logoutUrl) window.location.href = data.logoutUrl;
+		if (data.authenticationContext.type === 'JWT') deleteTokensCookies();
+		if (data.authenticationContext.logoutUrl)
+			window.location.href = data.authenticationContext.logoutUrl;
 	};
 
-	let accessTokenExpiredAt =
-		data.authentication.type === 'JWT' && data.authentication.success
-			? data.authentication.success.expiredAt
-			: new Date();
+	let accessTokenExpiredAt = data.authenticationContext.jwtExpiredAt;
 	const refreshTokenIfNeeded = async () => {
-		if (data.authentication.type !== 'JWT' || !data.authentication.success) return;
+		if (data.authenticationContext.type !== 'JWT') return;
 		if (accessTokenExpiredAt.getTime() - Date.now() < 23 * 1000)
 			try {
 				const tokens = await rpcClient.login.refreshKeycloakToken.mutate();
@@ -52,7 +50,7 @@
 				accessTokenExpiredAt = dateAddSeconds(new Date(), tokens.expires_in);
 			} catch (error) {
 				// eslint-disable-next-line no-console
-				console.error('Failed to refresh access token:', error);
+				console.error('Failed to refresh access token', error);
 			}
 	};
 	onMount(() => {

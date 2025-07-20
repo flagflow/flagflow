@@ -1,6 +1,7 @@
 import z from 'zod';
 
 export const USER_ROLES_PREFIX = 'flagflow-';
+
 export const USER_ROLES_DESCRIPTOR = {
 	'flagflow-admin':
 		'Can manage all aspects of Flagflow, including user management and system settings',
@@ -18,6 +19,14 @@ export const UserRoleZodEnum = z.enum([
 	'flagflow-editor',
 	'flagflow-viewer'
 ]);
+
+export const UserRoleFromArray = (roles: string[]): Readonly<Record<UserRole, boolean>> =>
+	({
+		'flagflow-admin': roles.includes('flagflow-admin'),
+		'flagflow-maintainer': roles.includes('flagflow-maintainer'),
+		'flagflow-editor': roles.includes('flagflow-editor'),
+		'flagflow-viewer': roles.includes('flagflow-viewer')
+	}) as const;
 
 export const UserRolePostfixToColor: Record<UserRole, string> = {
 	'flagflow-admin': '!!',

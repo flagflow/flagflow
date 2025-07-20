@@ -26,7 +26,7 @@
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import { type UserRole } from '$types/userRoles';
+	import { type UserRole } from '$types/UserRoles';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

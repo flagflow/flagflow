@@ -21,7 +21,8 @@
 			columns: [
 				{
 					title: 'User',
-					property: 'userName'
+					property: 'userName',
+					subProperty: 'userKey'
 				},
 				{
 					title: 'Created at',
