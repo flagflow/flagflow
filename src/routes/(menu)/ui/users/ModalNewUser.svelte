@@ -30,7 +30,7 @@
 		name: 'John Doe',
 		password: '',
 		password2: '',
-		roles: ['flagflow-viewer'] as UserRole[],
+		roles: ['viewer'] as UserRole[],
 		mustChangePassword: true
 	};
 

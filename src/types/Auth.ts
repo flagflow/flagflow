@@ -1,4 +1,5 @@
 import type { JwtTokens } from './Jwt';
+import type { UserRole } from './UserRoles';
 
 export type Authentication =
 	| {
@@ -8,7 +9,7 @@ export type Authentication =
 				| {
 						userName: string;
 						email: string;
-						roles: string[];
+						roles: UserRole[];
 						expiredAt: Date;
 				  }
 				| undefined;
@@ -19,7 +20,7 @@ export type Authentication =
 			success?:
 				| {
 						userName: string;
-						roles: string[];
+						roles: UserRole[];
 				  }
 				| undefined;
 	  }

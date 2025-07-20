@@ -1,8 +1,8 @@
 <script lang="ts">
 	import {
 		Avatar,
+		Badge,
 		Dropdown,
-		DropdownGroup,
 		DropdownHeader,
 		DropdownItem,
 		Navbar,
@@ -21,6 +21,7 @@
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
 	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
+	import type { UserRole } from '$types/UserRoles';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
 
@@ -33,6 +34,11 @@
 		userName.split(' ').length > 1
 			? userName.split(' ')[0].slice(0, 1) + userName.split(' ')[1].slice(0, 1)
 			: userName.slice(0, 2);
+
+	const userRolesString = Object.keys(data.authenticationContext.roles)
+		.filter((role) => data.authenticationContext.roles[role as UserRole])
+		.map((role) => role.slice(0, 1).toUpperCase())
+		.join('');
 
 	const logout = async () => {
 		if (data.authenticationContext.type === 'JWT') deleteTokensCookies();
@@ -82,11 +88,12 @@
 	<div class="flex cursor-pointer items-center md:order-2">
 		<Avatar id="avatar" class="bg-orange-100 p-4" border>{userNameInitials}</Avatar>
 	</div>
-	<Dropdown placement="bottom" triggeredBy="#avatar">
-		<DropdownHeader class="text-xs font-semibold">{userName}</DropdownHeader>
-		<DropdownGroup>
-			<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
-		</DropdownGroup>
+	<Dropdown placement="bottom" simple triggeredBy="#avatar">
+		<DropdownHeader class="text-xs font-semibold">
+			{userName}
+			<Badge>{userRolesString}</Badge>
+		</DropdownHeader>
+		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
 </Navbar>
 
