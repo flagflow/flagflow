@@ -26,7 +26,7 @@
 				{
 					title: 'Created at',
 					property: 'createdAt',
-					dateFormat: 'YYYY-MM-DD HH:mm:ss',
+					dateFormat: 'yyyy-MM-dd HH:mm:ss',
 					subProperty: 'createdAtElapsed'
 				},
 				{

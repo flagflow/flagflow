@@ -1,6 +1,5 @@
 import { serialize as serializeCookie, type SerializeOptions } from 'cookie';
 
-// import dayjs from 'dayjs';
 import { dateAddSeconds } from '$lib/dateEx';
 
 export const JWT_COOKIE_NAMES = {
@@ -39,15 +38,6 @@ export const setTokensCookies = (tokens: TokenInput) => {
 			expires: dateAddSeconds(now, tokens.expires_in),
 			...defaultOptions
 		});
-
-	// document.cookie = serializeCookie(
-	// 	'token_last_refresh',
-	// 	dayjs(now).format('YYYY-MM-DD_HH-mm-ss'),
-	// 	{
-	// 		expires: dateAddSeconds(now, 12 * 60 * 60),
-	// 		...defaultOptions
-	// 	}
-	// );
 };
 
 export const deleteTokensCookies = () => {

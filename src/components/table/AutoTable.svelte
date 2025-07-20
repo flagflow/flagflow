@@ -225,7 +225,7 @@
 
 <script lang="ts">
 	import { clsx } from 'clsx';
-	import dayjs from 'dayjs';
+	import { format as dateFormat } from 'date-fns';
 	import {
 		Badge,
 		Checkbox,
@@ -644,7 +644,7 @@
 										{:else if 'trueValue' in column && 'falseValue' in column}
 											<span class={textClass}>{value ? column.trueValue : column.falseValue}</span>
 										{:else if 'dateFormat' in column}
-											<span class={textClass}>{dayjs(value).format(column.dateFormat)}</span>
+											<span class={textClass}>{dateFormat(value, column.dateFormat)}</span>
 											{#if 'indicatorColor' in column}
 												{@const indicatorColor =
 													typeof column.indicatorColor === 'function'
