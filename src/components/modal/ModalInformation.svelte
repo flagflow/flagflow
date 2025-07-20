@@ -31,7 +31,7 @@
 	message = marked.parse(message, { async: false });
 </script>
 
-<Modal color="default" dismissable onclose={() => resolve(false)} open size="sm">
+<Modal oncancel={() => resolve(false)} open size="sm">
 	{#snippet header()}
 		<div class="flex justify-between">Information</div>
 	{/snippet}

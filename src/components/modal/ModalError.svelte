@@ -32,7 +32,7 @@
 	});
 </script>
 
-<Modal dismissable onclose={() => resolve(false)} open size="sm">
+<Modal oncancel={() => resolve(false)} open size="sm">
 	{#snippet header()}
 		<div class="flex justify-between">Error</div>
 	{/snippet}

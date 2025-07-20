@@ -71,9 +71,11 @@
 
 <form onsubmit={formExecute}>
 	<Modal
+		closedby="none"
 		dismissable={false}
-		onclose={() => dispatch('resolve', { isOk: false })}
-		permanent
+		oncancel={() => dispatch('resolve', { isOk: false })}
+		open
+		outsideclose={false}
 		size="sm"
 	>
 		{#snippet header()}
