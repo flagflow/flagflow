@@ -62,6 +62,13 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 		}
 	};
 
+	private _formValidate = () => {
+		if (this._actuators?.validator)
+			this._stateIsValid.set(
+				this._actuators.validator ? this._actuators.validator(this._formData) : undefined
+			);
+	};
+
 	constructor(init: T, action: Action<P>, actuators?: Actuators<T, V>, options?: Partial<Options>) {
 		const usedOptions: Options = { ...defaultOptions, ...options };
 
@@ -83,8 +90,7 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 			}
 		);
 
-		if (actuators?.validator)
-			this._stateIsValid.set(actuators.validator ? actuators.validator(this._formData) : undefined);
+		this._formValidate();
 	}
 
 	get formData() {
@@ -101,7 +107,8 @@ export class FormLogic<T extends InputObject, V extends Validator, P extends obj
 			stateAllValid: this._stateAllValid,
 			stateIsDirty: this._stateIsDirty,
 			stateInProgress: this._stateInProgress,
-			stateError: this._stateError
+			stateError: this._stateError,
+			validateFn: this._formValidate
 		};
 	}
 }

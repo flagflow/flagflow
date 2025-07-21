@@ -6,9 +6,9 @@ export const flagSchemaValidator = (flag: EtcdFlag): string => {
 			return '';
 		case 'INTEGER':
 			if (flag.minValue > flag.maxValue)
-				return 'Minimum value cannot be greater than maximum value';
+				return `Minimum value (${flag.minValue}) cannot be greater than maximum value (${flag.maxValue})`;
 			else if (flag.defaultValue < flag.minValue || flag.defaultValue > flag.maxValue)
-				return `Default value must be between ${flag.minValue} and ${flag.maxValue}`;
+				return `Default value (${flag.defaultValue}) must be between ${flag.minValue} and ${flag.maxValue}`;
 			return '';
 		case 'STRING':
 			return '';
@@ -24,7 +24,7 @@ export const flagValueValidator = (flag: EtcdFlag): string => {
 			return '';
 		case 'INTEGER':
 			if (flag.value < flag.minValue || flag.value > flag.maxValue)
-				return `Value must be between ${flag.minValue} and ${flag.maxValue}`;
+				return `Value (${flag.value}) must be between ${flag.minValue} and ${flag.maxValue}`;
 			if (!Number.isInteger(flag.value)) return 'Value must be an integer';
 			return '';
 		case 'STRING':

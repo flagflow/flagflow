@@ -29,6 +29,8 @@
 	import { urlParameterStore } from '$lib/stores/urlParameterStore';
 
 	import type { PageProps as PageProperties } from './$types';
+	import { showModalModifyFlagSchema } from './ModalModifyFlagSchema.svelte';
+	import { showModalModifyFlagValue } from './ModalModifyFlagValue.svelte';
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
 	import { showModalRenameFlag } from './ModalRenameFlag.svelte';
 
@@ -61,6 +63,28 @@
 	const renameFlag = async (key: string) => {
 		try {
 			const result = await showModalRenameFlag(key);
+			if (!result || !result.isOk) return;
+
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const modifyFlagSchema = async (key: string) => {
+		try {
+			const result = await showModalModifyFlagSchema(key);
+			if (!result || !result.isOk) return;
+
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const modifyFlagValue = async (key: string) => {
+		try {
+			const result = await showModalModifyFlagValue(key);
 			if (!result || !result.isOk) return;
 
 			await invalidatePage();
@@ -159,7 +183,9 @@
 						{/if}
 						<Icon id="dots" class="dots-menu inline-flex cursor-pointer" color="gray" size={24} />
 						<Dropdown simple transitionParams={{ duration: 0 }}>
-							<DropdownItem href="#" onclick={() => addFlag(groupName)}>Add flag</DropdownItem>
+							<DropdownItem class="font-semibold" href="#" onclick={() => addFlag(groupName)}
+								>Add flag</DropdownItem
+							>
 							<DropdownDivider />
 							<DropdownItem href="#">Rename group</DropdownItem>
 							<DropdownItem href="#">Delete group</DropdownItem>
@@ -194,8 +220,14 @@
 												size={24}
 											/>
 											<Dropdown simple transitionParams={{ duration: 0 }}>
-												<DropdownItem href="#">Set value</DropdownItem>
-												<DropdownItem href="#">Modify schema</DropdownItem>
+												<DropdownItem
+													class="font-semibold"
+													href="#"
+													onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
+												>
+												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
+													>Modify schema</DropdownItem
+												>
 												<DropdownDivider />
 												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
 													>Rename flag</DropdownItem

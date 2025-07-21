@@ -10,6 +10,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
+	import FormLabel from '$components/form/FormLabel.svelte';
 	import Stepper from '$components/Stepper.svelte';
 	import { flagSchemaValidator, flagValueValidator } from '$lib/flagValidator';
 	import {
@@ -31,10 +32,11 @@
 		EMPTY_STRING_FLAG
 	} from '$types/etcd/flagEmptyInstance';
 
-	import StepSchemaAndValue from './/StepSchemaAndValue.svelte';
 	import StepName from './StepName.svelte';
 	import StepNewWelcome from './StepNewWelcome.svelte';
+	import StepSchema from './StepSchema.svelte';
 	import StepType from './StepType.svelte';
+	import StepValue from './StepValue.svelte';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -222,11 +224,31 @@
 
 			{#snippet content3Schema()}
 				{#if formSpecific}
-					<StepSchemaAndValue
-						name={formData.name}
-						flag={formSpecific.formData}
-						validity={$formStateIsvalid}
-					/>
+					<div class="grid grid-cols-2 gap-4">
+						<FormLabel
+							class="trimmed-content"
+							mandatory
+							text={formData.name}
+							title="Name"
+							tooltip
+						/>
+						<FormLabel mandatory text={formData.type} title="Type" />
+					</div>
+					<hr />
+					<div class="grid min-h-80 grid-cols-2 gap-4">
+						<StepSchema
+							name={formData.name}
+							flag={formSpecific.formData}
+							validity={$formStateIsvalid}
+						/>
+						<div class="border-l-1 border-dashed">
+							<StepValue
+								name={formData.name}
+								flag={formSpecific.formData}
+								validity={$formStateIsvalid}
+							/>
+						</div>
+					</div>
 				{/if}
 			{/snippet}
 		</Stepper>

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { updateFlag } from '$lib/flagUpdater';
+import { updateFlagSchema, updateFlagValue } from '$lib/flagUpdater';
 import { flagSchemaValidator, flagValueValidator } from '$lib/flagValidator';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { EtcdFlag } from '$types/etcd';
@@ -63,7 +63,37 @@ export const flagRpc = createRpcRouter({
 				await etcdService.delete('flag', input.oldKey);
 			}
 		}),
-	update: rpcProcedure
+	updateSchema: rpcProcedure
+		.input(
+			z.object({
+				key: EtcdFlagKey.trim(),
+				flag: EtcdFlag,
+				resetValue: z.boolean()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const etcdService = ctx.container.resolve('etcdService');
+			const currentFlag = await etcdService.getOrThrow('flag', input.key);
+
+			if (currentFlag.type !== input.flag.type)
+				throw new Error(
+					`Flag type cannot be changed (current: ${currentFlag.type}, new: ${input.flag.type})`
+				);
+
+			const recentFlag = updateFlagSchema(currentFlag, input.flag);
+			const schemaError = flagSchemaValidator(recentFlag);
+			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
+
+			if (input.resetValue) {
+				recentFlag.valueExists = false;
+				recentFlag.value = recentFlag.defaultValue;
+			}
+			const valueError = flagValueValidator(recentFlag);
+			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
+
+			await etcdService.overwrite('flag', input.key, recentFlag);
+		}),
+	updateValue: rpcProcedure
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -79,7 +109,15 @@ export const flagRpc = createRpcRouter({
 					`Flag type cannot be changed (current: ${currentFlag.type}, new: ${input.flag.type})`
 				);
 
-			await etcdService.overwrite('flag', input.key, updateFlag(currentFlag, input.flag));
+			const schemaError = flagSchemaValidator(currentFlag);
+			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
+
+			const recentFlag = updateFlagValue(currentFlag, input.flag);
+
+			const valueError = flagValueValidator(recentFlag);
+			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
+
+			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
 	delete: rpcProcedure
 		.input(
