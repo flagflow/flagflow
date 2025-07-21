@@ -133,7 +133,11 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			const key = genEtcdKey(store, name);
 
 			try {
-				await client.put(key).value(JSON.stringify(data));
+				const putData: EtcdSchemaDataType<K> = EtcdSchema[store].parse(
+					data
+				) as EtcdSchemaDataType<K>;
+
+				await client.put(key).value(JSON.stringify(putData));
 				logger.debug({ key }, 'Put');
 			} catch (error) {
 				resetEtcdClient();
@@ -149,10 +153,11 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const sourceData = await getOrThrowFunction(store, name);
-				const overwrittenData: EtcdSchemaDataType<K> = {
+				const overwrittenData: EtcdSchemaDataType<K> = EtcdSchema[store].parse({
 					...sourceData,
 					...data
-				};
+				}) as EtcdSchemaDataType<K>;
+
 				await client.put(key).value(JSON.stringify(overwrittenData));
 				logger.debug({ key }, 'Overwrite');
 			} catch (error) {
