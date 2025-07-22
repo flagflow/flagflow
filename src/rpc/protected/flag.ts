@@ -25,6 +25,7 @@ export const flagRpc = createRpcRouter({
 			return await etcdService.getOrThrow('flag', input.key);
 		}),
 	create: rpcProcedure
+		.meta({ permission: 'maintainer' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -43,6 +44,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.put('flag', input.key, input.flag);
 		}),
 	rename: rpcProcedure
+		.meta({ permission: 'maintainer' })
 		.input(
 			z.object({
 				oldKey: EtcdFlagKey.trim(),
@@ -64,6 +66,7 @@ export const flagRpc = createRpcRouter({
 			}
 		}),
 	updateSchema: rpcProcedure
+		.meta({ permission: 'maintainer' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -104,6 +107,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
 	updateValue: rpcProcedure
+		.meta({ permission: 'editor' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -130,6 +134,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
 	delete: rpcProcedure
+		.meta({ permission: 'maintainer' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim()
