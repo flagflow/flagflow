@@ -12,7 +12,7 @@
 
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import Stepper from '$components/Stepper.svelte';
-	import { flagSchemaValidator, flagValueValidator } from '$lib/flagValidator';
+	import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
 	import {
 		ExternalValidator,
 		FormLogic,
@@ -245,6 +245,7 @@
 							<StepValue
 								name={formData.name}
 								flag={formSpecific.formData}
+								initial
 								validity={$formStateIsvalid}
 							/>
 						</div>

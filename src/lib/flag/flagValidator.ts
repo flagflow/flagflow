@@ -1,5 +1,18 @@
 import type { EtcdFlag } from '$types/etcd';
 
+export const flagSchemaToString = (flag: EtcdFlag): string => {
+	switch (flag.type) {
+		case 'BOOLEAN':
+			return 'true/false';
+		case 'INTEGER':
+			return `${flag.minValue} - ${flag.maxValue}`;
+		case 'STRING':
+			return '';
+		default:
+			return 'Unknown flag type';
+	}
+};
+
 export const flagSchemaValidator = (flag: EtcdFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':

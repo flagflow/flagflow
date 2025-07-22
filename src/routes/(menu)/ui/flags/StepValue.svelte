@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { Helper, Radio } from 'flowbite-svelte';
+	import { Helper, RadioButton } from 'flowbite-svelte';
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
+	import { flagSchemaToString } from '$lib/flag/flagValidator';
 	import { focusInputById, type Validator, type ValidityItem } from '$lib/form.svelte';
 	import type { EtcdFlag } from '$types/etcd';
 
@@ -11,6 +12,7 @@
 		name: string;
 		flag: EtcdFlag;
 		headers?: boolean;
+		initial?: boolean;
 
 		validity?:
 			| {
@@ -19,7 +21,7 @@
 			  }
 			| undefined;
 	}
-	let { name, flag, headers = false, validity }: Properties = $props();
+	let { name, flag, headers = false, initial = false, validity }: Properties = $props();
 
 	focusInputById('default');
 </script>
@@ -30,10 +32,33 @@
 		<FormLabel mandatory text={flag.type} title="Type" />
 		<hr />
 	{/if}
-	<div class="flex gap-6">
-		<Radio value={false} bind:group={flag.valueExists}>Use default value</Radio>
-		<Radio value={true} bind:group={flag.valueExists}>Set initial value</Radio>
+	<div class="flex gap-4">
+		<RadioButton
+			class="w-1/2 text-sm"
+			checkedClass="bg-primary-700 text-white"
+			outline
+			size="xs"
+			value={false}
+			bind:group={flag.valueExists}
+		>
+			Use default value
+			<br />
+			{flag.defaultValue}
+		</RadioButton>
+		<RadioButton
+			class="w-1/2 text-sm"
+			checkedClass="bg-primary-700 text-white"
+			outline
+			size="xs"
+			value={true}
+			bind:group={flag.valueExists}
+		>
+			Set {initial ? 'initial' : ''} value
+			<br />
+			{flagSchemaToString(flag)}
+		</RadioButton>
 	</div>
+
 	{#if flag.valueExists}
 		{#if flag.type === 'BOOLEAN'}
 			<div class="flex flex-col">
