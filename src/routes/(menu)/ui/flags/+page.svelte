@@ -36,6 +36,9 @@
 
 	let { data }: PageProperties = $props();
 
+	const hasRoleEditor = data.authenticationContext.roles.editor;
+	const hasRoleMaintainer = data.authenticationContext.roles.maintainer;
+
 	const GROUP_GENERAL_NAME = '#root';
 	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', ' › ');
 
@@ -53,7 +56,7 @@
 
 	const addFlag = async (groupName = '') => {
 		try {
-			const result = await showModalNewFlag(data.authenticationContext.roles.editor, groupName);
+			const result = await showModalNewFlag(hasRoleEditor, groupName);
 			if (result.isOk) await invalidatePage(); //window.location.reload();
 		} catch (error) {
 			await showModalError(error);
@@ -73,7 +76,7 @@
 
 	const modifyFlagSchema = async (key: string) => {
 		try {
-			const result = await showModalModifyFlagSchema(key, data.authenticationContext.roles.editor);
+			const result = await showModalModifyFlagSchema(key, hasRoleEditor);
 			if (!result || !result.isOk) return;
 
 			await invalidatePage();
@@ -205,7 +208,14 @@
 									.includes($searchFilter.toLowerCase())}
 								<Card class="max-w-full p-4 py-2">
 									<div class="flex flex-row items-center justify-between">
-										<h5 class="trimmed-content mb-2 font-semibold text-gray-700">
+										<h5
+											class={clsx('trimmed-content mb-2 font-semibold text-gray-700', {
+												'cursor-pointer': hasRoleMaintainer
+											})}
+											ondblclick={() => {
+												if (hasRoleMaintainer) modifyFlagSchema(flag.key);
+											}}
+										>
 											<Badge class="mr-1 w-0" color="indigo" size="small"
 												>{flag.typeToDisplay.slice(0, 1)}</Badge
 											>
@@ -220,14 +230,14 @@
 												size={24}
 											/>
 											<Dropdown simple transitionParams={{ duration: 0 }}>
-												{#if data.authenticationContext.roles.editor}
+												{#if hasRoleEditor}
 													<DropdownItem
 														class="font-semibold"
 														href="#"
 														onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
 													>
 												{/if}
-												{#if data.authenticationContext.roles.maintainer}
+												{#if hasRoleMaintainer}
 													<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
 														>Modify schema</DropdownItem
 													>
@@ -248,7 +258,15 @@
 									</div>
 									<hr class="-mx-4 my-1 text-gray-200" />
 									<div class="mt-2 flex flex-row items-center justify-between">
-										<Kbd class={flag.valueExists ? '' : 'italic'}>
+										<Kbd
+											class={clsx({
+												italic: !flag.valueExists,
+												'cursor-pointer': hasRoleEditor
+											})}
+											ondblclick={() => {
+												if (hasRoleEditor) modifyFlagValue(flag.key);
+											}}
+										>
 											{flag.valueToDisplay}</Kbd
 										>
 									</div>

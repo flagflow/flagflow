@@ -48,7 +48,7 @@
 
 {#if children}
 	<Button
-		class={clsx(aClass, color === 'none' ? 'border-0 py-0 hover:bg-inherit' : '')}
+		class={clsx(aClass, { 'border-0 py-0 hover:bg-inherit': color === 'none' })}
 		color={color === 'none' ? 'alternative' : color}
 		disabled={isWorking}
 		onclick={handleClick}

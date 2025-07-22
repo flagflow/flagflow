@@ -14,7 +14,7 @@
 	}
 	const { id, class: aClass = '', align, size = 20, color = '', onclick }: Properties = $props();
 
-	const cls = clsx(aClass, align === 'left' ? 'mr-2' : align === 'right' ? 'ml-2' : '');
+	const cls = clsx(aClass, { 'mr-2': align === 'left', 'ml-2': align === 'right' });
 </script>
 
 <Icon class={cls} {color} icon={IconIds[id]} {onclick} width={size} />
