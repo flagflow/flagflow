@@ -40,8 +40,15 @@
 		</div>
 	{:else if flag.type === 'STRING'}
 		<FormInput id="default" title="Default value" type="text" bind:value={flag.defaultValue} />
-		<FormInput title="Maximum length" type="number" bind:value={flag.maxLength} />
-		<FormInput title="Regular expression" type="text" bind:value={flag.regExp} />
+		<div class="grid grid-cols-3 gap-4">
+			<FormInput title="Maximum length" type="number" bind:value={flag.maxLength} />
+			<FormInput
+				class="col-span-2"
+				title="Regular expression"
+				type="text"
+				bind:value={flag.regExp}
+			/>
+		</div>
 	{/if}
 	{#if validity?.schema.message}
 		<Helper class="text-red-700">{validity.schema.message}</Helper>

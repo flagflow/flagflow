@@ -227,19 +227,21 @@
 														onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
 													>
 												{/if}
-												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
-													>Modify schema</DropdownItem
-												>
-												<DropdownDivider />
-												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
-													>Rename flag</DropdownItem
-												>
-												<DropdownItem
-													href="#"
-													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-													>Delete flag</DropdownItem
-												>
-												<DropdownDivider />
+												{#if data.authenticationContext.roles.maintainer}
+													<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
+														>Modify schema</DropdownItem
+													>
+													<DropdownDivider />
+													<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
+														>Rename flag</DropdownItem
+													>
+													<DropdownItem
+														href="#"
+														onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+														>Delete flag</DropdownItem
+													>
+													<DropdownDivider />
+												{/if}
 												<DropdownItem href="#">Show URLs</DropdownItem>
 											</Dropdown>
 										</div>
