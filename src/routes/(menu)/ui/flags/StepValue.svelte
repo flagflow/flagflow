@@ -4,7 +4,7 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
-	import { flagSchemaToString } from '$lib/flag/flagValidator';
+	import { flagSchemaToString } from '$lib/flag/flagToString';
 	import { focusInputById, type Validator, type ValidityItem } from '$lib/form.svelte';
 	import type { EtcdFlag } from '$types/etcd';
 

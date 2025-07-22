@@ -30,7 +30,8 @@
 		EMPTY_BOOLEAN_FLAG,
 		EMPTY_ENUM_FLAG,
 		EMPTY_INTEGER_FLAG,
-		EMPTY_STRING_FLAG
+		EMPTY_STRING_FLAG,
+		EMPTY_TAG_FLAG
 	} from '$types/etcd/flagEmptyInstance';
 
 	import StepName from './StepName.svelte';
@@ -118,6 +119,12 @@
 						description: flagCommon.description
 					};
 				}
+				break;
+			case 'TAG':
+				flagSpecific = {
+					...EMPTY_TAG_FLAG,
+					description: flagCommon.description
+				};
 				break;
 			default:
 				throw new Error(`Unsupported flag type: ${flagType}`);

@@ -28,6 +28,15 @@ export const updateFlagSchema = (current: EtcdFlag, input: EtcdFlag): EtcdFlag =
 		return {
 			...current,
 			enumValues: input.enumValues,
+			allowEmpty: input.allowEmpty,
+			defaultValue: input.defaultValue
+		};
+	if (current.type === 'TAG' && input.type === 'TAG')
+		return {
+			...current,
+			tagValues: input.tagValues,
+			minCount: input.minCount,
+			maxCount: input.maxCount,
 			defaultValue: input.defaultValue
 		};
 
@@ -57,6 +66,12 @@ export const updateFlagValue = (current: EtcdFlag, input: EtcdFlag): EtcdFlag =>
 			value: input.value
 		};
 	if (current.type === 'ENUM' && input.type === 'ENUM')
+		return {
+			...current,
+			valueExists: input.valueExists,
+			value: input.value
+		};
+	if (current.type === 'TAG' && input.type === 'TAG')
 		return {
 			...current,
 			valueExists: input.valueExists,

@@ -15,8 +15,7 @@ export const load: PageServerLoad = async ({ locals: { rpcCaller } }) => {
 
 			typeToDisplay: capitalize(
 				flag.type === 'BOOLEAN' ? (flag.isKillSwitch ? 'KILL SWITCH' : 'BOOLEAN') : flag.type
-			),
-			valueToDisplay: flag.valueExists ? flag.value : flag.defaultValue
+			)
 		}));
 
 	const flagGroups = Object.entries(

@@ -23,6 +23,7 @@
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
+	import { flagValueToString } from '$lib/flag/flagToString';
 	import { focusInputById } from '$lib/form.svelte';
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
@@ -267,7 +268,7 @@
 												if (hasRoleEditor) modifyFlagValue(flag.key);
 											}}
 										>
-											{flag.valueToDisplay}</Kbd
+											{flagValueToString(flag)}</Kbd
 										>
 									</div>
 									<p class="mt-2 text-justify text-xs font-light text-gray-500">

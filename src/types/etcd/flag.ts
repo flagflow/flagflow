@@ -42,14 +42,17 @@ const EtcdEnumFlag = z.object({
 	type: z.literal('ENUM'),
 	defaultValue: z.string().trim(),
 	enumValues: z.array(z.string().trim()),
+	allowEmpty: z.boolean(),
 
 	valueExists: z.boolean(),
 	value: z.string().trim()
 });
 const EtcdTagFlag = z.object({
 	type: z.literal('TAG'),
-	defaultValue: z.string().trim(),
+	defaultValue: z.array(z.string().trim()),
 	tagValues: z.array(z.string().trim()),
+	minCount: z.number().int(),
+	maxCount: z.number().int(),
 
 	valueExists: z.boolean(),
 	value: z.array(z.string().trim())
@@ -57,7 +60,6 @@ const EtcdTagFlag = z.object({
 const EtcdABFlag = z.object({
 	type: z.literal('AB-TEST'),
 	defaultValue: z.string().trim(),
-	tagValues: z.array(z.string().trim()),
 
 	valueExists: z.boolean(),
 	value: z.array(z.string().trim())
