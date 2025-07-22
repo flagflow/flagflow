@@ -36,9 +36,9 @@ export const flagValueValidator = (flag: EtcdFlag): string => {
 		case 'BOOLEAN':
 			return '';
 		case 'INTEGER':
+			if (!Number.isInteger(flag.value)) return 'Value must be an integer';
 			if (flag.value < flag.minValue || flag.value > flag.maxValue)
 				return `Value (${flag.value}) must be between ${flag.minValue} and ${flag.maxValue}`;
-			if (!Number.isInteger(flag.value)) return 'Value must be an integer';
 			return '';
 		case 'STRING':
 			return '';

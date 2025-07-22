@@ -53,7 +53,7 @@
 
 	const addFlag = async (groupName = '') => {
 		try {
-			const result = await showModalNewFlag(groupName);
+			const result = await showModalNewFlag(data.authenticationContext.roles.editor, groupName);
 			if (result.isOk) await invalidatePage(); //window.location.reload();
 		} catch (error) {
 			await showModalError(error);
@@ -73,7 +73,7 @@
 
 	const modifyFlagSchema = async (key: string) => {
 		try {
-			const result = await showModalModifyFlagSchema(key);
+			const result = await showModalModifyFlagSchema(key, data.authenticationContext.roles.editor);
 			if (!result || !result.isOk) return;
 
 			await invalidatePage();
@@ -220,11 +220,13 @@
 												size={24}
 											/>
 											<Dropdown simple transitionParams={{ duration: 0 }}>
-												<DropdownItem
-													class="font-semibold"
-													href="#"
-													onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
-												>
+												{#if data.authenticationContext.roles.editor}
+													<DropdownItem
+														class="font-semibold"
+														href="#"
+														onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
+													>
+												{/if}
 												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
 													>Modify schema</DropdownItem
 												>

@@ -1,8 +1,8 @@
 <script lang="ts" module>
 	import ModalNewFlag from './ModalNewFlag.svelte';
 
-	export const showModalNewFlag = async (groupName = '') =>
-		modalHandler.show({ component: ModalNewFlag, props: { groupName } });
+	export const showModalNewFlag = async (allowValueSet: boolean, groupName = '') =>
+		modalHandler.show({ component: ModalNewFlag, props: { allowValueSet, groupName } });
 </script>
 
 <script lang="ts">
@@ -11,6 +11,7 @@
 	import type { Writable } from 'svelte/store';
 
 	import FormLabel from '$components/form/FormLabel.svelte';
+	import Icon from '$components/icon/Icon.svelte';
 	import Stepper from '$components/Stepper.svelte';
 	import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
 	import {
@@ -43,9 +44,10 @@
 	}>();
 
 	interface Properties {
+		allowValueSet: boolean;
 		groupName: string;
 	}
-	const { groupName }: Properties = $props();
+	const { allowValueSet, groupName }: Properties = $props();
 
 	const steps = ['Welcome', 'Name & Type', 'Schema & Value'];
 	let currentStepIndex = $state(groupName ? 1 : 0);
@@ -242,12 +244,23 @@
 							validity={$formStateIsvalid}
 						/>
 						<div class="border-l-1 border-dashed">
-							<StepValue
-								name={formData.name}
-								flag={formSpecific.formData}
-								initial
-								validity={$formStateIsvalid}
-							/>
+							{#if allowValueSet}
+								<StepValue
+									name={formData.name}
+									flag={formSpecific.formData}
+									initial
+									validity={$formStateIsvalid}
+								/>
+							{:else}
+								<div class="flex flex-col items-center gap-8">
+									<center>
+										<Icon id="noPermission" class="text-gray-400" size={48} />
+										<div class="mt-4 text-gray-500">
+											Sorry, you cannot set flag value because of your permissions
+										</div>
+									</center>
+								</div>
+							{/if}
 						</div>
 					</div>
 				{/if}

@@ -40,6 +40,7 @@ export const IconIds = {
 	dots: 'mdi:dots-horizontal',
 	dotsVertical: 'mdi:dots-vertical',
 	search: 'mdi:search',
+	noPermission: 'mdi:do-not-disturb-on',
 
 	error: 'mdi:error',
 	warning: 'mdi:warning',
