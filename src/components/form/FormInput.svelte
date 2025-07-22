@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ButtonGroup, Input, InputAddon, type InputValue } from 'flowbite-svelte';
+	import { Button, ButtonGroup, Input, InputAddon, type InputValue } from 'flowbite-svelte';
 	import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
 	import Icon from '$components/icon/Icon.svelte';
@@ -13,7 +13,25 @@
 		class?: string;
 		id?: string;
 		title: string;
-		icon?: IconId;
+		preIcon?: IconId;
+		postIcon?: IconId;
+		preText?: string;
+		postText?: string;
+		postButton?: {
+			text: string;
+			onclick: () => void;
+			color?:
+				| 'primary'
+				| 'secondary'
+				| 'alternative'
+				| 'gray'
+				| 'dark'
+				| 'light'
+				| 'red'
+				| 'green'
+				| 'yellow'
+				| undefined;
+		};
 		maxLength?: number;
 		regexp?: RegExp;
 		mandatory?: boolean;
@@ -27,7 +45,11 @@
 		class: aClass = '',
 		id = '',
 		title,
-		icon,
+		preIcon,
+		postIcon,
+		preText,
+		postText,
+		postButton,
 		maxLength = 0,
 		regexp = /.*/,
 		mandatory = false,
@@ -54,10 +76,14 @@
 					onclick={() => (showPassword = !showPassword)}
 				/>
 			</InputAddon>
-		{:else if icon}
+		{/if}
+		{#if preIcon}
 			<InputAddon>
-				<Icon id={icon} />
+				<Icon id={preIcon} />
 			</InputAddon>
+		{/if}
+		{#if preText}
+			<InputAddon>{preText}</InputAddon>
 		{/if}
 		<Input
 			id={id || title}
@@ -68,5 +94,18 @@
 			type={type === 'password' && showPassword ? 'text' : type}
 			bind:value
 		/>
+		{#if postText}
+			<InputAddon>{postText}</InputAddon>
+		{/if}
+		{#if postIcon}
+			<InputAddon>
+				<Icon id={postIcon} />
+			</InputAddon>
+		{/if}
+		{#if postButton}
+			<Button color={postButton.color} onclick={postButton.onclick}>
+				{postButton.text}
+			</Button>
+		{/if}
 	</ButtonGroup>
 </FormContainer>

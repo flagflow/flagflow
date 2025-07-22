@@ -32,6 +32,7 @@ export const IconIds = {
 	formatListNumbered: 'mdi:format-list-numbered',
 	formatGrid: 'mdi:grid',
 	formatGridOutline: 'mdi:view-grid-outline',
+	question: 'mdi:question-mark',
 
 	add: 'mdi:plus',
 	edit: 'mdi:edit',

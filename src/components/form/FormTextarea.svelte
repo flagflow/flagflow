@@ -1,4 +1,5 @@
 <script lang="ts">
+	import clsx from 'clsx';
 	import { Textarea } from 'flowbite-svelte';
 
 	import type { ValidityItem } from '$lib/form.svelte';
@@ -33,7 +34,7 @@
 <FormContainer class={aClass} {mandatory} {title} {validity}>
 	<Textarea
 		id={id || title}
-		class={validity?.isError ? 'bg-red-100' : ''}
+		class={clsx('w-full', { 'bg-red-100': validity?.isError })}
 		disabled={inProgress}
 		{placeholder}
 		{rows}

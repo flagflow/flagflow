@@ -89,9 +89,9 @@
 				<div class="grid grid-cols-1 gap-4">
 					<FormInput
 						class="unfocused"
-						icon="email"
 						inProgress={$stateInProgress}
 						mandatory
+						preIcon="email"
 						title="Username"
 						validity={$stateIsValid?.username}
 						bind:value={formData.username}

@@ -4,6 +4,7 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
+	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import { focusInputById, type Validator, type ValidityItem } from '$lib/form.svelte';
 	import type { EtcdFlag } from '$types/etcd';
 
@@ -19,6 +20,15 @@
 			| undefined;
 	}
 	let { name, flag, headers = false, validity }: Properties = $props();
+
+	const regexpExamples = [
+		['^v[0-9]+.[0-9]+$', 'Version format like "v1.2", "v2.0"'],
+		['^release_[0-9]{4}_[0-9]{2}$', 'Release format like "release_2024_01"'],
+		['^user_[0-9]+$', 'Any string starting with "user_" followed by numbers'],
+		['.*_user$', 'Any string ending with "user" '],
+		['^test_.*_(control|variant)$', 'Test groups'],
+		['^(dev|staging)_feature_[a-z_]+_v[0-9]+$', 'Environment + feature + version']
+	];
 
 	focusInputById('default');
 </script>
@@ -44,6 +54,20 @@
 			<FormInput title="Maximum length" type="number" bind:value={flag.maxLength} />
 			<FormInput
 				class="col-span-2"
+				postButton={{
+					text: '?',
+					onclick: () =>
+						showModalInformation(
+							'Regular expression examples',
+							regexpExamples
+								.map(([regex, description]) => `**${regex}**: ${description}`)
+								.join('<br />'),
+							{ size: 'md', align: 'left' }
+						),
+					color: 'light'
+				}}
+				postText="/g"
+				preText="/"
 				title="Regular expression"
 				type="text"
 				bind:value={flag.regExp}
