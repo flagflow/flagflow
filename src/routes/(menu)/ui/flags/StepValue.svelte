@@ -68,6 +68,10 @@
 			<div class="flex flex-col">
 				<FormInput title="Value" type="number" bind:value={flag.value} />
 			</div>
+		{:else if flag.type === 'STRING'}
+			<div class="flex flex-col">
+				<FormInput title="Value" type="text" bind:value={flag.value} />
+			</div>
 		{/if}
 		{#if !validity?.schema.message && validity?.value.message}
 			<Helper class="text-red-700">{validity.value.message}</Helper>

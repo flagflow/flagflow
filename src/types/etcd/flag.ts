@@ -24,6 +24,8 @@ const EtcdIntegerFlag = z.object({
 const EtcdStringFlag = z.object({
 	type: z.literal('STRING'),
 	defaultValue: z.string().trim(),
+	maxLength: z.number().int(),
+	regExp: z.string().trim(),
 
 	valueExists: z.boolean(),
 	value: z.string().trim()
@@ -79,7 +81,7 @@ export type EtcdFlagType = EtcdFlag['type'];
 export const EtcdFlagTypeDescription: Record<EtcdFlagType, string> = {
 	BOOLEAN: 'On/off functionality or kill switch',
 	INTEGER: 'Integer value, can be bounded',
-	STRING: 'Text value with optional format restrictions',
+	STRING: 'Text value with optional length or format restrictions',
 	OBJECT: 'Structured data, like a JSON object',
 	ENUM: 'Select one element from a string valueset',
 	TAG: 'Select none, one or more elements from a string valueset',
@@ -87,9 +89,3 @@ export const EtcdFlagTypeDescription: Record<EtcdFlagType, string> = {
 };
 
 export { EtcdHierarchicalKey as EtcdFlagKey } from './base';
-
-/*
- * A/B
- * A/B/C
- * TAGS
- */

@@ -23,6 +23,8 @@ export const EMPTY_STRING_FLAG: EtcdFlag = {
 	description: '',
 	type: 'STRING',
 	defaultValue: '',
+	maxLength: 0,
+	regExp: '',
 	valueExists: false,
 	value: ''
 } as const;

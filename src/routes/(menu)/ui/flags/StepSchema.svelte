@@ -38,6 +38,10 @@
 			<FormInput title="Minimum value" type="number" bind:value={flag.minValue} />
 			<FormInput title="Maximum value" type="number" bind:value={flag.maxValue} />
 		</div>
+	{:else if flag.type === 'STRING'}
+		<FormInput id="default" title="Default value" type="text" bind:value={flag.defaultValue} />
+		<FormInput title="Maximum length" type="number" bind:value={flag.maxLength} />
+		<FormInput title="Regular expression" type="text" bind:value={flag.regExp} />
 	{/if}
 	{#if validity?.schema.message}
 		<Helper class="text-red-700">{validity.schema.message}</Helper>

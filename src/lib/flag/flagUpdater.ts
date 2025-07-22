@@ -20,6 +20,8 @@ export const updateFlagSchema = (current: EtcdFlag, input: EtcdFlag): EtcdFlag =
 	if (current.type === 'STRING' && input.type === 'STRING')
 		return {
 			...current,
+			maxLength: input.maxLength,
+			regExp: input.regExp,
 			defaultValue: input.defaultValue
 		};
 	if (current.type === 'ENUM' && input.type === 'ENUM')
