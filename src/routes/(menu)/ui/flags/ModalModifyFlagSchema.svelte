@@ -74,7 +74,7 @@
 		size="sm"
 	>
 		{#snippet header()}
-			<div class="flex justify-between">
+			<div class="flex justify-between gap-4">
 				Modify flag schema
 				{#if $stateInProgress}
 					<Badge color="green">Saving...</Badge>
@@ -86,18 +86,20 @@
 
 		<div class="min-h-96">
 			<StepSchema name={flag.key} flag={formData.flag} headers validity={$stateIsValid} />
-			<FormToggle
-				class="mt-4"
-				inline
-				title="Reset value to default"
-				bind:checked={formData.resetValue}
-			/>
-
+			<hr class="mt-4" />
 			{#if !$stateIsValid?.schema.message && $stateIsValid?.value.message}
 				<Helper class="mt-4 text-red-700"
 					>Use reset toggle, because value error "{$stateIsValid?.value.message}"</Helper
 				>
 			{/if}
+			<div class="mt-4 flex justify-end space-x-4">
+				<FormToggle
+					class="mt-4"
+					inline
+					title="Reset value to default"
+					bind:checked={formData.resetValue}
+				/>
+			</div>
 		</div>
 
 		<div class="mt-4 flex justify-center space-x-4">

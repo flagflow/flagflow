@@ -79,7 +79,7 @@
 		size="sm"
 	>
 		{#snippet header()}
-			<div class="flex justify-between">
+			<div class="flex justify-between gap-4">
 				Modify user
 				{#if $stateInProgress}
 					<Badge color="green">Saving...</Badge>

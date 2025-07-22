@@ -1,7 +1,7 @@
 import type { EtcdFlag } from './flag';
 
 class EtcdFlagMethods {
-	getDisplayName(this: EtcdFlag) {
+	public getDisplayName(this: EtcdFlag) {
 		return `${this.type} => ${this.defaultValue}`;
 	}
 }

@@ -188,7 +188,7 @@
 		size="lg"
 	>
 		{#snippet header()}
-			<div class="flex justify-between">
+			<div class="flex justify-between gap-4">
 				New flag
 				{#if $stateInProgress}
 					<Badge color="green">Saving...</Badge>

@@ -33,7 +33,7 @@
 
 <Modal oncancel={() => resolve(false)} open size="sm">
 	{#snippet header()}
-		<div class="flex justify-between">Information</div>
+		<div class="flex justify-between gap-4">Information</div>
 	{/snippet}
 	<div class="flex flex-col items-center justify-center space-y-4 text-center">
 		<Icon id="information" color="green" size={32} />

@@ -45,7 +45,7 @@
 
 <Modal oncancel={() => resolve(false)} open size="xs">
 	{#snippet header()}
-		<div class="flex justify-between">Confirmation</div>
+		<div class="flex justify-between gap-4">Confirmation</div>
 	{/snippet}
 	<div class="flex justify-center space-y-4">
 		<Icon id="warning" color="orange" size={32} />

@@ -75,7 +75,7 @@
 		size="sm"
 	>
 		{#snippet header()}
-			<div class="flex justify-between">
+			<div class="flex justify-between gap-4">
 				Rename flag
 				{#if $stateInProgress}
 					<Badge color="green">Saving...</Badge>
