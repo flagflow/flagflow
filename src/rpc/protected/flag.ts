@@ -95,7 +95,7 @@ export const flagRpc = createRpcRouter({
 					input.flag.valueExists &&
 					(recentFlag.value !== input.flag.value ||
 						recentFlag.valueExists !== input.flag.valueExists) &&
-					ctx.authentication.success?.roles.includes('editor')
+					!ctx.authentication.success?.roles.includes('editor')
 				)
 					throw new Error('You do not have permission to update flag value');
 				recentFlag.valueExists = input.flag.valueExists;
