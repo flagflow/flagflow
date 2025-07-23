@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Helper } from 'flowbite-svelte';
+	import { Helper, Tags } from 'flowbite-svelte';
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
@@ -73,6 +73,10 @@
 				bind:value={flag.regExp}
 			/>
 		</div>
+	{:else if flag.type === 'ENUM'}
+		<Tags class="mt-5 mb-3" unique bind:value={flag.enumValues} />
+		<FormInput title="Default value" type="text" bind:value={flag.defaultValue} />
+		<FormToggle title="Allow no selection" bind:checked={flag.allowEmpty} />
 	{/if}
 	{#if validity?.schema.message}
 		<Helper class="text-red-700">{validity.schema.message}</Helper>

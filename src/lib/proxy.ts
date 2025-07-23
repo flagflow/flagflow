@@ -1,4 +1,4 @@
-import { DeepProxy } from '@qiwi/deep-proxy';
+import { DeepProxy } from './deepProxy';
 
 export type ProxyChanged<T extends object> = (
 	target: T,
