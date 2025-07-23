@@ -5,12 +5,13 @@
 	import { trimEnd } from '$lib/stringEx';
 
 	interface Properties {
+		id?: string;
 		inlineTitle?: string;
 		tags: string[];
 		disabled?: boolean;
 	}
 
-	let { inlineTitle = '', tags = $bindable(), disabled = false }: Properties = $props();
+	let { id = '', inlineTitle = '', tags = $bindable(), disabled = false }: Properties = $props();
 
 	let inputVisible = $state(false);
 	let inputValue: string = $state('');
@@ -35,7 +36,7 @@
 
 {#if inputVisible}
 	<Input
-		id="newTag"
+		{id}
 		autofocus
 		{disabled}
 		onblur={() => {

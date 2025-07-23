@@ -6,6 +6,7 @@
 
 	interface Properties {
 		class?: string;
+		id?: string;
 		inlineTitle?: string;
 		title?: string;
 		tags: string[];
@@ -15,6 +16,7 @@
 
 	let {
 		class: aClass = '',
+		id = '',
 		inlineTitle = '',
 		title = '',
 		tags = $bindable(),
@@ -24,5 +26,5 @@
 </script>
 
 <FormContainer class={aClass} {title} {validity}>
-	<TagInput disabled={inProgress} {inlineTitle} bind:tags />
+	<TagInput id={id || title} disabled={inProgress} {inlineTitle} bind:tags />
 </FormContainer>
