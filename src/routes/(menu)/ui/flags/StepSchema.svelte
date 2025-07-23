@@ -1,11 +1,19 @@
 <script lang="ts">
-	import { Helper, Tags } from 'flowbite-svelte';
+	import { Helper } from 'flowbite-svelte';
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
+	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
+	import FormSelect from '$components/form/FormSelect.svelte';
+	import FormTag from '$components/form/FormTag.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
-	import { focusInputById, type Validator, type ValidityItem } from '$lib/form.svelte';
+	import {
+		convertStringsToSelectInput,
+		focusInputById,
+		type Validator,
+		type ValidityItem
+	} from '$lib/form.svelte';
 	import type { EtcdFlag } from '$types/etcd';
 
 	interface Properties {
@@ -74,9 +82,27 @@
 			/>
 		</div>
 	{:else if flag.type === 'ENUM'}
-		<Tags class="mt-5 mb-3" unique bind:value={flag.enumValues} />
-		<FormInput title="Default value" type="text" bind:value={flag.defaultValue} />
+		<FormTag id="default" class="mt-5 mb-3" title="Enum values" bind:tags={flag.enumValues} />
+		<FormSelect
+			items={convertStringsToSelectInput(
+				flag.enumValues,
+				flag.allowEmpty ? { name: '[Not set]', value: '' } : undefined
+			)}
+			title="Default value"
+			bind:value={flag.defaultValue}
+		/>
 		<FormToggle title="Allow no selection" bind:checked={flag.allowEmpty} />
+	{:else if flag.type === 'TAG'}
+		<FormTag id="default" class="mt-5 mb-3" title="Tag values" bind:tags={flag.tagValues} />
+		<FormMultiSelect
+			items={convertStringsToSelectInput(flag.tagValues)}
+			title="Default value"
+			bind:value={flag.defaultValue}
+		/>
+		<div class="grid grid-cols-2 gap-4">
+			<FormInput title="Minimum count" type="number" bind:value={flag.minCount} />
+			<FormInput title="Maximum count" type="number" bind:value={flag.maxCount} />
+		</div>
 	{/if}
 	{#if validity?.schema.message}
 		<Helper class="text-red-700">{validity.schema.message}</Helper>

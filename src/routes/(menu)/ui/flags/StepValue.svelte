@@ -3,9 +3,16 @@
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
+	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
+	import FormSelect from '$components/form/FormSelect.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
-	import { flagSchemaToString } from '$lib/flag/flagToString';
-	import { focusInputById, type Validator, type ValidityItem } from '$lib/form.svelte';
+	import { flagDefaultValueToString, flagSchemaToString } from '$lib/flag/flagToString';
+	import {
+		convertStringsToSelectInput,
+		focusInputById,
+		type Validator,
+		type ValidityItem
+	} from '$lib/form.svelte';
 	import type { EtcdFlag } from '$types/etcd';
 
 	interface Properties {
@@ -43,7 +50,7 @@
 		>
 			Use default value
 			<br />
-			{flag.defaultValue}
+			{flagDefaultValueToString(flag)}
 		</RadioButton>
 		<RadioButton
 			class="w-1/2 text-sm"
@@ -72,6 +79,21 @@
 			<div class="flex flex-col">
 				<FormInput title="Value" type="text" bind:value={flag.value} />
 			</div>
+		{:else if flag.type === 'ENUM'}
+			<FormSelect
+				items={convertStringsToSelectInput(
+					flag.enumValues,
+					flag.allowEmpty ? { name: '[Not set]', value: '' } : undefined
+				)}
+				title="Value"
+				bind:value={flag.value}
+			/>
+		{:else if flag.type === 'TAG'}
+			<FormMultiSelect
+				items={convertStringsToSelectInput(flag.tagValues)}
+				title="Value"
+				bind:value={flag.value}
+			/>
 		{/if}
 		{#if !validity?.schema.message && validity?.value.message}
 			<Helper class="text-red-700">{validity.value.message}</Helper>

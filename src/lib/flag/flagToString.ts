@@ -25,6 +25,23 @@ export const flagSchemaToString = (flag: EtcdFlag): string => {
 	}
 };
 
+export const flagDefaultValueToString = (flag: EtcdFlag): string => {
+	switch (flag.type) {
+		case 'BOOLEAN':
+			return flag.defaultValue ? 'true' : 'false';
+		case 'INTEGER':
+			return `${flag.defaultValue}`;
+		case 'STRING':
+			return `"${flag.defaultValue}"`;
+		case 'ENUM':
+			return `(${flag.defaultValue})`;
+		case 'TAG':
+			return `[${flag.defaultValue.join(', ')}]`;
+		default:
+			return 'Unknown flag type';
+	}
+};
+
 export const flagValueToString = (flag: EtcdFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':

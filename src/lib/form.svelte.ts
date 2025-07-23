@@ -246,7 +246,10 @@ export class ArrayValidator<T> {
 	}
 }
 
-export const convertToSelect = <T extends Record<string, unknown>, U extends string | number>(
+export const convertObjectsToSelectInput = <
+	T extends Record<string, unknown>,
+	U extends string | number
+>(
 	source: T[],
 	valueField: TypeKeys<T, U>,
 	nameField: StringKeys<T> | ((item: T) => string),
@@ -256,6 +259,14 @@ export const convertToSelect = <T extends Record<string, unknown>, U extends str
 		value: s[valueField] as U,
 		name: typeof nameField === 'function' ? nameField(s) : (s[nameField] as string)
 	}));
+	return nullable ? [nullable, ...data] : data;
+};
+
+export const convertStringsToSelectInput = (
+	source: string[],
+	nullable?: { value: string; name: string }
+): { value: string; name: string }[] => {
+	const data = source.map((s) => ({ value: s, name: s }));
 	return nullable ? [nullable, ...data] : data;
 };
 
