@@ -56,7 +56,7 @@ export const flagValueValidator = (flag: EtcdFlag): string => {
 				return `Value (${flag.value}) must be between ${flag.minValue} and ${flag.maxValue}`;
 			return '';
 		case 'STRING':
-			if (flag.value.length > flag.maxLength)
+			if (flag.maxLength > 0 && flag.value.length > flag.maxLength)
 				return `Value is too long (max ${flag.maxLength} chars)`;
 			if (flag.regExp)
 				try {

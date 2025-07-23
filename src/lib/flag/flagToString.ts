@@ -35,8 +35,11 @@ export const flagDefaultValueToString = (flag: EtcdFlag): string => {
 			return `"${flag.defaultValue}"`;
 		case 'ENUM':
 			return `(${flag.defaultValue})`;
-		case 'TAG':
-			return `[${flag.defaultValue.join(', ')}]`;
+		case 'TAG': {
+			const defaultValue = [...flag.defaultValue];
+			defaultValue.sort();
+			return `[${defaultValue.join(', ')}]`;
+		}
 		default:
 			return 'Unknown flag type';
 	}
@@ -52,8 +55,11 @@ export const flagValueToString = (flag: EtcdFlag): string => {
 			return `"${flag.valueExists ? flag.value : flag.defaultValue}"`;
 		case 'ENUM':
 			return `(${flag.valueExists ? flag.value : flag.defaultValue})`;
-		case 'TAG':
-			return `[${(flag.valueExists ? flag.value : flag.defaultValue).join(', ')}]`;
+		case 'TAG': {
+			const defaultValue = [...(flag.valueExists ? flag.value : flag.defaultValue)];
+			defaultValue.sort();
+			return `[${defaultValue.join(', ')}]`;
+		}
 		default:
 			return 'Unknown flag type';
 	}

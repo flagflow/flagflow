@@ -59,7 +59,7 @@
 	{:else if flag.type === 'STRING'}
 		<FormInput id="default" title="Default value" type="text" bind:value={flag.defaultValue} />
 		<div class="grid grid-cols-3 gap-4">
-			<FormInput title="Maximum length" type="number" bind:value={flag.maxLength} />
+			<FormInput minNumber={0} title="Maximum length" type="number" bind:value={flag.maxLength} />
 			<FormInput
 				class="col-span-2"
 				postButton={{
@@ -82,7 +82,13 @@
 			/>
 		</div>
 	{:else if flag.type === 'ENUM'}
-		<FormTag id="default" class="mt-5 mb-3" title="Enum values" bind:tags={flag.enumValues} />
+		<FormTag
+			id="default"
+			class="mt-5 mb-3"
+			allowSort
+			title="Enum values"
+			bind:tags={flag.enumValues}
+		/>
 		<FormSelect
 			items={convertStringsToSelectInput(
 				flag.enumValues,
@@ -93,15 +99,21 @@
 		/>
 		<FormToggle title="Allow no selection" bind:checked={flag.allowEmpty} />
 	{:else if flag.type === 'TAG'}
-		<FormTag id="default" class="mt-5 mb-3" title="Tag values" bind:tags={flag.tagValues} />
+		<FormTag
+			id="default"
+			class="mt-5 mb-3"
+			allowSort
+			title="Tag values"
+			bind:tags={flag.tagValues}
+		/>
 		<FormMultiSelect
 			items={convertStringsToSelectInput(flag.tagValues)}
 			title="Default value"
 			bind:value={flag.defaultValue}
 		/>
 		<div class="grid grid-cols-2 gap-4">
-			<FormInput title="Minimum count" type="number" bind:value={flag.minCount} />
-			<FormInput title="Maximum count" type="number" bind:value={flag.maxCount} />
+			<FormInput minNumber={0} title="Minimum count" type="number" bind:value={flag.minCount} />
+			<FormInput minNumber={0} title="Maximum count" type="number" bind:value={flag.maxCount} />
 		</div>
 	{/if}
 	{#if validity?.schema.message}

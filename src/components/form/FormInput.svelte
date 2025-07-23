@@ -33,6 +33,8 @@
 				| undefined;
 		};
 		maxLength?: number;
+		minNumber?: number;
+		maxNumber?: number;
 		regexp?: RegExp;
 		mandatory?: boolean;
 		inProgress?: boolean;
@@ -51,6 +53,8 @@
 		postText,
 		postButton,
 		maxLength = 0,
+		minNumber,
+		maxNumber,
 		regexp = /.*/,
 		mandatory = false,
 		inProgress = false,
@@ -90,6 +94,9 @@
 			class={aClass}
 			color={validity?.isError ? 'red' : 'default'}
 			disabled={inProgress}
+			max={maxNumber}
+			maxlength={maxLength}
+			min={minNumber}
 			onkeypress={onKeypress}
 			type={type === 'password' && showPassword ? 'text' : type}
 			bind:value

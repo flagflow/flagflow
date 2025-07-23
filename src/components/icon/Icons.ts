@@ -42,6 +42,10 @@ export const IconIds = {
 	dotsVertical: 'mdi:dots-vertical',
 	search: 'mdi:search',
 	noPermission: 'mdi:do-not-disturb-on',
+	sortAlphabeticalAscending: 'mdi:sort-alphabetical-ascending',
+	sortAlphabeticalDescending: 'mdi:sort-alphabetical-descending',
+	sortNumericAscending: 'mdi:sort-numeric-ascending',
+	sortNumericDescending: 'mdi:sort-numeric-descending',
 
 	error: 'mdi:error',
 	warning: 'mdi:warning',
