@@ -1,5 +1,7 @@
 import type { EtcdFlag } from './flag';
 
+const ENUM_DEFAULT_VALUES = ['one', 'two', 'three'] as const;
+
 export const EMPTY_BOOLEAN_FLAG: EtcdFlag = {
 	description: '',
 	type: 'BOOLEAN',
@@ -35,8 +37,8 @@ export const EMPTY_STRING_FLAG: EtcdFlag = {
 export const EMPTY_ENUM_FLAG: EtcdFlag = {
 	description: '',
 	type: 'ENUM',
-	defaultValue: ENUM_VALUES[0],
-	enumValues: ENUM_VALUES,
+	defaultValue: ENUM_DEFAULT_VALUES[0],
+	enumValues: [...ENUM_DEFAULT_VALUES],
 	allowEmpty: false,
 
 	valueExists: false,
@@ -46,8 +48,8 @@ export const EMPTY_ENUM_FLAG: EtcdFlag = {
 export const EMPTY_TAG_FLAG: EtcdFlag = {
 	description: '',
 	type: 'TAG',
-	defaultValue: ['one'],
-	tagValues: ['one', 'two', 'three'],
+	defaultValue: [ENUM_DEFAULT_VALUES[0]],
+	tagValues: [...ENUM_DEFAULT_VALUES],
 	minCount: 1,
 	maxCount: 0,
 

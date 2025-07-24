@@ -52,7 +52,7 @@ const cleanWatchers = () => {
 			/**/
 		}
 	}
-	watchers.length = 0;
+	watchers.clear();
 };
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
@@ -210,7 +210,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			const prefix = genEtcdPrefix(store);
 			try {
 				const result = await client.watch().prefix(genEtcdPrefix(store)).create();
-				watchers.push(result);
+				watchers.add(result);
 				logger.debug({ prefix, id: result.id }, 'Watch');
 
 				result.on('end', () => {

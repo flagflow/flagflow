@@ -1,5 +1,7 @@
 import type { EtcdFlag } from '$types/etcd';
 
+const regExpCache = new Map<string, RegExp>();
+
 export const flagSchemaValidator = (flag: EtcdFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':
