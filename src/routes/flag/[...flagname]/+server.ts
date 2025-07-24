@@ -1,9 +1,7 @@
 import { error } from '@sveltejs/kit';
 
-import { createJsonResponse } from '$lib/Response';
-import { createTextResponse } from '$lib/Response';
-import { formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
-import { formatFlagApiResponseENV } from '$lib/server/flagApiFormatter';
+import { createJsonResponse, createTextResponse } from '$lib/Response';
+import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
 
 import type { RequestEvent, RequestHandler } from './$types';
