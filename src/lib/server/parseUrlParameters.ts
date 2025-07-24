@@ -26,7 +26,8 @@ export const parseUrlParameters = <T extends Record<string, unknown>>(
 	const otherParameters: Record<string, string[]> = {};
 	const parsedKeys = new Set(Object.keys(parsers));
 
-	for (const [key, parser] of Object.entries(parsers) as [keyof T, ParameterParser<T>[keyof T]][]) {
+	for (const key of Object.keys(parsers) as (keyof T)[]) {
+		const parser = parsers[key];
 		const value = parameters_.get(key as string);
 		result[key] = parser(value);
 	}
