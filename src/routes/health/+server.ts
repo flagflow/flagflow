@@ -1,3 +1,4 @@
+import { createJsonResponse } from '$lib/Response';
 import { verifyKeycloakCommunication } from '$lib/server/keycloak';
 
 import type { RequestEvent, RequestHandler } from './$types';
@@ -24,8 +25,8 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 					: 'Unknown error';
 	}
 
-	return new Response(
-		JSON.stringify({
+	return createJsonResponse(
+		{
 			etcd: etcdVersion
 				? {
 						version: etcdVersion,
@@ -43,7 +44,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 				: {
 						status: 'OK'
 					}
-		}),
-		{ status: etcdVersion && !keycloakError ? 200 : 500 }
+		},
+		etcdVersion && !keycloakError ? 200 : 500
 	);
 };
