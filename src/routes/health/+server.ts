@@ -45,6 +45,6 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 						status: 'OK'
 					}
 		},
-		etcdVersion && !keycloakError ? 200 : 500
+		{ status: etcdVersion && !keycloakError ? 200 : 500 }
 	);
 };

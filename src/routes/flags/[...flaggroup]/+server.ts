@@ -1,9 +1,7 @@
 import { error } from '@sveltejs/kit';
 
-import { createJsonResponse } from '$lib/Response';
-import { createTextResponse } from '$lib/Response';
-import { formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
-import { formatFlagApiResponseENV } from '$lib/server/flagApiFormatter';
+import { createJsonResponse, createTextResponse } from '$lib/Response';
+import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
 
 import type { RequestEvent, RequestHandler } from './$types';
@@ -16,26 +14,16 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	});
 	if (Object.keys(urlParsed.otherParams).length > 0)
 		return error(400, `Invalid query parameters: ${Object.keys(urlParsed.otherParams).join(', ')}`);
-	if (!['json', 'env', 'plain'].includes(urlParsed.format))
+	if (!['json', 'env'].includes(urlParsed.format))
 		return error(400, 'Invalid format parameter: ' + urlParsed.format);
 
 	const flagService = event.locals.container.resolve('flagService');
-	const flagData = await flagService.getFlag(event.params.flagname);
-	if (!flagData) return error(404, `Flag not found: ${event.params.flagname}`);
-
+	const flagData = await flagService.getFlags(event.params.flaggroup);
 	switch (urlParsed.format) {
 		case 'json':
-			return createJsonResponse(
-				formatFlagApiResponseJson(Object.fromEntries([[event.params.flagname, flagData]]))
-			);
+			return createJsonResponse(formatFlagApiResponseJson(flagData));
 		case 'env':
-			return createTextResponse(
-				formatFlagApiResponseENV(Object.fromEntries([[event.params.flagname, flagData]]))
-			);
-		case 'plain':
-			return createTextResponse(
-				String(flagData.valueExists ? flagData.value : flagData.defaultValue)
-			);
+			return createTextResponse(formatFlagApiResponseENV(flagData));
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);
 	}

@@ -43,9 +43,15 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 
 	return {
 		list: async () => await accessFlags(),
-		getFlag: async (key: string): Promise<EtcdFlag> => {
+		getFlag: async (key: string): Promise<EtcdFlag | undefined> => {
 			const flags = await accessFlags();
-			return flags?.[key];
+			return flags?.[key] ?? undefined;
+		},
+		getFlags: async (prefix: string): Promise<Record<string, EtcdFlag>> => {
+			const flags = await accessFlags();
+			return Object.fromEntries(
+				Object.entries(flags).filter(([name]) => name.startsWith(prefix ? prefix + '/' : ''))
+			);
 		}
 	};
 };

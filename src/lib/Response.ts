@@ -4,17 +4,30 @@ export const HEADERS_NO_CACHE = {
 	Expires: '0'
 };
 
-const createResponse = (body: string, status: number, contentType: string) =>
+const createResponse = (
+	body: string,
+	options: { status: number; contentType: string; headers?: Record<string, string> | undefined }
+) =>
 	new Response(body, {
-		status,
+		status: options.status,
 		headers: {
-			'Content-Type': contentType,
-			...HEADERS_NO_CACHE
+			'Content-Type': options.contentType,
+			...HEADERS_NO_CACHE,
+			...options.headers
 		}
 	});
 
-export const createJsonResponse = (body: object, status = 200) =>
-	createResponse(JSON.stringify(body), status, 'application/json');
+export const createJsonResponse = (
+	body: object,
+	options: { headers?: Record<string, string>; status?: number } = {}
+) =>
+	createResponse(JSON.stringify(body), {
+		...options,
+		contentType: 'application/json',
+		status: options.status ?? 200
+	});
 
-export const createTextResponse = (body: string, status = 200) =>
-	createResponse(body, status, 'text/plain');
+export const createTextResponse = (
+	body: string,
+	options: { headers?: Record<string, string>; status?: number } = {}
+) => createResponse(body, { ...options, contentType: 'text/plain', status: options.status ?? 200 });
