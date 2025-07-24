@@ -28,13 +28,20 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 			flagWatcher = await etcdService.watch('flag');
 			log.info('Watching flags');
 
-			flagWatcher.on('put', (key) => {
+			flagWatcher.on('put', async (key) => {
 				logWatch.debug({ key: key.key.toString() }, 'Updated flag');
-				flags = undefined;
+				if (flags) {
+					const updatedFlag = await etcdService.get(key.key.toString());
+					if (updatedFlag) {
+						flags[key.key.toString()] = updatedFlag;
+					}
+				}
 			});
 			flagWatcher.on('delete', (key) => {
 				logWatch.debug({ key: key.key.toString() }, 'Deleted flag');
-				flags = undefined;
+				if (flags) {
+					delete flags[key.key.toString()];
+				}
 			});
 		}
 
