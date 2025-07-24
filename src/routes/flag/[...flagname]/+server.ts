@@ -28,7 +28,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 			);
 		case 'env':
 			return createTextResponse(
-				formatFlagApiResponseENV(Object.fromEntries([[event.params.flagname, flagData]]))
+				formatFlagApiResponseENV(Object.fromEntries([[event.params.flagname, flagData]])).join('\n')
 			);
 		case 'plain':
 			return createTextResponse(

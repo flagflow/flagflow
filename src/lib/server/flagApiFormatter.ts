@@ -21,11 +21,12 @@ export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): obje
 	return result;
 };
 
-export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): string => {
+export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): string[] => {
 	const result: string[] = [];
 	for (const [key, flag] of Object.entries(flags)) {
 		const value = flag.valueExists ? flag.value : flag.defaultValue;
 		result.push(`${key}=${value}`);
 	}
-	return result.join('\n');
+	result.sort();
+	return result;
 };

@@ -23,7 +23,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 		case 'json':
 			return createJsonResponse(formatFlagApiResponseJson(flagData));
 		case 'env':
-			return createTextResponse(formatFlagApiResponseENV(flagData));
+			return createTextResponse(formatFlagApiResponseENV(flagData).join('\n'));
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);
 	}

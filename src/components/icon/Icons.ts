@@ -33,6 +33,9 @@ export const IconIds = {
 	formatGrid: 'mdi:grid',
 	formatGridOutline: 'mdi:view-grid-outline',
 	question: 'mdi:question-mark',
+	copy: 'mdi:content-copy',
+	copyOk: 'mdi:clipboard-check',
+	externalLink: 'mdi:external-link',
 
 	add: 'mdi:plus',
 	edit: 'mdi:edit',

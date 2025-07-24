@@ -30,6 +30,7 @@
 	import { urlParameterStore } from '$lib/stores/urlParameterStore';
 
 	import type { PageProps as PageProperties } from './$types';
+	import { showModalFlagGroupUrl, showModalFlagUrl } from './ModalFlagUrl.svelte';
 	import { showModalModifyFlagSchema } from './ModalModifyFlagSchema.svelte';
 	import { showModalModifyFlagValue } from './ModalModifyFlagValue.svelte';
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
@@ -195,7 +196,9 @@
 							<DropdownItem href="#">Rename group</DropdownItem>
 							<DropdownItem href="#">Delete group</DropdownItem>
 							<DropdownDivider />
-							<DropdownItem href="#">Show URLs</DropdownItem>
+							<DropdownItem href="#" onclick={() => showModalFlagGroupUrl(groupName)}
+								>Show URLs</DropdownItem
+							>
 						</Dropdown>
 					</h5>
 					<div
@@ -254,7 +257,9 @@
 													>
 													<DropdownDivider />
 												{/if}
-												<DropdownItem href="#">Show URLs</DropdownItem>
+												<DropdownItem href="#" onclick={() => showModalFlagUrl(flag.key)}
+													>Show URLs</DropdownItem
+												>
 											</Dropdown>
 										</div>
 									</div>
