@@ -41,7 +41,8 @@
 	const hasRoleMaintainer = data.authenticationContext.roles.maintainer;
 
 	const GROUP_GENERAL_NAME = '#root';
-	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', ' › ');
+	const GROUP_NAME_SEPARATOR = ' › ';
+	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', GROUP_NAME_SEPARATOR);
 
 	const listSettings = persisted<{ gridMode: boolean }>('flag-list', { gridMode: true });
 	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
