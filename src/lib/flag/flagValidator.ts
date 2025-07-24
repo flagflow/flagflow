@@ -16,7 +16,11 @@ export const flagSchemaValidator = (flag: EtcdFlag): string => {
 				return `Default value is too long (max ${flag.maxLength} chars)`;
 			if (flag.regExp)
 				try {
-					const regexp = new RegExp(flag.regExp);
+					let regexp = regExpCache.get(flag.regExp);
+					if (!regexp) {
+						regexp = new RegExp(flag.regExp);
+						regExpCache.set(flag.regExp, regexp);
+					}
 					if (!regexp.test(flag.defaultValue))
 						return `Default value (${flag.defaultValue}) does not match /${flag.regExp}/`;
 				} catch {
