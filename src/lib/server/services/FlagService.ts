@@ -28,20 +28,28 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 			flagWatcher = await etcdService.watch('flag');
 			log.info('Watching flags');
 
-			flagWatcher.on('put', async (key) => {
-				logWatch.debug({ key: key.key.toString() }, 'Updated flag');
+			flagWatcher.on('put', async (etcdKey) => {
+				const flagPrefix = etcdService.genEtcdPrefix('flag');
+				let key = etcdKey.key.toString();
+				if (!key.startsWith(flagPrefix)) return;
+
+				key = key.slice(flagPrefix.length);
+				logWatch.debug({ key }, 'Updated flag');
+
 				if (flags) {
-					const updatedFlag = await etcdService.get(key.key.toString());
-					if (updatedFlag) {
-						flags[key.key.toString()] = updatedFlag;
-					}
+					const updatedFlag = await etcdService.get('flag', key);
+					if (updatedFlag) flags[key] = updatedFlag;
 				}
 			});
-			flagWatcher.on('delete', (key) => {
-				logWatch.debug({ key: key.key.toString() }, 'Deleted flag');
-				if (flags) {
-					delete flags[key.key.toString()];
-				}
+			flagWatcher.on('delete', (etcdKey) => {
+				const flagPrefix = etcdService.genEtcdPrefix('flag');
+				let key = etcdKey.key.toString();
+				if (!key.startsWith(flagPrefix)) return;
+
+				key = key.slice(flagPrefix.length);
+				logWatch.debug({ key }, 'Updated flag');
+
+				if (flags) delete flags[key];
 			});
 		}
 

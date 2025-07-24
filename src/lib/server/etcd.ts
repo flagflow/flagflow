@@ -113,6 +113,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	};
 
 	return {
+		genEtcdPrefix,
 		get: getFunction,
 		getOrThrow: getOrThrowFunction,
 		exists: existsFunction,
