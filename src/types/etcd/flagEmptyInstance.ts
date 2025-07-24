@@ -35,8 +35,8 @@ export const EMPTY_STRING_FLAG: EtcdFlag = {
 export const EMPTY_ENUM_FLAG: EtcdFlag = {
 	description: '',
 	type: 'ENUM',
-	defaultValue: 'one',
-	enumValues: ['one', 'two', 'three'],
+	defaultValue: ENUM_VALUES[0],
+	enumValues: ENUM_VALUES,
 	allowEmpty: false,
 
 	valueExists: false,
