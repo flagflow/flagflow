@@ -40,10 +40,9 @@ const resetEtcdClient = () => {
 	}
 };
 
-const watchers: Watcher[] = [];
+const watchers: Set<Watcher> = new Set();
 const removeWatcher = (watcher: Watcher) => {
-	const index = watchers.indexOf(watcher);
-	if (index !== -1) watchers.splice(index, 1);
+	watchers.delete(watcher);
 };
 const cleanWatchers = () => {
 	for (const watcher of watchers) {
