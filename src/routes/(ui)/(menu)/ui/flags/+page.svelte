@@ -1,7 +1,6 @@
 <script lang="ts">
 	import clsx from 'clsx';
 	import {
-		Badge,
 		ButtonGroup,
 		Card,
 		Dropdown,
@@ -101,7 +100,9 @@
 
 	const deleteFlag = async (key: string, type: string) => {
 		try {
-			const result = await showModalConfirmationDelete(`${key} ${type.toLocaleLowerCase()} flag`);
+			const result = await showModalConfirmationDelete(
+				`${key} (${type.toLocaleLowerCase()} type) flag`
+			);
 			if (!result.isOk) return;
 
 			await rpcClient.flag.delete.mutate({ key });
@@ -221,9 +222,7 @@
 												if (hasRoleMaintainer) modifyFlagSchema(flag.key);
 											}}
 										>
-											<Badge class="mr-1 w-0" color="indigo" size="small"
-												>{flag.typeToDisplay.slice(0, 1)}</Badge
-											>
+											<Icon id={flag.icon} class="mr-1 inline-block" color="primary" />
 											<Tooltip placement="bottom-start" type="light">{flag.typeToDisplay}</Tooltip>
 											{flag.flagName}
 										</h5>
