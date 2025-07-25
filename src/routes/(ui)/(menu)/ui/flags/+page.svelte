@@ -118,15 +118,6 @@
 	<ButtonGroup size="md">
 		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
 	</ButtonGroup>
-	{#if filterItemGroup.length > 2}
-		<Select
-			class="unfocused ml-4 w-64"
-			items={filterItemGroup}
-			placeholder="Group filter"
-			size="sm"
-			bind:value={$groupFilter}
-		/>
-	{/if}
 	<ButtonGroup class="w-72">
 		<InputAddon><Icon id="search" /></InputAddon>
 		<Input
@@ -140,6 +131,15 @@
 	</ButtonGroup>
 
 	{#snippet rightToolbar()}
+		{#if filterItemGroup.length > 2}
+			<Select
+				class="unfocused ml-4 w-64"
+				items={filterItemGroup}
+				placeholder="Group filter"
+				size="sm"
+				bind:value={$groupFilter}
+			/>
+		{/if}
 		<div>
 			<RadioButton
 				checkedClass="border-2 border-gray-300"
