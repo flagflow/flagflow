@@ -51,7 +51,7 @@ export const IconIds = {
 	sortNumericDescending: 'mdi:sort-numeric-descending',
 
 	boolean: 'mdi:toggle-switch',
-	integer: 'mdi:numbers',
+	integer: 'mdi:numeric',
 	string: 'mdi:format-text',
 	object: 'mdi:bracket',
 	enum: 'mdi:format-list-bulleted-type',
