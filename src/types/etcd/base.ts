@@ -5,7 +5,8 @@ export const EtcdKey = z
 	.string()
 	.regex(EtcdKeyRegExp, 'String must only contain a-z, 0-9 and hyphens');
 
-export const EtcdHierarchicalKeyRegExp: RegExp = /^[\d_a-z]+(?:\/[\d_a-z]+)*$/;
+export const EtcdHierarchicalKeyRegExp: RegExp =
+	/^[a-z][\da-z]*(?:_[\da-z]+)*(?:\/[a-z][\da-z]*(?:_[\da-z]+)*)*$/;
 export const EtcdHierarchicalKeyInputRegExp: RegExp = /^[\d/_a-z]*$/;
 export const EtcdHierarchicalKey = z
 	.string()

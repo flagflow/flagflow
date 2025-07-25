@@ -1,4 +1,4 @@
-import { Etcd3, type SortTarget } from 'etcd3';
+import { Etcd3, type SortTarget, type Watcher } from 'etcd3';
 
 import {
 	EtcdSchema,
@@ -38,6 +38,21 @@ const resetEtcdClient = () => {
 		cachedClient.close();
 		cachedClient = undefined;
 	}
+};
+
+const watchers: Set<Watcher> = new Set();
+const removeWatcher = (watcher: Watcher) => {
+	watchers.delete(watcher);
+};
+const cleanWatchers = () => {
+	for (const watcher of watchers) {
+		try {
+			watcher.cancel();
+		} catch {
+			/**/
+		}
+	}
+	watchers.clear();
 };
 
 export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
@@ -98,6 +113,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	};
 
 	return {
+		genEtcdPrefix,
 		get: getFunction,
 		getOrThrow: getOrThrowFunction,
 		exists: existsFunction,
@@ -117,7 +133,11 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			const key = genEtcdKey(store, name);
 
 			try {
-				await client.put(key).value(JSON.stringify(data));
+				const putData: EtcdSchemaDataType<K> = EtcdSchema[store].parse(
+					data
+				) as EtcdSchemaDataType<K>;
+
+				await client.put(key).value(JSON.stringify(putData));
 				logger.debug({ key }, 'Put');
 			} catch (error) {
 				resetEtcdClient();
@@ -133,10 +153,11 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const sourceData = await getOrThrowFunction(store, name);
-				const overwrittenData: EtcdSchemaDataType<K> = {
+				const overwrittenData: EtcdSchemaDataType<K> = EtcdSchema[store].parse({
 					...sourceData,
 					...data
-				};
+				}) as EtcdSchemaDataType<K>;
+
 				await client.put(key).value(JSON.stringify(overwrittenData));
 				logger.debug({ key }, 'Overwrite');
 			} catch (error) {
@@ -186,12 +207,32 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		//watch: (key: string) => client.watch().key(key).create(),
+		watch: async <K extends EtcdSchemaKey>(store: K) => {
+			const prefix = genEtcdPrefix(store);
+			try {
+				const result = await client.watch().prefix(genEtcdPrefix(store)).create();
+				watchers.add(result);
+				logger.debug({ prefix, id: result.id }, 'Watch');
+
+				result.on('end', () => {
+					logger.debug({ prefix, id: result.id }, 'Unwatch');
+					removeWatcher(result);
+				});
+				return result;
+			} catch (error) {
+				resetEtcdClient();
+				logger.debug({ prefix, error }, 'Watch error');
+				throw error;
+			}
+		},
 		list: async <K extends EtcdSchemaKey>(
 			store: K,
 			limit = 0,
 			sort: keyof typeof SortTarget = 'Key'
-		): Promise<Record<string, EtcdSchemaDataType<K> | undefined>> => {
+		): Promise<{
+			list: Record<string, EtcdSchemaDataType<K>>;
+			undefs: string[];
+		}> => {
 			const prefix = genEtcdPrefix(store);
 			try {
 				const schema = EtcdSchema[store];
@@ -201,22 +242,23 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 
 				const data = await getAllBuilder.strings();
 
-				const result: Record<string, EtcdSchemaDataType<K> | undefined> = {};
+				const list: Record<string, EtcdSchemaDataType<K>> = {};
+				const undefs: string[] = [];
 				let success = 0;
 				let failed = 0;
 				for (const key in data)
 					try {
-						result[key.slice(prefix.length)] = schema.parse(
+						list[key.slice(prefix.length)] = schema.parse(
 							JSON.parse(data[key])
 						) as EtcdSchemaDataType<K>;
 						success++;
 					} catch {
-						result[key.slice(prefix.length)] = undefined;
+						undefs.push(key.slice(prefix.length));
 						failed++;
 					}
 
 				logger.debug({ prefix, limit, success, failed }, 'List');
-				return result;
+				return { list, undefs };
 			} catch (error) {
 				resetEtcdClient();
 				logger.debug({ prefix, error }, 'List error');
@@ -238,5 +280,6 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 };
 
 export const doneEtcdClient = () => {
+	cleanWatchers();
 	cachedClient?.close();
 };

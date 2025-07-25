@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { KeycloakJwtString } from './jwt';
+import { KeycloakJwtString } from './Jwt';
 
 export const KeycloakTokenResponse = z.object({
 	token_type: z.literal('Bearer'),

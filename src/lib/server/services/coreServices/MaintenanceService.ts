@@ -10,14 +10,18 @@ export const MaintenanceService = ({ etcdService, logService }: MaintenanceServi
 
 	return {
 		deleteExpiredSessions: async () => {
-			const sessions = await etcdService.list('session', 0, 'Key');
+			const { list, undefs } = await etcdService.list('session', 0, 'Key');
 
 			let deleted = 0;
-			for (const [sessionId, session] of Object.entries(sessions))
+			for (const [sessionId, session] of Object.entries(list))
 				if (!session || ('expiredAt' in session && session.expiredAt < Date.now())) {
 					await etcdService.delete('session', sessionId);
 					deleted++;
 				}
+			for (const undef of undefs) {
+				await etcdService.delete('session', undef);
+				deleted++;
+			}
 
 			if (deleted > 0) log.info({ deleted }, 'Deleted expired sessions');
 			else log.debug({ deleted }, 'Deleted expired sessions');

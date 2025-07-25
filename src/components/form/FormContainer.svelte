@@ -24,8 +24,9 @@
 
 <div class={aClass}>
 	{#if title}
-		<Label class={clsx('mb-0.5 ml-1', mandatory ? 'font-semibold' : 'font-light')} for={title}
-			>{title}</Label
+		<Label
+			class={clsx('mb-0.5 ml-1', { 'font-semibold': mandatory, 'font-light': !mandatory })}
+			for={title}>{title}</Label
 		>
 	{/if}
 

@@ -1,3 +1,5 @@
+import { formatDistance } from 'date-fns';
+
 export const dateAdd = (date: Date, days = 0, hours = 0, minutes = 0, seconds = 0) =>
 	new Date(date.getTime() + (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000);
 
@@ -11,3 +13,6 @@ export const dateAddDays = (date: Date, days: number) => dateAdd(date, days);
 
 export const dateDiffDays = (date1: Date, date2: Date) =>
 	Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
+
+export const getRelativeDateString = (from: Date, baseDate?: Date): string =>
+	formatDistance(from, baseDate ?? new Date(), { addSuffix: true });

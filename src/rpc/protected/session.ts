@@ -5,14 +5,15 @@ import type { EtcdSession } from '$types/etcd';
 import { etcdRecordToArray, EtcdSessionKey } from '$types/etcd';
 
 export const sessionRpc = createRpcRouter({
-	getList: rpcProcedure.query(async ({ ctx }) => {
+	getList: rpcProcedure.meta({ permission: 'admin' }).query(async ({ ctx }) => {
 		const etcdService = ctx.container.resolve('etcdService');
-		const sessionRecords = await etcdService.list('session');
+		const { list: sessionRecords } = await etcdService.list('session');
 		const sessions = etcdRecordToArray<EtcdSession>(sessionRecords);
 
 		return sessions;
 	}),
 	delete: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				sessionId: EtcdSessionKey

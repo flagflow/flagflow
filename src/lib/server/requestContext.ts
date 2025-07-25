@@ -3,7 +3,8 @@ import { parse as parseCookie } from 'cookie';
 
 import { JWT_COOKIE_NAMES, SESSION_COOKIE_NAME } from '$lib/cookies';
 import { generateTraceId } from '$lib/genId';
-import type { Authentication } from '$types/auth';
+import type { Authentication } from '$types/Auth';
+import { UserRole } from '$types/UserRoles';
 
 import { config } from './config';
 import { asValue, type Container, container } from './container';
@@ -54,7 +55,9 @@ export const createRequestContext = async (
 				success: {
 					userName: accessTokenAuth.name,
 					email: accessTokenAuth.email,
-					roles: accessTokenAuth.resource_access[config.keycloak.client]?.roles || [],
+					roles: (accessTokenAuth.resource_access[config.keycloak.client]?.roles || []).filter(
+						(role) => UserRole.includes(role as UserRole)
+					) as UserRole[],
 					expiredAt: new Date(accessTokenAuth.exp * 1000)
 				}
 			};

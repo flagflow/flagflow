@@ -1,7 +1,7 @@
 import pDebounce from 'p-debounce';
 
 import { generateSessionId } from '$lib/genId';
-import type { UserSession } from '$types/userSession';
+import type { UserSession } from '$types/UserSession';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 

@@ -15,3 +15,6 @@ export const camelCaseToHuman = (s: string) =>
 		.replaceAll(/([a-z])([A-Z])/g, '$1 $2')
 		.toLowerCase()
 		.replace(/^./, (s) => s.toUpperCase());
+
+export const capitalize = (s: string) =>
+	s.charAt(0).toLocaleUpperCase() + s.slice(1).toLocaleLowerCase();

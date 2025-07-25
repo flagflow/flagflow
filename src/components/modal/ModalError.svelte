@@ -32,9 +32,9 @@
 	});
 </script>
 
-<Modal dismissable onclose={() => resolve(false)} open size="sm">
+<Modal oncancel={() => resolve(false)} open size="sm">
 	{#snippet header()}
-		<div class="flex justify-between">Error</div>
+		<div class="flex justify-between gap-4">Error</div>
 	{/snippet}
 	<div class="flex flex-col items-center justify-center space-y-4 text-center">
 		<Icon id="error" color="red" size={32} />

@@ -23,12 +23,12 @@ export default defineConfig({
 		rollupOptions: {
 			treeshake: true,
 			output: {
-				compact: true,
-				manualChunks(id) {
-					if (id.includes('node_modules')) return 'vendor';
-					if (id.includes('/src/components/')) return 'components';
-					if (id.includes('/src/routes/')) return 'routes';
-				}
+				compact: true
+				// manualChunks: (id) => {
+				// 	if (id.includes('node_modules')) return 'vendor';
+				// 	if (id.includes('/src/components/')) return 'components';
+				// 	if (id.includes('/src/routes/')) return 'routes';
+				// }
 			},
 			onLog(level, log, handler) {
 				if (log.code !== 'CIRCULAR_DEPENDENCY') handler(level === 'warn' ? 'error' : level, log);

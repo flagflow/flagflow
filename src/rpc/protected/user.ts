@@ -5,17 +5,18 @@ import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import { ZNonEmptyString } from '$rpc/zodTypes';
 import type { EtcdUser } from '$types/etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
-import { type UserRole, UserRoleZodEnum } from '$types/userRoles';
+import { type UserRole, UserRoleZodEnum } from '$types/UserRoles';
 
 export const userRpc = createRpcRouter({
-	getList: rpcProcedure.query(async ({ ctx }) => {
+	getList: rpcProcedure.meta({ permission: 'admin' }).query(async ({ ctx }) => {
 		const etcdService = ctx.container.resolve('etcdService');
-		const usersAsRecord = await etcdService.list('user');
+		const { list: usersAsRecord } = await etcdService.list('user');
 		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
 
 		return users;
 	}),
 	get: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim()
@@ -32,6 +33,7 @@ export const userRpc = createRpcRouter({
 			};
 		}),
 	create: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -53,6 +55,7 @@ export const userRpc = createRpcRouter({
 			});
 		}),
 	update: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -68,6 +71,7 @@ export const userRpc = createRpcRouter({
 			});
 		}),
 	setPassword: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -83,6 +87,7 @@ export const userRpc = createRpcRouter({
 			});
 		}),
 	setEnabled: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim(),
@@ -96,6 +101,7 @@ export const userRpc = createRpcRouter({
 			});
 		}),
 	delete: rpcProcedure
+		.meta({ permission: 'admin' })
 		.input(
 			z.object({
 				key: EtcdUserKey.trim()
