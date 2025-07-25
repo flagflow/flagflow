@@ -100,10 +100,9 @@
 <div class="relative">
 	<Sidebar
 		class="z-50 h-full"
-		activeClass="p-2 text-white bg-primary-600 hover:bg-primary-800"
 		activeUrl={page.url.pathname}
 		backdrop={false}
-		nonActiveClass="p-2"
+		classes={{ active: 'p-2 text-white bg-primary-600 hover:bg-primary-800', nonactive: 'p-2' }}
 		params={{ x: 0, duration: 0 }}
 		position="absolute"
 	>
