@@ -113,10 +113,14 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	};
 
 	return {
-		genEtcdPrefix,
 		get: getFunction,
 		getOrThrow: getOrThrowFunction,
 		exists: existsFunction,
+		convertEtcdKeyToName: <K extends EtcdSchemaKey>(store: K, key: string): string | undefined => {
+			const prefix = genEtcdPrefix(store);
+			if (!key.startsWith(prefix)) return;
+			return key.slice(prefix.length);
+		},
 		throwIfExists: async <K extends EtcdSchemaKey>(store: K, name: string): Promise<void> => {
 			const exists = await existsFunction(store, name);
 			if (exists) throw new Error(`Key already exists: ${store}:${name}`);

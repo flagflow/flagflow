@@ -1,6 +1,6 @@
 import type { Watcher } from 'etcd3';
 
-import type { EtcdFlag } from '$types/etcd';
+import { EtcdFlag } from '$types/etcd';
 
 import type { ConfigService, EtcdService, LogService } from './index';
 
@@ -28,28 +28,35 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 			flagWatcher = await etcdService.watch('flag');
 			log.info('Watching flags');
 
-			flagWatcher.on('put', async (etcdKey) => {
-				const flagPrefix = etcdService.genEtcdPrefix('flag');
-				let key = etcdKey.key.toString();
-				if (!key.startsWith(flagPrefix)) return;
-
-				key = key.slice(flagPrefix.length);
-				logWatch.debug({ key }, 'Updated flag');
-
-				if (flags) {
-					const updatedFlag = await etcdService.get('flag', key);
-					if (updatedFlag) flags[key] = updatedFlag;
+			flagWatcher.on('put', async (etcdKeyValue) => {
+				const key = etcdKeyValue.key.toString();
+				const name = etcdService.convertEtcdKeyToName('flag', key);
+				if (!name) {
+					log.warn({ key }, 'Invalid flag key');
+					return;
 				}
+
+				if (flags)
+					try {
+						const value = etcdKeyValue.value.toString();
+						const valueObject = JSON.parse(value);
+						const flag = EtcdFlag.parse(valueObject);
+						flags[name] = flag;
+						logWatch.debug({ key: name }, 'Updated flag');
+					} catch {
+						log.warn({ key: name }, 'Failed to parse updated flag value');
+					}
 			});
-			flagWatcher.on('delete', (etcdKey) => {
-				const flagPrefix = etcdService.genEtcdPrefix('flag');
-				let key = etcdKey.key.toString();
-				if (!key.startsWith(flagPrefix)) return;
+			flagWatcher.on('delete', (etcdKeyValue) => {
+				const key = etcdKeyValue.key.toString();
+				const name = etcdService.convertEtcdKeyToName('flag', key);
+				if (!name) {
+					log.warn({ key }, 'Invalid flag key');
+					return;
+				}
 
-				key = key.slice(flagPrefix.length);
-				logWatch.debug({ key }, 'Updated flag');
-
-				if (flags) delete flags[key];
+				if (flags) delete flags[name];
+				logWatch.debug({ key: name }, 'Deleted flag');
 			});
 		}
 
