@@ -6,9 +6,12 @@ import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlPara
 
 import type { RequestEvent, RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event: RequestEvent) => {
-	const url = new URL(event.request.url);
+const ACCEPT_HASH_HEADER = 'X-Accept-FlagGroup-Hash';
+const HASH_HEADER = 'X-FlagGroup-Hash';
 
+export const GET: RequestHandler = async (event: RequestEvent) => {
+	// Parameters
+	const url = new URL(event.request.url);
 	const urlParsed = parseUrlParameters(url.searchParams, {
 		format: createStringParser('json')
 	});
@@ -17,13 +20,35 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	if (!['json', 'env'].includes(urlParsed.format))
 		return error(400, 'Invalid format parameter: ' + urlParsed.format);
 
+	// Service
+	const flagGroup = event.params.flaggroup;
+	const acceptFlagGroupHash = event.request.headers.get(ACCEPT_HASH_HEADER);
+
 	const flagService = event.locals.container.resolve('flagService');
-	const flagData = await flagService.getFlags(event.params.flaggroup);
+
+	const flagData = await flagService.getFlags(flagGroup);
+	if (Object.keys(flagData).length === 0)
+		return error(404, 'Group not found: ' + (flagGroup || '/'));
+
+	const flagGroupHash = await flagService.getFlagGroupHash(flagGroup);
+	//if (!flagGroupHash) return error(404, 'Group hash not found: ' + (flagGroup || '/'));
+
+	// Response
+	if (acceptFlagGroupHash && acceptFlagGroupHash !== flagGroupHash)
+		return error(
+			409,
+			`Flag group (${flagGroup || '/'}) hash mismatch: ${acceptFlagGroupHash} <=> ${flagGroupHash}`
+		);
+
 	switch (urlParsed.format) {
 		case 'json':
-			return createJsonResponse(formatFlagApiResponseJson(flagData));
+			return createJsonResponse(formatFlagApiResponseJson(flagData), {
+				headers: { [HASH_HEADER]: flagGroupHash }
+			});
 		case 'env':
-			return createTextResponse(formatFlagApiResponseENV(flagData).join('\n'));
+			return createTextResponse(formatFlagApiResponseENV(flagData).join('\n'), {
+				headers: { [HASH_HEADER]: flagGroupHash }
+			});
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);
 	}

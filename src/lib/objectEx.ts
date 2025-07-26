@@ -1,6 +1,16 @@
 import { camelCaseToHuman, trim } from './stringEx';
 import type { NullableNumberKeys, NumberKeys } from './typeEx';
 
+export const sortObjectByKey = <T extends Record<string, unknown>>(
+	object: T
+): { [K in keyof T]: T[K] } =>
+	Object.fromEntries(Object.entries(object).sort(([keyA], [keyB]) => keyA.localeCompare(keyB))) as {
+		[K in keyof T]: T[K];
+	};
+
+export const sortMapByKey = <K extends string, V>(map: Map<K, V>): Map<K, V> =>
+	new Map([...map.entries()].sort(([keyA], [keyB]) => keyA.localeCompare(keyB)));
+
 export const filterObjectFields = <T extends object>(object: object, allowedKeys: (keyof T)[]): T =>
 	Object.fromEntries(
 		Object.entries(object).filter(([key]) => allowedKeys.includes(key as keyof T))

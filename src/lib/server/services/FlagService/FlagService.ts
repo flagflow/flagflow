@@ -2,7 +2,8 @@ import type { Watcher } from 'etcd3';
 
 import { EtcdFlag } from '$types/etcd';
 
-import type { ConfigService, EtcdService, LogService } from './index';
+import type { ConfigService, EtcdService, LogService } from '../index';
+import { type FlagTypeDescriptor, generateTypeDescriptor } from './TypeGenerator';
 
 type FlagServiceParameters = {
 	configService: ConfigService;
@@ -12,6 +13,7 @@ type FlagServiceParameters = {
 
 let flags: Record<string, EtcdFlag> | undefined;
 let flagWatcher: Watcher | undefined;
+let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
 export const FlagService = ({ etcdService, logService }: FlagServiceParameters) => {
 	const log = logService('flag');
@@ -63,6 +65,16 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		return flags;
 	};
 
+	const accessTypeDescriptor = async (): Promise<FlagTypeDescriptor> => {
+		if (flagTypeDescriptor === undefined) {
+			const flags = await accessFlags();
+			flagTypeDescriptor = generateTypeDescriptor(flags);
+			log.info('Generated flag type descriptor');
+		}
+
+		return flagTypeDescriptor;
+	};
+
 	return {
 		list: async () => await accessFlags(),
 		getFlag: async (key: string): Promise<EtcdFlag | undefined> => {
@@ -74,6 +86,15 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 			return Object.fromEntries(
 				Object.entries(flags).filter(([name]) => name.startsWith(prefix ? prefix + '/' : ''))
 			);
+		},
+		//getTypeDescriptor: async (): Promise<FlagTypeDescriptor> => await accessTypeDescriptor(),
+		getFlagGroupHash: async (group: string): Promise<string> => {
+			const types = await accessTypeDescriptor();
+			return types.groupTypeHash.get(group) ?? '';
+		},
+		getTSFileContent: async (): Promise<string> => {
+			const types = await accessTypeDescriptor();
+			return types.tsFileContent;
 		}
 	};
 };
