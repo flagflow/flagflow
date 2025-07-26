@@ -31,7 +31,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 		return error(404, 'Group not found: ' + (flagGroup || '/'));
 
 	const flagGroupHash = await flagService.getFlagGroupHash(flagGroup);
-	//if (!flagGroupHash) return error(404, 'Group hash not found: ' + (flagGroup || '/'));
+	if (!flagGroupHash) return error(404, 'Group hash not found: ' + (flagGroup || '/'));
 
 	// Response
 	if (acceptFlagGroupHash && acceptFlagGroupHash !== flagGroupHash)
