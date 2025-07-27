@@ -17,10 +17,10 @@ const generateGroupCode = (
 			const subTypeName = ROOT_TYPE_NAME + (flag ? `__${capitalizeWords(flag, '__')}` : '');
 			tsFileLines.push(`\treadonly ${flagName}: ${subTypeName};`);
 		} else {
-			//tsFileLines.push(`\t/**`);
-			//if (flag.description) tsFileLines.push(`\t* ${flag.description}`);
-			//tsFileLines.push(`\t* @default ${flag.defaultValue}`);
-			//tsFileLines.push(`\t*/`);
+			tsFileLines.push(`\t/**`);
+			if (flag.description) tsFileLines.push(`\t* ${flag.description}`);
+			tsFileLines.push(`\t* @default ${flag.defaultValue}`);
+			tsFileLines.push(`\t*/`);
 			const type = flag.getTypescriptType();
 			tsFileLines.push(`\treadonly ${flagName}: ${type};`);
 		}
@@ -97,7 +97,81 @@ export const flagFlow_Descriptors: {
 		tsFileContent.push(`\t\turi: '${typeUri ? '/' + typeUri : ''}',`);
 		tsFileContent.push(`\t},`);
 	}
-	tsFileContent.push(`} as const;`, '');
+	tsFileContent.push(`} as const;`);
+
+	tsFileContent.push(
+		'',
+		'',
+		'// Example code with Axios',
+		'// Always copy the latest version of this file to your client codebase',
+		'// Use the proper level of functions'
+	);
+	tsFileContent.push(`
+/*
+// flagflowFetchData.ts
+import axios from "axios";
+
+import { flagFlow_Descriptors, FlagFlow_DescriptorTypeMap } from "./flagflowTypes";
+
+const FLAGFLOW_BASE_URL = 'http://localhost:5173/flags';
+export const fetchData = async <K extends keyof FlagFlow_DescriptorTypeMap>(
+    key: K
+): Promise<FlagFlow_DescriptorTypeMap[K]> => {
+    const { uri, hash } = flagFlow_Descriptors[key];
+    const { data } = await axios.get<FlagFlow_DescriptorTypeMap[K]>(
+        FLAGFLOW_BASE_URL + uri, {
+        responseType: 'json',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-accept-flagflow-hash': hash,
+        }
+    })
+    return data
+}
+
+export const createFetchFunction = <K extends keyof FlagFlow_DescriptorTypeMap>(
+    key: K
+): (() => Promise<FlagFlow_DescriptorTypeMap[K]>) => () => fetchData(key);
+
+export const createFetchFunctionWithCache = <K extends keyof FlagFlow_DescriptorTypeMap>(
+    key: K,
+    ttlSeconds: number = 60
+) => {
+    const fetchDataFn = createFetchFunction(key);
+    let data: FlagFlow_DescriptorTypeMap[K] | undefined;
+    let lastFetchTime: number = 0;
+    return async (): Promise<FlagFlow_DescriptorTypeMap[K]> => {
+        const now = Date.now();
+        if (data && (now - lastFetchTime < ttlSeconds * 1000)) return data;
+
+        data = await fetchDataFn();
+        lastFetchTime = now;
+        return data;
+    }
+}
+
+// yourService.ts
+    import { createFetchFunction, createFetchFunctionWithCache, fetchData } from "flagflowFetchData";
+
+    ...
+
+    // direct fetch
+    const data1 = await fetchData('#root');
+
+    // create fetch data function and call it to get data
+    const fetchFn = createFetchFunction('#root');
+    const data2 = await fetchFn();
+
+    // create fetch data function with cache and call it to get data
+    const cachedFetchFn = createFetchFunctionWithCache('#root', 30);
+    const data3 = await cachedFetchFn();
+
+    ...
+
+*/
+`);
+
+	tsFileContent.push('');
 
 	return tsFileContent.join('\n');
 };

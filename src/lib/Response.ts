@@ -31,3 +31,17 @@ export const createTextResponse = (
 	body: string,
 	options: { headers?: Record<string, string>; status?: number } = {}
 ) => createResponse(body, { ...options, contentType: 'text/plain', status: options.status ?? 200 });
+
+export const createDownloadResponse = (
+	body: string | object,
+	filename: string,
+	options: { headers?: Record<string, string> } = {}
+) =>
+	createResponse(typeof body === 'string' ? body : JSON.stringify(body), {
+		contentType: 'application/octet-stream',
+		headers: {
+			'Content-Disposition': `attachment; filename="${filename}"`,
+			...options.headers
+		},
+		status: 200
+	});

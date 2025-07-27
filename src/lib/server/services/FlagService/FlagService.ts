@@ -99,11 +99,13 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		},
 		getFlags: async (prefix: string): Promise<Record<string, EtcdFlagObject>> => {
 			const flags = await accessFlags();
+			prefix = prefix ? prefix + '/' : '';
 			return Object.fromEntries(
-				Object.entries(flags).filter(([name]) => name.startsWith(prefix ? prefix + '/' : ''))
+				Object.entries(flags)
+					.filter(([name]) => name.startsWith(prefix))
+					.map(([name, flag]) => [name.slice(prefix.length), flag])
 			);
 		},
-		//getTypeDescriptor: async (): Promise<FlagTypeDescriptor> => await accessTypeDescriptor(),
 		getFlagGroupHash: async (group: string): Promise<string> => {
 			const types = await accessTypeDescriptor();
 			return types.groupTypeHash.get(group.replaceAll('/', '__')) ?? '';
