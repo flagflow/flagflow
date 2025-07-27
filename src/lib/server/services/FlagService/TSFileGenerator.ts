@@ -123,7 +123,7 @@ export const fetchData = async <K extends keyof FlagFlow_DescriptorTypeMap>(
         responseType: 'json',
         headers: {
             'Content-Type': 'application/json',
-            'x-accept-flagflow-hash': hash,
+            'x-accept-flaggroup-hash': hash,
         }
     })
     return data
