@@ -13,28 +13,25 @@ export const generateHashInfo = (flags: Record<string, EtcdFlagObject>): Map<str
 		const groupParts = keyParts.slice(0, -1);
 		if (!name) continue;
 
-		const groupName = groupParts.join('_');
+		const groupName = groupParts.join('__');
 		if (!groups.has(groupName)) groups.set(groupName, {});
 		groups.get(groupName)![name] = flag;
 		if (groupParts.length > 0) {
-			const subGroupName = groupParts.slice(0, -1).join('_');
+			const subGroupName = groupParts.slice(0, -1).join('__');
 			if (!groups.has(subGroupName)) groups.set(subGroupName, {});
-			groups.get(subGroupName)![groupParts.at(-1) || ''] = groupParts.join('_');
+			groups.get(subGroupName)![groupParts.at(-1) || ''] = groupParts.join('__');
 		}
 	}
 
+	// Calculate hashes for each group, use recursive approach if needed
 	const generateGroupHash = (groupName: string): string => {
 		const hashInfo: string[] = [];
 
-		for (const [flagName, flag] of Object.entries(sortObjectByKey(groups.get(groupName) || {}))) {
-			if (typeof flag === 'string') {
-				hashInfo.push(flagName, generateGroupHash((groupName ? groupName + '_' : '') + flagName));
-			} else {
-				hashInfo.push(flagName, flag.getHashInfo());
-			}
-		}
+		for (const [flagName, flag] of Object.entries(sortObjectByKey(groups.get(groupName) || {})))
+			if (typeof flag === 'string')
+				hashInfo.push(flagName, generateGroupHash((groupName ? groupName + '__' : '') + flagName));
+			else hashInfo.push(flagName, flag.getHashInfo());
 
-		//return hashInfo.join('+');
 		return createHash('sha1').update(hashInfo.join('\n')).digest('hex');
 	};
 

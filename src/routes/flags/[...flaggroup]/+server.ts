@@ -6,8 +6,8 @@ import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlPara
 
 import type { RequestEvent, RequestHandler } from './$types';
 
-const ACCEPT_HASH_HEADER = 'X-Accept-FlagGroup-Hash';
-const HASH_HEADER = 'X-FlagGroup-Hash';
+const ACCEPT_HASH_HEADER = 'x-accept-flaggroup-hash';
+const HASH_HEADER = 'x-flaggroup-hash';
 
 export const GET: RequestHandler = async (event: RequestEvent) => {
 	// Parameters
