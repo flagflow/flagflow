@@ -106,7 +106,7 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		//getTypeDescriptor: async (): Promise<FlagTypeDescriptor> => await accessTypeDescriptor(),
 		getFlagGroupHash: async (group: string): Promise<string> => {
 			const types = await accessTypeDescriptor();
-			return types.groupTypeHash.get(group) ?? '';
+			return types.groupTypeHash.get(group.replaceAll('/', '__')) ?? '';
 		},
 		getTSFileContent: async (): Promise<string> => {
 			const types = await accessTypeDescriptor();
