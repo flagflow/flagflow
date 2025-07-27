@@ -69,7 +69,7 @@ export const generateTSFileContent = (
 	tsFileContent.push('', '', '// Group hash checksums');
 	for (const [groupName, groupHash] of groupTypeHash.entries()) {
 		const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
-		tsFileContent.push(`export const HASH_${typeName.toLocaleUpperCase()} = '${groupHash}';`);
+		tsFileContent.push(`export const HASH_${typeName.toUpperCase()} = '${groupHash}';`);
 	}
 
 	tsFileContent.push('', '', '// Client type descriptors');
