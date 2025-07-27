@@ -1,44 +1,45 @@
 import { createHash } from 'node:crypto';
 
-import { sortMapByKey, sortObjectByKey } from '$lib/objectEx';
+import { sortObjectByKey } from '$lib/objectEx';
 import type { EtcdFlagObject } from '$types/etcd/flagObject';
 
-const generateGroupHash = (flags: Record<string, EtcdFlagObject>, groupName: string): string => {
-	const hashInfo: string[] = [];
-
-	hashInfo.push(groupName);
-
-	// const typeName = ROOT_TYPE_NAME + (groupName ? `_${capitalizeWords(groupName, '_')}` : '');
-	// hashInfo.push(`export type ${typeName} = {`);
-	// for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags))) {
-	// 	if (typeof flag === 'string') {
-	// 		const subTypeName = ROOT_TYPE_NAME + (flag ? `_${capitalizeWords(flag, '_')}` : '');
-	// 		hashInfo.push(`\t${flagName}: ${subTypeName};`);
-	// 	} else {
-	// 		hashInfo.push(`\t/**`);
-	// 		if (flag.description) hashInfo.push(`\t* ${flag.description}`);
-	// 		hashInfo.push(
-	// 			`\t* @default ${flag.defaultValue}`,
-	// 			`\t*/`
-	// 		);
-	// 		const type = flag.getTypescriptType();
-	// 		hashInfo.push(`\t${flagName}: ${type};`);
-	// 	}
-	// }
-
-	return createHash('sha1').update(hashInfo.join('\n')).digest('hex');
-};
-
 export const generateHashInfo = (flags: Record<string, EtcdFlagObject>): Map<string, string> => {
-	const groups: Map<string, string> = new Map();
+	const groups: Map<string, Record<string, EtcdFlagObject | string>> = new Map();
 
-	for (const key of Object.keys(flags)) {
+	// Generate groups
+	for (const [key, flag] of Object.entries(flags)) {
 		const keyParts = key.split('/');
+		const name = keyParts.at(-1);
 		const groupParts = keyParts.slice(0, -1);
-		const groupName = groupParts.join('/');
+		if (!name) continue;
 
-		if (!groups.has(groupName)) groups.set(groupName, generateGroupHash(flags, groupName));
+		const groupName = groupParts.join('_');
+		if (!groups.has(groupName)) groups.set(groupName, {});
+		groups.get(groupName)![name] = flag;
+		if (groupParts.length > 0) {
+			const subGroupName = groupParts.slice(0, -1).join('_');
+			if (!groups.has(subGroupName)) groups.set(subGroupName, {});
+			groups.get(subGroupName)![groupParts.at(-1) || ''] = groupParts.join('_');
+		}
 	}
 
-	return sortMapByKey(groups);
+	const generateGroupHash = (groupName: string): string => {
+		const hashInfo: string[] = [];
+
+		for (const [flagName, flag] of Object.entries(sortObjectByKey(groups.get(groupName) || {}))) {
+			if (typeof flag === 'string') {
+				hashInfo.push(flagName, generateGroupHash((groupName ? groupName + '_' : '') + flagName));
+			} else {
+				hashInfo.push(flagName, flag.getHashInfo());
+			}
+		}
+
+		//return hashInfo.join('+');
+		return createHash('sha1').update(hashInfo.join('\n')).digest('hex');
+	};
+
+	const result: Map<string, string> = new Map();
+	for (const groupName of groups.keys().toArray().sort())
+		result.set(groupName, generateGroupHash(groupName));
+	return result;
 };

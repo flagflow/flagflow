@@ -10,12 +10,21 @@ class EtcdFlagMethods {
 			case 'STRING':
 				return 'string';
 			case 'ENUM':
-				return `${this.enumValues.map((v) => JSON.stringify(v)).join(' | ')}`;
+				return `${[...this.enumValues]
+					.sort()
+					.map((v) => JSON.stringify(v))
+					.join(' | ')}`;
 			case 'TAG':
-				return `(${this.tagValues.map((v) => JSON.stringify(v)).join(' | ')})[]`;
+				return `(${[...this.tagValues]
+					.sort()
+					.map((v) => JSON.stringify(v))
+					.join(' | ')})[]`;
 			default:
-				return 'unknown';
+				return 'never';
 		}
+	}
+	public getHashInfo(this: EtcdFlagObject): string {
+		return this.getTypescriptType();
 	}
 }
 export type EtcdFlagObject = EtcdFlag & EtcdFlagMethods;

@@ -56,6 +56,7 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 					} catch {
 						log.warn({ key: name }, 'Failed to parse updated flag value');
 					}
+				flagTypeDescriptor = undefined;
 			});
 			flagWatcher.on('delete', (etcdKeyValue) => {
 				const key = etcdKeyValue.key.toString();
@@ -65,8 +66,11 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 					return;
 				}
 
-				if (flags) delete flags[name];
-				logWatch.debug({ key: name }, 'Deleted flag');
+				if (flags) {
+					delete flags[name];
+					logWatch.debug({ key: name }, 'Deleted flag');
+				}
+				flagTypeDescriptor = undefined;
 			});
 		}
 
