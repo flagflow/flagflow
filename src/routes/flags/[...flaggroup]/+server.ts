@@ -37,7 +37,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	if (acceptFlagGroupHash && acceptFlagGroupHash !== flagGroupHash)
 		return error(
 			409,
-			`Flag group (${flagGroup || '/'}) hash mismatch: ${acceptFlagGroupHash} <=> ${flagGroupHash}`
+			`Flag group (${flagGroup || '/'}) hash mismatch: client: ${acceptFlagGroupHash}, server: ${flagGroupHash}`
 		);
 
 	switch (urlParsed.format) {
