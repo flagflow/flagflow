@@ -88,7 +88,7 @@ export const flagFlow_Descriptors: {
 		uri: string;
 	}
 } = {`);
-	for (const groupName of groupTypeHash.keys().toArray().sort()) {
+	for (const groupName of Array.from(groupTypeHash.keys()).sort()) {
 		const typeUri = groupName.replaceAll('__', '/');
 		const typeKey = (groupName || '#root').replaceAll('__', '/');
 		const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
