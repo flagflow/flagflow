@@ -74,7 +74,7 @@ export const generateTSFileContent = (
 
 	tsFileContent.push('', '', '// Client type descriptors');
 	tsFileContent.push('export type FlagFlow_DescriptorTypeMap = {');
-	for (const groupName of groupTypeHash.keys().toArray().sort()) {
+	for (const groupName of Array.from(groupTypeHash.keys()).sort()) {
 		const typeKey = (groupName || '#root').replaceAll('__', '/');
 		const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
 		tsFileContent.push(`\t'${typeKey}': ${typeName};`);
