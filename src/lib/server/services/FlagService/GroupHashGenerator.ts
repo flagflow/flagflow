@@ -36,7 +36,7 @@ export const generateHashInfo = (flags: Record<string, EtcdFlagObject>): Map<str
 	};
 
 	const result: Map<string, string> = new Map();
-	for (const groupName of Array.from(groups.keys()).sort())
+	for (const groupName of [...groups.keys()].sort())
 		result.set(groupName, generateGroupHash(groupName));
 	return result;
 };

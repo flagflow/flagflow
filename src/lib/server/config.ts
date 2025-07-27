@@ -1,5 +1,5 @@
 import { config as dotenvInit } from '@dotenvx/dotenvx';
-dotenvInit();
+dotenvInit({ ignore: ['MISSING_ENV_FILE'] });
 import envVar from 'env-var';
 
 const defaults = {
@@ -10,7 +10,7 @@ const defaults = {
 export const config = {
 	logLevel: envVar.get('LOGLEVEL').asString() || defaults.LogLevel,
 	etcd: {
-		server: envVar.get('ETCD_SERVER').required().asString(),
+		server: envVar.get('ETCD_SERVER').default('localhost:2379').asString(),
 		username: envVar.get('ETCD_USERNAME').asString(),
 		password: envVar.get('ETCD_PASSWORD').asString(),
 		namespace: envVar.get('ETCD_NAMESPACE').default('default').asString()
