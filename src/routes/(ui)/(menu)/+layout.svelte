@@ -115,14 +115,12 @@
 					<Icon id="dashboard" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarDropdownWrapper btnClass="p-2" label="Flags">
+			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Flags">
 				{#snippet icon()}
 					<Icon id="flag" />
 				{/snippet}
 				<SidebarItem href="/ui/flags" label="Flags" {spanClass} />
-				<SidebarItem href="/ui/flags?inconsistencies" label="Inconsistencies" {spanClass} />
-				<SidebarItem href="/ui/flags?deprecated" label="Deprecated" {spanClass} />
-				<SidebarItem href="/ui/flags/depgraph" label="Dependency graph" {spanClass} />
+				<SidebarItem href="/ui/flags/graph" label="Graph" {spanClass} />
 				<SidebarItem href="/ui/flags/urls" label="URL info" {spanClass} />
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
@@ -132,7 +130,7 @@
 					<Icon id="export" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarDropdownWrapper btnClass="p-2" label="Users">
+			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Users">
 				{#snippet icon()}
 					<Icon id="user" />
 				{/snippet}
