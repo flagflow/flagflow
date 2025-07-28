@@ -28,7 +28,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	const flagService = event.locals.container.resolve('flagService');
 
-	let flagData = await flagService.getFlags(flagGroup);
+	const flagData = await flagService.getFlags(flagGroup);
 	if (Object.keys(flagData).length === 0)
 		return error(404, 'Group not found: ' + (flagGroup || '/'));
 	const flagGroupPrefix = flagGroup ? flagGroup + '/' : '';
@@ -48,11 +48,11 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	switch (urlParsed.format) {
 		case 'json':
-			return createJsonResponse(formatFlagApiResponseJson(flagData), {
+			return createJsonResponse(formatFlagApiResponseJson(processedFlagData), {
 				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash }
 			});
 		case 'env':
-			return createTextResponse(formatFlagApiResponseENV(flagData).join('\n'), {
+			return createTextResponse(formatFlagApiResponseENV(processedFlagData).join('\n'), {
 				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash }
 			});
 		default:
