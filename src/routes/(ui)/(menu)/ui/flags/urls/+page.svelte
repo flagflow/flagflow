@@ -22,6 +22,10 @@
 		)
 	});
 
+	const hashlUrls: Record<string, string> = $derived({
+		Hash: `/type/hash${format ? '?format=' + format : ''}`
+	});
+
 	const toolUrls: Record<string, string> = $derived({
 		'TS types and mapping': '/type/typescript',
 		'TS types and mapping (download)': '/type/typescript?download'
@@ -29,7 +33,8 @@
 
 	const urls: Record<string, Record<string, string>> = $derived({
 		'Direct access of flag groups': groupUrls,
-		'Tool URLs': format ? {} : toolUrls
+		Hash: hashlUrls,
+		Types: format ? {} : toolUrls
 	});
 </script>
 

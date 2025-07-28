@@ -29,3 +29,10 @@ export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): strin
 	result.sort();
 	return result;
 };
+
+export const formatFlagApiMapResponseENV = (flags: Record<string, string>): string[] => {
+	const result: string[] = [];
+	for (const [key, group] of Object.entries(flags)) result.push(`${key}=${group}`);
+	result.sort();
+	return result;
+};

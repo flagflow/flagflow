@@ -1,13 +1,15 @@
 import { error } from '@sveltejs/kit';
 
-import { createJsonResponse, createTextResponse } from '$lib/Response';
+import {
+	createJsonResponse,
+	createTextResponse,
+	HEADER_ACCEPT_FLAGGROUP_HASH,
+	HEADER_FLAGGROUP_HASH
+} from '$lib/Response';
 import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
 
 import type { RequestEvent, RequestHandler } from './$types';
-
-const ACCEPT_HASH_HEADER = 'x-accept-flaggroup-hash';
-const HASH_HEADER = 'x-flaggroup-hash';
 
 export const GET: RequestHandler = async (event: RequestEvent) => {
 	// Parameters
@@ -22,7 +24,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	// Service
 	const flagGroup = event.params.flaggroup;
-	const acceptFlagGroupHash = event.request.headers.get(ACCEPT_HASH_HEADER);
+	const acceptFlagGroupHash = event.request.headers.get(HEADER_ACCEPT_FLAGGROUP_HASH);
 
 	const flagService = event.locals.container.resolve('flagService');
 
@@ -47,11 +49,11 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	switch (urlParsed.format) {
 		case 'json':
 			return createJsonResponse(formatFlagApiResponseJson(flagData), {
-				headers: { [HASH_HEADER]: flagGroupHash }
+				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash }
 			});
 		case 'env':
 			return createTextResponse(formatFlagApiResponseENV(flagData).join('\n'), {
-				headers: { [HASH_HEADER]: flagGroupHash }
+				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash }
 			});
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);

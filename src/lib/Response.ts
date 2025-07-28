@@ -4,6 +4,9 @@ export const HEADERS_NO_CACHE = {
 	Expires: '0'
 };
 
+export const HEADER_FLAGGROUP_HASH = 'x-flaggroup-hash';
+export const HEADER_ACCEPT_FLAGGROUP_HASH = 'x-accept-flaggroup-hash';
+
 const createResponse = (
 	body: string,
 	options: { status: number; contentType: string; headers?: Record<string, string> | undefined }
