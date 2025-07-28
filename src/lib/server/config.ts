@@ -10,6 +10,7 @@ const defaults = {
 
 export const config = {
 	logLevel: envVar.get('LOGLEVEL').asString() || defaults.LogLevel,
+	environment: envVar.get('ENVIRONMENT').default('').asString(),
 	etcd: {
 		server: envVar.get('ETCD_SERVER').default('localhost:2379').asString(),
 		username: envVar.get('ETCD_USERNAME').asString(),

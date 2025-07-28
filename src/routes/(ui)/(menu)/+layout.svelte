@@ -84,6 +84,9 @@
 		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
 			FlagFlow admin
 		</span>
+		{#if data.environmentContext.name}
+			<Badge class="text-md ml-4" color="emerald" rounded>{data.environmentContext.name}</Badge>
+		{/if}
 	</NavBrand>
 	<div class="flex cursor-pointer items-center md:order-2">
 		<Avatar id="avatar" class="bg-orange-100 p-4" border>{userNameInitials}</Avatar>
