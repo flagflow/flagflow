@@ -5,7 +5,7 @@
 
 	const { title }: Properties = $props();
 
-	const APPNAME = 'ERP';
+	const APPNAME = 'FlagFlow';
 </script>
 
 <svelte:head>

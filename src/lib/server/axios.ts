@@ -10,7 +10,7 @@ export const getAxiosInstance = (baseURL: string, outLogger: ChildLogger) => {
 	const result = axios.create({
 		baseURL,
 		timeout: 5 * 1000,
-		headers: { application: 'segmentcontroller ERP' }
+		headers: { application: 'client' }
 	});
 	result.interceptors.request.use(
 		(config: TimestampedAxiosRequestConfig) => {

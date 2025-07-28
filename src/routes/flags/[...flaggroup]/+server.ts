@@ -26,9 +26,13 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	const flagService = event.locals.container.resolve('flagService');
 
-	const flagData = await flagService.getFlags(flagGroup);
+	let flagData = await flagService.getFlags(flagGroup);
 	if (Object.keys(flagData).length === 0)
 		return error(404, 'Group not found: ' + (flagGroup || '/'));
+	const flagGroupPrefix = flagGroup ? flagGroup + '/' : '';
+	flagData = Object.fromEntries(
+		Object.entries(flagData).map(([name, flag]) => [name.slice(flagGroupPrefix.length), flag])
+	);
 
 	const flagGroupHash = await flagService.getFlagGroupHash(flagGroup);
 	if (!flagGroupHash) return error(404, 'Group hash not found: ' + (flagGroup || '/'));
