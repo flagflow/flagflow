@@ -32,7 +32,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	if (Object.keys(flagData).length === 0)
 		return error(404, 'Group not found: ' + (flagGroup || '/'));
 	const flagGroupPrefix = flagGroup ? flagGroup + '/' : '';
-	flagData = Object.fromEntries(
+	const processedFlagData = Object.fromEntries(
 		Object.entries(flagData).map(([name, flag]) => [name.slice(flagGroupPrefix.length), flag])
 	);
 
