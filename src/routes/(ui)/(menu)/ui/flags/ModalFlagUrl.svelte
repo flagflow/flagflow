@@ -23,6 +23,7 @@
 
 	import CopyButton from '$components/CopyButton.svelte';
 	import FormContainer from '$components/form/FormContainer.svelte';
+	import FormLabel from '$components/form/FormLabel.svelte';
 	import Icon from '$components/icon/Icon.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import { modalHandler } from '$lib/modals';
@@ -57,6 +58,8 @@
 	{#snippet header()}
 		<div class="flex justify-between gap-4">Flag {key ? '' : 'group '} URLs</div>
 	{/snippet}
+
+	<FormLabel text={key || group || '#root'} title={`Flag ${key ? '' : 'group '}`} />
 
 	<FormContainer title="Value format">
 		<div class="flex gap-2">

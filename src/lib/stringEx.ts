@@ -16,5 +16,10 @@ export const camelCaseToHuman = (s: string) =>
 		.toLowerCase()
 		.replace(/^./, (s) => s.toUpperCase());
 
-export const capitalize = (s: string) =>
-	s.charAt(0).toLocaleUpperCase() + s.slice(1).toLocaleLowerCase();
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+export const capitalizeWords = (s: string, separator: string) =>
+	s
+		.split(separator)
+		.map((element) => capitalize(element))
+		.join(separator);

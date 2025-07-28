@@ -1,7 +1,6 @@
 <script lang="ts">
 	import clsx from 'clsx';
 	import {
-		Badge,
 		ButtonGroup,
 		Card,
 		Dropdown,
@@ -101,7 +100,9 @@
 
 	const deleteFlag = async (key: string, type: string) => {
 		try {
-			const result = await showModalConfirmationDelete(`${key} ${type.toLocaleLowerCase()} flag`);
+			const result = await showModalConfirmationDelete(
+				`${key} (${type.toLocaleLowerCase()} type) flag`
+			);
 			if (!result.isOk) return;
 
 			await rpcClient.flag.delete.mutate({ key });
@@ -118,15 +119,6 @@
 	<ButtonGroup size="md">
 		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
 	</ButtonGroup>
-	{#if filterItemGroup.length > 2}
-		<Select
-			class="unfocused ml-4 w-64"
-			items={filterItemGroup}
-			placeholder="Group filter"
-			size="sm"
-			bind:value={$groupFilter}
-		/>
-	{/if}
 	<ButtonGroup class="w-72">
 		<InputAddon><Icon id="search" /></InputAddon>
 		<Input
@@ -140,6 +132,15 @@
 	</ButtonGroup>
 
 	{#snippet rightToolbar()}
+		{#if filterItemGroup.length > 2}
+			<Select
+				class="unfocused ml-4 w-64"
+				items={filterItemGroup}
+				placeholder="Group filter"
+				size="sm"
+				bind:value={$groupFilter}
+			/>
+		{/if}
 		<div>
 			<RadioButton
 				checkedClass="border-2 border-gray-300"
@@ -221,9 +222,7 @@
 												if (hasRoleMaintainer) modifyFlagSchema(flag.key);
 											}}
 										>
-											<Badge class="mr-1 w-0" color="indigo" size="small"
-												>{flag.typeToDisplay.slice(0, 1)}</Badge
-											>
+											<Icon id={flag.icon} class="mr-1 inline-block" color="primary" />
 											<Tooltip placement="bottom-start" type="light">{flag.typeToDisplay}</Tooltip>
 											{flag.flagName}
 										</h5>

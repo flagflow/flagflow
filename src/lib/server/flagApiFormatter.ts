@@ -6,13 +6,12 @@ export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): obje
 	for (const [key, flag] of Object.entries(flags)) {
 		const keyParts = key.split('/');
 		const name = keyParts.at(-1);
-		const path = keyParts.slice(0, -1).join('/');
-		const pathParts = path.split('/');
+		const groupParts = keyParts.slice(0, -1);
 		if (!name) continue;
 
 		let position = result;
-		if (path)
-			for (const part of pathParts) {
+		if (groupParts.length > 0)
+			for (const part of groupParts) {
 				if (!position[part]) position[part] = {};
 				position = position[part] as Record<string, unknown>;
 			}
@@ -27,6 +26,13 @@ export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): strin
 		const value = flag.valueExists ? flag.value : flag.defaultValue;
 		result.push(`${key}=${value}`);
 	}
+	result.sort();
+	return result;
+};
+
+export const formatFlagApiMapResponseENV = (flags: Record<string, string>): string[] => {
+	const result: string[] = [];
+	for (const [key, group] of Object.entries(flags)) result.push(`${key}=${group}`);
 	result.sort();
 	return result;
 };

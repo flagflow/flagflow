@@ -5,8 +5,16 @@ import { UserRoleFromArray } from '$types/UserRoles';
 
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ request, locals: { authentication } }) => {
+export const load: LayoutServerLoad = async ({
+	request,
+	locals: { authentication, container }
+}) => {
 	if (!authentication.success) throw redirect(302, '/login');
+
+	const configService = container.resolve('configService');
+	const environmentContext = {
+		name: configService.environment
+	};
 
 	const url = new URL(request.url);
 	const host = `${url.protocol}//${url.host}`;
@@ -25,6 +33,7 @@ export const load: LayoutServerLoad = async ({ request, locals: { authentication
 	} as const;
 
 	return {
-		authenticationContext
+		authenticationContext,
+		environmentContext
 	};
 };

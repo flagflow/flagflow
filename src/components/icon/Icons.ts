@@ -50,6 +50,14 @@ export const IconIds = {
 	sortNumericAscending: 'mdi:sort-numeric-ascending',
 	sortNumericDescending: 'mdi:sort-numeric-descending',
 
+	boolean: 'mdi:toggle-switch',
+	integer: 'mdi:numeric',
+	string: 'mdi:format-text',
+	object: 'mdi:bracket',
+	enum: 'mdi:format-list-bulleted-type',
+	tag: 'mdi:tag',
+	abTest: 'mdi:ab-testing',
+
 	error: 'mdi:error',
 	warning: 'mdi:warning',
 	information: 'mdi:information'

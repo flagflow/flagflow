@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { IconId } from '$components/icon/Icons';
+
 const EtcdBaseFlag = z.object({
 	description: z.string().trim()
 });
@@ -88,6 +90,16 @@ export const EtcdFlagTypeDescription: Record<EtcdFlagType, string> = {
 	ENUM: 'Select one element from a string valueset',
 	TAG: 'Select none, one or more elements from a string valueset',
 	'AB-TEST': 'Randomly select one of A and B'
+};
+
+export const EtcdFlagTypeIcon: Record<EtcdFlagType, IconId> = {
+	BOOLEAN: 'boolean',
+	INTEGER: 'integer',
+	STRING: 'string',
+	OBJECT: 'object',
+	ENUM: 'enum',
+	TAG: 'tag',
+	'AB-TEST': 'abTest'
 };
 
 export { EtcdHierarchicalKey as EtcdFlagKey } from './base';

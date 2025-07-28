@@ -84,6 +84,9 @@
 		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
 			FlagFlow admin
 		</span>
+		{#if data.environmentContext.name}
+			<Badge class="text-md ml-4" color="emerald" rounded>{data.environmentContext.name}</Badge>
+		{/if}
 	</NavBrand>
 	<div class="flex cursor-pointer items-center md:order-2">
 		<Avatar id="avatar" class="bg-orange-100 p-4" border>{userNameInitials}</Avatar>
@@ -100,10 +103,9 @@
 <div class="relative">
 	<Sidebar
 		class="z-50 h-full"
-		activeClass="p-2 text-white bg-primary-600 hover:bg-primary-800"
 		activeUrl={page.url.pathname}
 		backdrop={false}
-		nonActiveClass="p-2"
+		classes={{ active: 'p-2 text-white bg-primary-600 hover:bg-primary-800', nonactive: 'p-2' }}
 		params={{ x: 0, duration: 0 }}
 		position="absolute"
 	>
