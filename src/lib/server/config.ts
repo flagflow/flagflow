@@ -1,5 +1,6 @@
 import { config as dotenvInit } from '@dotenvx/dotenvx';
-dotenvInit({ ignore: ['MISSING_ENV_FILE'] });
+if (process.env?.['NODE_ENV'] !== 'production') dotenvInit({ ignore: ['MISSING_ENV_FILE'] });
+
 import envVar from 'env-var';
 
 const defaults = {
