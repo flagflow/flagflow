@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Kbd } from 'flowbite-svelte';
+	import { Button, Kbd, RadioButton } from 'flowbite-svelte';
 
 	import CopyButton from '$components/CopyButton.svelte';
 	import Icon from '$components/icon/Icon.svelte';
@@ -10,26 +10,47 @@
 
 	let { data }: PageProperties = $props();
 
-	const groupUrls: Record<string, string> = {
+	const formats = { 'JSON format (default)': '', 'ENV format': 'env' };
+	let format = $state('');
+
+	const groupUrls: Record<string, string> = $derived({
 		...Object.fromEntries(
 			data.flagGroups.map((flagGroup) => [
 				`${flagGroup || 'ALL'}`,
-				`/flags${flagGroup ? '/' + flagGroup : ''}`
+				`/flags${flagGroup ? '/' + flagGroup : ''}${format ? '?format=' + format : ''}`
 			])
 		)
-	};
+	});
 
-	const toolUrls: Record<string, string> = {
-		'TS types and mapping': '/type/typescript?download'
-	};
+	const toolUrls: Record<string, string> = $derived({
+		'TS types and mapping': '/type/typescript',
+		'TS types and mapping (download)': '/type/typescript?download'
+	});
 
-	const urls: Record<string, Record<string, string>> = {
+	const urls: Record<string, Record<string, string>> = $derived({
 		'Direct access of flag groups': groupUrls,
-		'Tool URLs': toolUrls
-	};
+		'Tool URLs': format ? {} : toolUrls
+	});
 </script>
 
-<PageTitle hr title="Flag URLs"></PageTitle>
+<PageTitle hr title="Flag URLs">
+	{#snippet rightToolbar()}
+		<div class="flex flex-row gap-2">
+			{#each Object.entries(formats) as [label, value]}
+				<RadioButton
+					class="text-sm"
+					checkedClass="bg-primary-700 text-white"
+					outline
+					size="xs"
+					{value}
+					bind:group={format}
+				>
+					{label}
+				</RadioButton>
+			{/each}
+		</div>
+	{/snippet}
+</PageTitle>
 
 <PageContainer>
 	<div class="grid grid-cols-3 gap-4">
