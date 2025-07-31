@@ -26,6 +26,47 @@ class EtcdFlagMethods {
 	public getHashInfo(this: EtcdFlagObject): string {
 		return this.getTypescriptType();
 	}
+	public getTypescriptDefaultValue(this: EtcdFlagObject): string {
+		switch (this.type) {
+			case 'BOOLEAN':
+				return this.defaultValue ? 'true' : 'false';
+			case 'INTEGER':
+				return this.defaultValue.toString();
+			case 'STRING':
+				return JSON.stringify(this.defaultValue);
+			case 'ENUM':
+				return JSON.stringify(this.defaultValue);
+			case 'TAG':
+				return `[${[...this.defaultValue]
+					.sort()
+					.map((v) => JSON.stringify(v))
+					.join(', ')}]`;
+			default:
+				return 'never';
+		}
+	}
+	public getTypescriptZodMethod(this: EtcdFlagObject): string {
+		switch (this.type) {
+			case 'BOOLEAN':
+				return 'z.boolean()';
+			case 'INTEGER':
+				return 'z.number()';
+			case 'STRING':
+				return 'z.string()';
+			case 'ENUM':
+				return `z.enum([${[...this.enumValues]
+					.sort()
+					.map((v) => JSON.stringify(v))
+					.join(', ')}])`;
+			case 'TAG':
+				return `z.array(z.literal([${[...this.tagValues]
+					.sort()
+					.map((v) => JSON.stringify(v))
+					.join(', ')}]))`;
+			default:
+				return 'never';
+		}
+	}
 }
 export type EtcdFlagObject = EtcdFlag & EtcdFlagMethods;
 

@@ -32,7 +32,7 @@
 	"devDependencies": {
 		"@iconify/svelte": "^5.0.1",
 		"@sveltejs/adapter-node": "^5.2.13",
-		"@sveltejs/kit": "^2.26.1",
+		"@sveltejs/kit": "^2.27.0",
 		"@sveltejs/vite-plugin-svelte": "^6.1.0",
 		"@tailwindcss/postcss": "^4.1.11",
 		"@tailwindcss/typography": "^0.5.16",
@@ -54,24 +54,24 @@
 		"eslint-plugin-svelte": "^3.11.0",
 		"eslint-plugin-unicorn": "^60.0.0",
 		"flowbite": "^3.1.2",
-		"flowbite-svelte": "^1.10.20",
+		"flowbite-svelte": "^1.10.22",
 		"globals": "^16.3.0",
 		"mermaid": "^11.9.0",
-		"pino-pretty": "^13.0.0",
+		"pino-pretty": "^13.1.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.6.14",
-		"svelte": "^5.37.0",
+		"svelte": "^5.37.1",
 		"svelte-check": "^4.3.0",
 		"tailwindcss": "^4.1.11",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.6",
 		"vite-plugin-circular-dependency": "^0.5.0",
-		"vite-plugin-devtools-json": "^0.3.0",
+		"vite-plugin-devtools-json": "^0.4.1",
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
-		"@dotenvx/dotenvx": "^1.48.3",
+		"@dotenvx/dotenvx": "^1.48.4",
 		"awilix": "^12.0.5",
 		"axios": "^1.11.0",
 		"clsx": "^2.1.1",
@@ -91,6 +91,6 @@
 		"superjson": "^2.2.2",
 		"svelte-persisted-store": "^0.12.0",
 		"tsx": "^4.20.3",
-		"zod": "^4.0.10"
+		"zod": "^4.0.14"
 	}
 }

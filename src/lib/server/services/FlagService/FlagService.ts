@@ -4,7 +4,7 @@ import { createEtcdFlagObject, EtcdFlagObject } from '$types/etcd/flagObject';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
-import { generateTSFileContent } from './TSFileGenerator';
+import { generateTSTypeFileContent, generateTSZodFileContent } from './TSFileGenerator';
 
 type FlagServiceParameters = {
 	configService: ConfigService;
@@ -14,6 +14,7 @@ type FlagServiceParameters = {
 
 type FlagTypeDescriptor = {
 	tsFileContent: string;
+	zodFileContent: string;
 	groupTypeHash: Map<string, string>;
 };
 
@@ -82,8 +83,9 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 			const flags = await accessFlags();
 
 			const groupTypeHash = generateHashInfo(flags);
-			const tsFileContent = generateTSFileContent(flags, groupTypeHash);
-			flagTypeDescriptor = { tsFileContent, groupTypeHash };
+			const tsFileContent = generateTSTypeFileContent(flags, groupTypeHash);
+			const zodFileContent = generateTSZodFileContent(flags);
+			flagTypeDescriptor = { tsFileContent, groupTypeHash, zodFileContent };
 
 			log.info('Generated flag type descriptor');
 		}
@@ -113,6 +115,10 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		getTSFileContent: async (): Promise<string> => {
 			const types = await accessTypeDescriptor();
 			return types.tsFileContent;
+		},
+		getZodFileContent: async (): Promise<string> => {
+			const types = await accessTypeDescriptor();
+			return types.zodFileContent;
 		}
 	};
 };

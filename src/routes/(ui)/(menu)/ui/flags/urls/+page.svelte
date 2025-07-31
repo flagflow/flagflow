@@ -28,7 +28,9 @@
 
 	const toolUrls: Record<string, string> = $derived({
 		'TS types and mapping': '/type/typescript',
-		'TS types and mapping (download)': '/type/typescript?download'
+		'TS types and mapping (download)': '/type/typescript?download',
+		'ZOD types': '/type/zod',
+		'ZOD types (download)': '/type/zod?download'
 	});
 
 	const urls: Record<string, Record<string, string>> = $derived({
