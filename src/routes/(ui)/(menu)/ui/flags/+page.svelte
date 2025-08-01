@@ -43,6 +43,7 @@
 	const GROUP_GENERAL_NAME = '#root';
 	const GROUP_NAME_SEPARATOR = ' › ';
 	const GROUP_INDENT_PX = 40;
+	const GROUP_TITLE_INDENT_PX = 20;
 	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', GROUP_NAME_SEPARATOR);
 	const groupNameLevel = (groupName: string) => (groupName ? groupName.split('/').length : 0);
 
@@ -174,7 +175,7 @@
 					<h5
 						style={$listSettings['gridMode']
 							? ''
-							: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX}px`}
+							: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX + GROUP_TITLE_INDENT_PX}px`}
 						class="col-span-3 flex items-center gap-2 overflow-auto py-4 text-lg font-normal text-gray-700"
 					>
 						<div>
@@ -224,7 +225,7 @@
 									class={clsx(
 										$listSettings['gridMode']
 											? ''
-											: `max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
+											: `!w-auto max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
 										'bg-gray-50 p-4 py-2 hover:bg-gray-100'
 									)}
 								>
