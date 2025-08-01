@@ -117,14 +117,16 @@
 						>Use reset toggle, because value error "{$stateIsValid?.value.message}"</Helper
 					>
 				{/if}
-				<div class="mt-2 flex justify-end space-x-4">
-					<FormToggle
-						class="mt-4"
-						inline
-						title="Reset value to default"
-						bind:checked={formData.resetValue}
-					/>
-				</div>
+				{#if 'valueExists' in flag}
+					<div class="mt-2 flex justify-end space-x-4">
+						<FormToggle
+							class="mt-4"
+							inline
+							title="Reset value to default"
+							bind:checked={formData.resetValue}
+						/>
+					</div>
+				{/if}
 			{/if}
 		</div>
 

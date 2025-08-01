@@ -82,13 +82,15 @@
 		</div>
 
 		<div class="mt-4 flex justify-center space-x-4">
-			<Button
-				class="w-20"
-				disabled={!$stateAllValid || $stateInProgress}
-				onclick={() => formExecute()}
-			>
-				Set</Button
-			>
+			{#if 'valueExists' in flag}
+				<Button
+					class="w-20"
+					disabled={!$stateAllValid || $stateInProgress}
+					onclick={() => formExecute()}
+				>
+					Set</Button
+				>
+			{/if}
 			<Button class="w-20" color="alternative" onclick={() => dispatch('resolve', { isOk: false })}
 				>Cancel</Button
 			>
