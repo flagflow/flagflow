@@ -259,22 +259,25 @@
 								>
 									<div class="flex flex-row items-center justify-between">
 										<div class="row flex items-center gap-2">
-											<!-- svelte-ignore a11y_no_static_element_interactions -->
-											<div
-												class={clsx(
-													'trimmed-content inline-flex min-w-64 items-center gap-2 font-semibold text-gray-700',
-													{
-														'cursor-pointer': hasRoleMaintainer
-													}
-												)}
-												ondblclick={() => {
-													if (hasRoleMaintainer) modifyFlagSchema(flag.key);
-												}}
-											>
-												<Icon id={flag.icon} class="mr-1 inline-flex" color="primary" />
-												<Tooltip placement="bottom-start" type="light">{flag.typeToDisplay}</Tooltip
+											<div class="flex min-w-64 items-center">
+												<!-- svelte-ignore a11y_no_static_element_interactions -->
+												<div
+													class={clsx(
+														'trimmed-content inline-flex items-center gap-2 font-semibold text-gray-700',
+														{
+															'cursor-pointer': hasRoleMaintainer
+														}
+													)}
+													ondblclick={() => {
+														if (hasRoleMaintainer) modifyFlagSchema(flag.key);
+													}}
 												>
-												{flag.flagName}
+													<Icon id={flag.icon} class="mr-1 inline-flex" color="primary" />
+													<Tooltip placement="bottom-start" type="light"
+														>{flag.typeToDisplay}</Tooltip
+													>
+													{flag.flagName}
+												</div>
 											</div>
 											{#if $listSettings['displayMode'] === 'compactList'}
 												{@render flagValueKbd(flag)}
