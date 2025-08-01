@@ -29,6 +29,7 @@ RUN npm ci --omit=dev && \
 COPY --from=builder /app/build ./build
 RUN find build -name "*.map" -delete
 
+ENV NODE_ENV=production
 EXPOSE 3000
 
 CMD ["node", "build"]
