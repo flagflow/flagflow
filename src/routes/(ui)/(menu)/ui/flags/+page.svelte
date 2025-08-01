@@ -42,7 +42,9 @@
 
 	const GROUP_GENERAL_NAME = '#root';
 	const GROUP_NAME_SEPARATOR = ' › ';
+	const GROUP_INDENT_PX = 40;
 	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', GROUP_NAME_SEPARATOR);
+	const groupNameLevel = (groupName: string) => (groupName ? groupName.split('/').length : 0);
 
 	const listSettings = persisted<{ gridMode: boolean }>('flag-list', { gridMode: true });
 	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
@@ -170,6 +172,9 @@
 			{#each data.flagGroups as [groupName, flags]}
 				{#if !$groupFilter || (groupName || GROUP_GENERAL_NAME).startsWith($groupFilter)}
 					<h5
+						style={$listSettings['gridMode']
+							? ''
+							: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX}px`}
 						class="col-span-3 flex items-center gap-2 overflow-auto py-4 text-lg font-normal text-gray-700"
 					>
 						<div>
@@ -212,7 +217,17 @@
 							{#if !$searchFilter || flag.flagName
 									.toLowerCase()
 									.includes($searchFilter.toLowerCase())}
-								<Card class="max-w-full p-4 py-2">
+								<Card
+									style={$listSettings['gridMode']
+										? ''
+										: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX}px`}
+									class={clsx(
+										$listSettings['gridMode']
+											? ''
+											: `max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
+										'bg-gray-50 p-4 py-2 hover:bg-gray-100'
+									)}
+								>
 									<div class="flex flex-row items-center justify-between">
 										<h5
 											class={clsx('trimmed-content mb-2 font-semibold text-gray-700', {
