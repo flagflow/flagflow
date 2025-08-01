@@ -2,8 +2,7 @@
 	import { DropdownItem } from 'flowbite-svelte';
 	import type { Snippet } from 'svelte';
 
-	import Icon from './icon/Icon.svelte';
-	import type { IconId } from './icon/Icons';
+	import Icon, { type IconId } from './Icon.svelte';
 
 	interface Properties {
 		href?: string;

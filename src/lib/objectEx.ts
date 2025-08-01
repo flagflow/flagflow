@@ -8,8 +8,13 @@ export const sortObjectByKey = <T extends Record<string, unknown>>(
 		[K in keyof T]: T[K];
 	};
 
-export const sortMapByKey = <K extends string, V>(map: Map<K, V>): Map<K, V> =>
-	new Map([...map.entries()].sort(([keyA], [keyB]) => keyA.localeCompare(keyB)));
+export const sortMapByKey = <K extends string, V>(
+	map: Map<K, V>,
+	reverse: boolean = false
+): Map<K, V> =>
+	new Map(
+		[...map.entries()].sort(([keyA], [keyB]) => keyA.localeCompare(keyB) * (reverse ? -1 : 1))
+	);
 
 export const filterObjectFields = <T extends object>(object: object, allowedKeys: (keyof T)[]): T =>
 	Object.fromEntries(

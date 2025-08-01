@@ -17,7 +17,7 @@
 
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
@@ -27,6 +27,8 @@
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
 	import { urlParameterStore } from '$lib/stores/urlParameterStore';
+	import type { EtcdFlag } from '$types/etcd';
+	import { type EtcdWithKey } from '$types/etcd';
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalFlagGroupUrl, showModalFlagUrl } from './ModalFlagUrl.svelte';
@@ -42,9 +44,14 @@
 
 	const GROUP_GENERAL_NAME = '#root';
 	const GROUP_NAME_SEPARATOR = ' › ';
+	const GROUP_INDENT_PX = 40;
+	const GROUP_TITLE_INDENT_PX = 20;
 	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', GROUP_NAME_SEPARATOR);
+	const groupNameLevel = (groupName: string) => (groupName ? groupName.split('/').length : 0);
 
-	const listSettings = persisted<{ gridMode: boolean }>('flag-list', { gridMode: true });
+	const listSettings = persisted<{ displayMode: 'grid' | 'list' | 'compactList' }>('flag-list', {
+		displayMode: 'grid'
+	});
 	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
 	const searchFilter = urlParameterStore({ key: 'search', defaultValue: '', debounce: 350 });
 
@@ -146,8 +153,8 @@
 				checkedClass="border-2 border-gray-300"
 				color="alternative"
 				size="xs"
-				value={true}
-				bind:group={$listSettings['gridMode']}
+				value="grid"
+				bind:group={$listSettings['displayMode']}
 			>
 				<Icon id="formatGrid" />
 			</RadioButton>
@@ -155,14 +162,37 @@
 				checkedClass="border-2 border-gray-300"
 				color="alternative"
 				size="xs"
-				value={false}
-				bind:group={$listSettings['gridMode']}
+				value="list"
+				bind:group={$listSettings['displayMode']}
 			>
-				<Icon id="formatListGroup" />
+				<Icon id="formatListExpanded" />
+			</RadioButton>
+			<RadioButton
+				checkedClass="border-2 border-gray-300"
+				color="alternative"
+				size="xs"
+				value="compactList"
+				bind:group={$listSettings['displayMode']}
+			>
+				<Icon id="formatListCompact" />
 			</RadioButton>
 		</div>
 	{/snippet}
 </PageTitle>
+
+{#snippet flagValueKbd(flag: EtcdWithKey<EtcdFlag>)}
+	<Kbd
+		class={clsx('bg-primary-50 inline-flex decoration-dashed underline-offset-4', {
+			underline: 'valueExists' in flag && !flag.valueExists,
+			'cursor-pointer': hasRoleEditor
+		})}
+		ondblclick={() => {
+			if (hasRoleEditor) modifyFlagValue(flag.key);
+		}}
+	>
+		{flagValueToString(flag)}
+	</Kbd>
+{/snippet}
 
 <PageContainer>
 	{#key data}
@@ -170,6 +200,9 @@
 			{#each data.flagGroups as [groupName, flags]}
 				{#if !$groupFilter || (groupName || GROUP_GENERAL_NAME).startsWith($groupFilter)}
 					<h5
+						style={$listSettings['displayMode'] === 'grid'
+							? ''
+							: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX + GROUP_TITLE_INDENT_PX}px`}
 						class="col-span-3 flex items-center gap-2 overflow-auto py-4 text-lg font-normal text-gray-700"
 					>
 						<div>
@@ -205,80 +238,93 @@
 					<div
 						class={clsx(
 							'mb-8 ml-4 grid gap-4',
-							$listSettings['gridMode'] ? 'grid-cols-3' : 'grid-cols-1'
+							$listSettings['displayMode'] === 'grid' ? 'grid-cols-3' : 'grid-cols-1'
 						)}
 					>
 						{#each flags as flag (flag.key)}
 							{#if !$searchFilter || flag.flagName
 									.toLowerCase()
 									.includes($searchFilter.toLowerCase())}
-								<Card class="max-w-full p-4 py-2">
+								<Card
+									style={$listSettings['displayMode'] === 'grid'
+										? ''
+										: `margin-left: ${groupNameLevel(groupName) * GROUP_INDENT_PX}px`}
+									class={clsx(
+										$listSettings['displayMode'] === 'grid'
+											? ''
+											: `!w-auto max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
+										'bg-gray-50 p-4 py-2 hover:bg-gray-100'
+									)}
+								>
 									<div class="flex flex-row items-center justify-between">
-										<h5
-											class={clsx('trimmed-content mb-2 font-semibold text-gray-700', {
-												'cursor-pointer': hasRoleMaintainer
-											})}
-											ondblclick={() => {
-												if (hasRoleMaintainer) modifyFlagSchema(flag.key);
-											}}
-										>
-											<Icon id={flag.icon} class="mr-1 inline-block" color="primary" />
-											<Tooltip placement="bottom-start" type="light">{flag.typeToDisplay}</Tooltip>
-											{flag.flagName}
-										</h5>
-										<div class="-mt-1 -mr-2">
-											<Icon
-												id="dotsVertical"
-												class="dots-menu inline-flex cursor-pointer"
-												color="gray"
-												size={24}
-											/>
-											<Dropdown simple transitionParams={{ duration: 0 }}>
-												{#if hasRoleEditor}
-													<DropdownItem
-														class="font-semibold"
-														href="#"
-														onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
-													>
-												{/if}
-												{#if hasRoleMaintainer}
-													<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
-														>Modify schema</DropdownItem
-													>
-													<DropdownDivider />
-													<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
-														>Rename flag</DropdownItem
-													>
-													<DropdownItem
-														href="#"
-														onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
-														>Delete flag</DropdownItem
-													>
-													<DropdownDivider />
-												{/if}
-												<DropdownItem href="#" onclick={() => showModalFlagUrl(flag.key)}
-													>Show URLs</DropdownItem
+										<div class="row flex items-center gap-2">
+											<div class="flex min-w-72 items-center">
+												<!-- svelte-ignore a11y_no_static_element_interactions -->
+												<div
+													class={clsx(
+														'trimmed-content inline-flex items-center gap-2 font-semibold text-gray-700',
+														{
+															'cursor-pointer': hasRoleMaintainer
+														}
+													)}
+													ondblclick={() => {
+														if (hasRoleMaintainer) modifyFlagSchema(flag.key);
+													}}
 												>
-											</Dropdown>
+													<Icon id={flag.icon} class="mr-1 inline-flex" color="primary" />
+													<Tooltip placement="bottom-start" type="light"
+														>{flag.typeToDisplay}</Tooltip
+													>
+													{flag.flagName}
+												</div>
+											</div>
+											{#if $listSettings['displayMode'] === 'compactList'}
+												{@render flagValueKbd(flag)}
+											{/if}
 										</div>
+										<Icon
+											id="dotsVertical"
+											class="dots-menu inline-flex cursor-pointer"
+											color="gray"
+											size={24}
+										/>
+										<Dropdown simple transitionParams={{ duration: 0 }}>
+											{#if hasRoleEditor}
+												<DropdownItem
+													class="font-semibold"
+													href="#"
+													onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
+												>
+											{/if}
+											{#if hasRoleMaintainer}
+												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
+													>Modify schema</DropdownItem
+												>
+												<DropdownDivider />
+												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
+													>Rename flag</DropdownItem
+												>
+												<DropdownItem
+													href="#"
+													onclick={() => deleteFlag(flag.key, flag.typeToDisplay)}
+													>Delete flag</DropdownItem
+												>
+												<DropdownDivider />
+											{/if}
+											<DropdownItem href="#" onclick={() => showModalFlagUrl(flag.key)}
+												>Show URLs</DropdownItem
+											>
+										</Dropdown>
 									</div>
-									<hr class="-mx-4 my-1 text-gray-200" />
-									<div class="mt-2 flex flex-row items-center justify-between">
-										<Kbd
-											class={clsx({
-												italic: !flag.valueExists,
-												'cursor-pointer': hasRoleEditor
-											})}
-											ondblclick={() => {
-												if (hasRoleEditor) modifyFlagValue(flag.key);
-											}}
-										>
-											{flagValueToString(flag)}</Kbd
-										>
-									</div>
-									<p class="mt-2 text-justify text-xs font-light text-gray-500">
-										{flag.description}
-									</p>
+									{#if $listSettings['displayMode'] !== 'compactList'}
+										<hr class="-mx-4 my-1 text-gray-200" />
+										<div class="mt-2 flex flex-row items-center justify-between">
+											{@render flagValueKbd(flag)}
+										</div>
+										<p class="mt-2 text-justify text-xs font-light text-gray-500">
+											{flag.description}
+										</p>
+									{/if}
 								</Card>
 							{/if}
 						{/each}

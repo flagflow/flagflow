@@ -28,8 +28,6 @@ export default [
 			'**/.env',
 			'**/.env.*',
 			'!**/.env.example',
-			'src/icons',
-			'plan/**/*.js',
 			'**/pnpm-lock.yaml',
 			'**/package-lock.json',
 			'**/yarn.lock'

@@ -5,6 +5,7 @@
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
 	import FormSelect from '$components/form/FormSelect.svelte';
+	import FormSlider from '$components/form/FormSlider.svelte';
 	import FormTag from '$components/form/FormTag.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
@@ -114,6 +115,21 @@
 		<div class="grid grid-cols-2 gap-4">
 			<FormInput minNumber={0} title="Minimum count" type="number" bind:value={flag.minCount} />
 			<FormInput minNumber={0} title="Maximum count" type="number" bind:value={flag.maxCount} />
+		</div>
+	{:else if flag.type === 'AB-TEST'}
+		<FormSlider
+			id="default"
+			class="mt-5 mb-3"
+			mandatory
+			maxValue={100}
+			minValue={0}
+			step={1}
+			title="The percentage chance of option B"
+			bind:value={flag.chanceBPercent}
+		/>
+		<div class="grid grid-cols-2 gap-4 text-center">
+			<div>A = <span class="font-bold">{100 - flag.chanceBPercent} %</span></div>
+			<div>B = <span class="font-bold">{flag.chanceBPercent} %</span></div>
 		</div>
 	{/if}
 	{#if validity?.schema.message}

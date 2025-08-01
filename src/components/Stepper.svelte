@@ -2,7 +2,7 @@
 	import { Button, DetailedStepper } from 'flowbite-svelte';
 	import type { Snippet } from 'svelte';
 
-	import Icon from './icon/Icon.svelte';
+	import Icon from './Icon.svelte';
 
 	type Properties = {
 		steps: string[];

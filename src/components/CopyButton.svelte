@@ -2,7 +2,7 @@
 	import clsx from 'clsx';
 	import { Button } from 'flowbite-svelte';
 
-	import Icon from './icon/Icon.svelte';
+	import Icon from './Icon.svelte';
 
 	interface Properties {
 		data: string;

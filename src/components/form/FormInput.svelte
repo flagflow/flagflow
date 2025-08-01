@@ -2,8 +2,8 @@
 	import { Button, ButtonGroup, Input, InputAddon, type InputValue } from 'flowbite-svelte';
 	import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
-	import Icon from '$components/icon/Icon.svelte';
-	import { type IconId } from '$components/icon/Icons';
+	import Icon from '$components/Icon.svelte';
+	import { type IconId } from '$components/Icon.svelte';
 	import type { ValidityItem } from '$lib/form.svelte';
 
 	import FormContainer from './FormContainer.svelte';

@@ -2,7 +2,7 @@
 	import { Button, Kbd, RadioButton } from 'flowbite-svelte';
 
 	import CopyButton from '$components/CopyButton.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
 
@@ -28,7 +28,9 @@
 
 	const toolUrls: Record<string, string> = $derived({
 		'TS types and mapping': '/type/typescript',
-		'TS types and mapping (download)': '/type/typescript?download'
+		'TS types and mapping (download)': '/type/typescript?download',
+		'ZOD types': '/type/zod',
+		'ZOD types (download)': '/type/zod?download'
 	});
 
 	const urls: Record<string, Record<string, string>> = $derived({

@@ -20,6 +20,8 @@ export const flagSchemaToString = (flag: EtcdFlag): string => {
 			];
 			return `${intervals.join('...')} from ${flag.tagValues.length}`.trim();
 		}
+		case 'AB-TEST':
+			return `Chance B: ${flag.chanceBPercent}%`;
 		default:
 			return 'Unknown flag type';
 	}
@@ -60,6 +62,8 @@ export const flagValueToString = (flag: EtcdFlag): string => {
 			defaultValue.sort();
 			return `[${defaultValue.join(', ')}]`;
 		}
+		case 'AB-TEST':
+			return Math.random() * 100 < flag.chanceBPercent ? 'B' : 'A';
 		default:
 			return 'Unknown flag type';
 	}

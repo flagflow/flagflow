@@ -87,19 +87,21 @@ export const flagRpc = createRpcRouter({
 			const schemaError = flagSchemaValidator(recentFlag);
 			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
 
-			if (input.resetValue) {
-				recentFlag.valueExists = false;
-				recentFlag.value = recentFlag.defaultValue;
-			} else {
-				if (
-					input.flag.valueExists &&
-					(recentFlag.value !== input.flag.value ||
-						recentFlag.valueExists !== input.flag.valueExists) &&
-					!ctx.authentication.success?.roles.includes('editor')
-				)
-					throw new Error('You do not have permission to update flag value');
-				recentFlag.valueExists = input.flag.valueExists;
-				recentFlag.value = input.flag.value;
+			if ('valueExists' in recentFlag && 'valueExists' in input.flag) {
+				if (input.resetValue) {
+					recentFlag.valueExists = false;
+					recentFlag.value = recentFlag.defaultValue;
+				} else {
+					if (
+						input.flag.valueExists &&
+						(recentFlag.value !== input.flag.value ||
+							recentFlag.valueExists !== input.flag.valueExists) &&
+						!ctx.authentication.success?.roles.includes('editor')
+					)
+						throw new Error('You do not have permission to update flag value');
+					recentFlag.valueExists = input.flag.valueExists;
+					recentFlag.value = input.flag.value;
+				}
 			}
 			const valueError = flagValueValidator(recentFlag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
@@ -122,6 +124,8 @@ export const flagRpc = createRpcRouter({
 				throw new Error(
 					`Flag type cannot be changed (current: ${currentFlag.type}, new: ${input.flag.type})`
 				);
+			if (!('valueExists' in input.flag))
+				throw new Error('Flag with dynamic value cannot be updated');
 
 			const schemaError = flagSchemaValidator(currentFlag);
 			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);

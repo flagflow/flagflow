@@ -11,7 +11,7 @@
 	import type { Writable } from 'svelte/store';
 
 	import FormLabel from '$components/form/FormLabel.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import Stepper from '$components/Stepper.svelte';
 	import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
 	import {
@@ -27,6 +27,7 @@
 	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
 	import {
+		EMPTY_AB_FLAG,
 		EMPTY_BOOLEAN_FLAG,
 		EMPTY_ENUM_FLAG,
 		EMPTY_INTEGER_FLAG,
@@ -123,6 +124,12 @@
 			case 'TAG':
 				flagSpecific = {
 					...EMPTY_TAG_FLAG,
+					description: flagCommon.description
+				};
+				break;
+			case 'AB-TEST':
+				flagSpecific = {
+					...EMPTY_AB_FLAG,
 					description: flagCommon.description
 				};
 				break;

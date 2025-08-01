@@ -14,7 +14,7 @@
 	import { marked } from 'marked';
 	import { createEventDispatcher } from 'svelte';
 
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { modalHandler } from '$lib/modals';
 
 	const dispatch = createEventDispatcher<{

@@ -242,8 +242,8 @@
 	import { derived, get, type Writable } from 'svelte/store';
 
 	import AsyncButton from '$components/AsyncButton.svelte';
-	import Icon from '$components/icon/Icon.svelte';
-	import { type IconId } from '$components/icon/Icons';
+	import Icon from '$components/Icon.svelte';
+	import { type IconId } from '$components/Icon.svelte';
 	import { isStringArray, searchObjectStringField } from '$lib/objectEx';
 	import { isStringStore } from '$lib/storeEx';
 	import { trimEnd } from '$lib/stringEx';

@@ -1,6 +1,6 @@
-import type { EtcdFlag } from '$types/etcd';
+import type { EtcdFlagObject } from '$types/etcd/flagObject';
 
-export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): object => {
+export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlagObject>): object => {
 	const result: Record<string, unknown> = {};
 
 	for (const [key, flag] of Object.entries(flags)) {
@@ -15,15 +15,15 @@ export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): obje
 				if (!position[part]) position[part] = {};
 				position = position[part] as Record<string, unknown>;
 			}
-		position[name] = flag.valueExists ? flag.value : flag.defaultValue;
+		position[name] = flag.getDisplayValue().value;
 	}
 	return result;
 };
 
-export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): string[] => {
+export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlagObject>): string[] => {
 	const result: string[] = [];
 	for (const [key, flag] of Object.entries(flags)) {
-		const value = flag.valueExists ? flag.value : flag.defaultValue;
+		const value = flag.getDisplayValue().value;
 		result.push(`${key}=${value}`);
 	}
 	result.sort();

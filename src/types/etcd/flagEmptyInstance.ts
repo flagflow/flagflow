@@ -56,3 +56,10 @@ export const EMPTY_TAG_FLAG: EtcdFlag = {
 	valueExists: false,
 	value: []
 } as const;
+
+export const EMPTY_AB_FLAG: EtcdFlag = {
+	description: '',
+	type: 'AB-TEST',
+
+	chanceBPercent: 25
+} as const;

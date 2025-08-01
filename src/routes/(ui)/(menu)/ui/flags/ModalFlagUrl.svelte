@@ -24,7 +24,7 @@
 	import CopyButton from '$components/CopyButton.svelte';
 	import FormContainer from '$components/form/FormContainer.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import { modalHandler } from '$lib/modals';
 

@@ -1,5 +1,5 @@
-import { config as dotenvInit } from '@dotenvx/dotenvx';
-if (process.env?.['NODE_ENV'] !== 'production') dotenvInit({ ignore: ['MISSING_ENV_FILE'] });
+if (process.env?.['NODE_ENV'] !== 'production')
+	(await import('@dotenvx/dotenvx')).config({ ignore: ['MISSING_ENV_FILE'] });
 
 import envVar from 'env-var';
 

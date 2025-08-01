@@ -1,81 +1,94 @@
 import type { EtcdFlag } from '$types/etcd';
 
-export const updateFlagSchema = (current: EtcdFlag, input: EtcdFlag): EtcdFlag => {
-	if (current.type !== input.type)
-		throw new Error(`Flag type cannot be changed (current: ${current.type}, new: ${input.type})`);
+export const updateFlagSchema = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
+	if (current.type !== override.type)
+		throw new Error(
+			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
+		);
 
-	if (current.type === 'BOOLEAN' && input.type === 'BOOLEAN')
+	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')
 		return {
 			...current,
-			isKillSwitch: input.isKillSwitch,
-			defaultValue: input.defaultValue
+			isKillSwitch: override.isKillSwitch,
+			defaultValue: override.defaultValue
 		};
-	if (current.type === 'INTEGER' && input.type === 'INTEGER')
+	if (current.type === 'INTEGER' && override.type === 'INTEGER')
 		return {
 			...current,
-			minValue: input.minValue,
-			maxValue: input.maxValue,
-			defaultValue: input.defaultValue
+			minValue: override.minValue,
+			maxValue: override.maxValue,
+			defaultValue: override.defaultValue
 		};
-	if (current.type === 'STRING' && input.type === 'STRING')
+	if (current.type === 'STRING' && override.type === 'STRING')
 		return {
 			...current,
-			maxLength: input.maxLength,
-			regExp: input.regExp,
-			defaultValue: input.defaultValue
+			maxLength: override.maxLength,
+			regExp: override.regExp,
+			defaultValue: override.defaultValue
 		};
-	if (current.type === 'ENUM' && input.type === 'ENUM')
+	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return {
 			...current,
-			enumValues: input.enumValues,
-			allowEmpty: input.allowEmpty,
-			defaultValue: input.defaultValue
+			enumValues: override.enumValues,
+			allowEmpty: override.allowEmpty,
+			defaultValue: override.defaultValue
 		};
-	if (current.type === 'TAG' && input.type === 'TAG')
+	if (current.type === 'TAG' && override.type === 'TAG')
 		return {
 			...current,
-			tagValues: input.tagValues,
-			minCount: input.minCount,
-			maxCount: input.maxCount,
-			defaultValue: input.defaultValue
+			tagValues: override.tagValues,
+			minCount: override.minCount,
+			maxCount: override.maxCount,
+			defaultValue: override.defaultValue
+		};
+	if (current.type === 'AB-TEST' && override.type === 'AB-TEST')
+		return {
+			...current,
+			chanceBPercent: override.chanceBPercent
 		};
 
 	throw new Error(`Unknown flag type: ${current.type}`);
 };
 
-export const updateFlagValue = (current: EtcdFlag, input: EtcdFlag): EtcdFlag => {
-	if (current.type !== input.type)
-		throw new Error(`Flag type cannot be changed (current: ${current.type}, new: ${input.type})`);
+export const updateFlagValue = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
+	if (current.type !== override.type)
+		throw new Error(
+			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
+		);
 
-	if (current.type === 'BOOLEAN' && input.type === 'BOOLEAN')
+	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')
 		return {
 			...current,
-			valueExists: input.valueExists,
-			value: input.value
+			valueExists: override.valueExists,
+			value: override.value
 		};
-	if (current.type === 'INTEGER' && input.type === 'INTEGER')
+	if (current.type === 'INTEGER' && override.type === 'INTEGER')
 		return {
 			...current,
-			valueExists: input.valueExists,
-			value: input.value
+			valueExists: override.valueExists,
+			value: override.value
 		};
-	if (current.type === 'STRING' && input.type === 'STRING')
+	if (current.type === 'STRING' && override.type === 'STRING')
 		return {
 			...current,
-			valueExists: input.valueExists,
-			value: input.value
+			valueExists: override.valueExists,
+			value: override.value
 		};
-	if (current.type === 'ENUM' && input.type === 'ENUM')
+	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return {
 			...current,
-			valueExists: input.valueExists,
-			value: input.value
+			valueExists: override.valueExists,
+			value: override.value
 		};
-	if (current.type === 'TAG' && input.type === 'TAG')
+	if (current.type === 'TAG' && override.type === 'TAG')
 		return {
 			...current,
-			valueExists: input.valueExists,
-			value: input.value
+			valueExists: override.valueExists,
+			value: override.value
+		};
+	if (current.type === 'AB-TEST' && override.type === 'AB-TEST')
+		return {
+			...current
 		};
 
 	throw new Error(`Unknown flag type: ${current.type}`);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ButtonGroup, InputAddon, Tags, Tooltip } from 'flowbite-svelte';
 
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import type { ValidityItem } from '$lib/form.svelte';
 
 	import FormContainer from './FormContainer.svelte';
