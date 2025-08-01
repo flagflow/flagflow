@@ -1,6 +1,45 @@
 import { EtcdFlag } from './flag';
 
 class EtcdFlagMethods {
+	public getDisplayValue(this: EtcdFlagObject): {
+		isDefaultValue: boolean;
+		value: string | number | boolean | string[];
+	} {
+		switch (this.type) {
+			case 'BOOLEAN':
+				return {
+					isDefaultValue: !this.valueExists,
+					value: this.valueExists ? this.value : this.defaultValue
+				};
+			case 'INTEGER':
+				return {
+					isDefaultValue: !this.valueExists,
+					value: this.valueExists ? this.value : this.defaultValue
+				};
+			case 'STRING':
+				return {
+					isDefaultValue: !this.valueExists,
+					value: this.valueExists ? this.value : this.defaultValue
+				};
+			case 'ENUM':
+				return {
+					isDefaultValue: !this.valueExists,
+					value: this.valueExists ? this.value : this.defaultValue
+				};
+			case 'TAG':
+				return {
+					isDefaultValue: !this.valueExists,
+					value: this.valueExists ? this.value : this.defaultValue
+				};
+			case 'AB-TEST':
+				return {
+					isDefaultValue: false,
+					value: Math.random() * 100 < this.chanceBPercent ? 'B' : 'A'
+				};
+			default:
+				return { isDefaultValue: false, value: 'unknown' };
+		}
+	}
 	public getTypescriptType(this: EtcdFlagObject): string {
 		switch (this.type) {
 			case 'BOOLEAN':
@@ -19,6 +58,8 @@ class EtcdFlagMethods {
 					.sort()
 					.map((v) => JSON.stringify(v))
 					.join(' | ')})[]`;
+			case 'AB-TEST':
+				return 'string';
 			default:
 				return 'never';
 		}
@@ -41,6 +82,8 @@ class EtcdFlagMethods {
 					.sort()
 					.map((v) => JSON.stringify(v))
 					.join(', ')}]`;
+			case 'AB-TEST':
+				return JSON.stringify('A');
 			default:
 				return 'never';
 		}
@@ -63,6 +106,8 @@ class EtcdFlagMethods {
 					.sort()
 					.map((v) => JSON.stringify(v))
 					.join(', ')}]))`;
+			case 'AB-TEST':
+				return 'z.string()';
 			default:
 				return 'never';
 		}

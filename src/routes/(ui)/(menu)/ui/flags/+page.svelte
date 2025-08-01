@@ -266,7 +266,7 @@
 									<div class="mt-2 flex flex-row items-center justify-between">
 										<Kbd
 											class={clsx({
-												italic: !flag.valueExists,
+												italic: 'valueExists' in flag && !flag.valueExists,
 												'cursor-pointer': hasRoleEditor
 											})}
 											ondblclick={() => {

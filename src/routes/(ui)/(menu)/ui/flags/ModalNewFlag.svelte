@@ -27,6 +27,7 @@
 	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
 	import { EtcdFlagKey } from '$types/etcd';
 	import {
+		EMPTY_AB_FLAG,
 		EMPTY_BOOLEAN_FLAG,
 		EMPTY_ENUM_FLAG,
 		EMPTY_INTEGER_FLAG,
@@ -123,6 +124,12 @@
 			case 'TAG':
 				flagSpecific = {
 					...EMPTY_TAG_FLAG,
+					description: flagCommon.description
+				};
+				break;
+			case 'AB-TEST':
+				flagSpecific = {
+					...EMPTY_AB_FLAG,
 					description: flagCommon.description
 				};
 				break;

@@ -46,13 +46,17 @@ export const flagSchemaValidator = (flag: EtcdFlag): string => {
 			if (!flag.defaultValue.every((tag) => flag.tagValues.includes(tag)))
 				return `Allowed values for tags: ${flag.tagValues.join(', ')}`;
 			return '';
+		case 'AB-TEST':
+			if (flag.chanceBPercent < 0 || flag.chanceBPercent > 100)
+				return `Chance B percent (${flag.chanceBPercent}) must be between 0 and 100`;
+			return '';
 		default:
 			return 'Unknown flag type';
 	}
 };
 
 export const flagValueValidator = (flag: EtcdFlag): string => {
-	if (!flag.valueExists) return '';
+	if ('valueExists' in flag && !flag.valueExists) return '';
 	switch (flag.type) {
 		case 'BOOLEAN':
 			return '';
@@ -85,6 +89,8 @@ export const flagValueValidator = (flag: EtcdFlag): string => {
 				return `Value must have at most ${flag.maxCount} tags`;
 			if (!flag.value.every((tag) => flag.tagValues.includes(tag)))
 				return `Allowed values for tags: ${flag.tagValues.join(', ')}`;
+			return '';
+		case 'AB-TEST':
 			return '';
 		default:
 			return 'Unknown flag type';

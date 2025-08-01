@@ -49,6 +49,7 @@ export const IconIds = {
 	sortAlphabeticalDescending: 'mdi:sort-alphabetical-descending',
 	sortNumericAscending: 'mdi:sort-numeric-ascending',
 	sortNumericDescending: 'mdi:sort-numeric-descending',
+	changingValue: 'mdi:track-changes',
 
 	boolean: 'mdi:toggle-switch',
 	integer: 'mdi:numeric',

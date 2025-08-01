@@ -61,10 +61,8 @@ const EtcdTagFlag = z.object({
 });
 const EtcdABFlag = z.object({
 	type: z.literal('AB-TEST'),
-	defaultValue: z.string().trim(),
 
-	valueExists: z.boolean(),
-	value: z.array(z.string().trim())
+	chanceBPercent: z.number().min(0).max(100)
 });
 
 export const EtcdFlag = z.intersection(

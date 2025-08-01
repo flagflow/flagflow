@@ -39,6 +39,11 @@ export const updateFlagSchema = (current: EtcdFlag, input: EtcdFlag): EtcdFlag =
 			maxCount: input.maxCount,
 			defaultValue: input.defaultValue
 		};
+	if (current.type === 'AB-TEST' && input.type === 'AB-TEST')
+		return {
+			...current,
+			chanceBPercent: input.chanceBPercent
+		};
 
 	throw new Error(`Unknown flag type: ${current.type}`);
 };
@@ -76,6 +81,10 @@ export const updateFlagValue = (current: EtcdFlag, input: EtcdFlag): EtcdFlag =>
 			...current,
 			valueExists: input.valueExists,
 			value: input.value
+		};
+	if (current.type === 'AB-TEST' && input.type === 'AB-TEST')
+		return {
+			...current
 		};
 
 	throw new Error(`Unknown flag type: ${current.type}`);

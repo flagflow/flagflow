@@ -31,9 +31,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 				formatFlagApiResponseENV(Object.fromEntries([[event.params.flagname, flagData]])).join('\n')
 			);
 		case 'plain':
-			return createTextResponse(
-				String(flagData.valueExists ? flagData.value : flagData.defaultValue)
-			);
+			return createTextResponse(String(flagData.getDisplayValue().value));
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);
 	}

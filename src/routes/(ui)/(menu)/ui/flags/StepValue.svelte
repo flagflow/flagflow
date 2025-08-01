@@ -6,6 +6,7 @@
 	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
 	import FormSelect from '$components/form/FormSelect.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
+	import Icon from '$components/icon/Icon.svelte';
 	import { flagDefaultValueToString, flagSchemaToString } from '$lib/flag/flagToString';
 	import {
 		convertStringsToSelectInput,
@@ -39,64 +40,73 @@
 		<FormLabel mandatory text={flag.type} title="Type" />
 		<hr />
 	{/if}
-	<div class="flex gap-4">
-		<RadioButton
-			class="w-1/2 text-sm"
-			checkedClass="bg-primary-700 text-white"
-			outline
-			size="xs"
-			value={false}
-			bind:group={flag.valueExists}
-		>
-			Use default value
-			<br />
-			{flagDefaultValueToString(flag)}
-		</RadioButton>
-		<RadioButton
-			class="w-1/2 text-sm"
-			checkedClass="bg-primary-700 text-white"
-			outline
-			size="xs"
-			value={true}
-			bind:group={flag.valueExists}
-		>
-			Set {initial ? 'initial' : ''} value
-			<br />
-			{flagSchemaToString(flag)}
-		</RadioButton>
-	</div>
+	{#if 'valueExists' in flag}
+		<div class="flex gap-4">
+			<RadioButton
+				class="w-1/2 text-sm"
+				checkedClass="bg-primary-700 text-white"
+				outline
+				size="xs"
+				value={false}
+				bind:group={flag.valueExists}
+			>
+				Use default value
+				<br />
+				{flagDefaultValueToString(flag)}
+			</RadioButton>
+			<RadioButton
+				class="w-1/2 text-sm"
+				checkedClass="bg-primary-700 text-white"
+				outline
+				size="xs"
+				value={true}
+				bind:group={flag.valueExists}
+			>
+				Set {initial ? 'initial' : ''} value
+				<br />
+				{flagSchemaToString(flag)}
+			</RadioButton>
+		</div>
 
-	{#if flag.valueExists}
-		{#if flag.type === 'BOOLEAN'}
-			<div class="flex flex-col">
-				<FormToggle title="Value" bind:checked={flag.value} />
-			</div>
-		{:else if flag.type === 'INTEGER'}
-			<div class="flex flex-col">
-				<FormInput title="Value" type="number" bind:value={flag.value} />
-			</div>
-		{:else if flag.type === 'STRING'}
-			<div class="flex flex-col">
-				<FormInput title="Value" type="text" bind:value={flag.value} />
-			</div>
-		{:else if flag.type === 'ENUM'}
-			<FormSelect
-				items={convertStringsToSelectInput(
-					flag.enumValues,
-					flag.allowEmpty ? { name: '[Not set]', value: '' } : undefined
-				)}
-				title="Value"
-				bind:value={flag.value}
-			/>
-		{:else if flag.type === 'TAG'}
-			<FormMultiSelect
-				items={convertStringsToSelectInput(flag.tagValues)}
-				title="Value"
-				bind:value={flag.value}
-			/>
+		{#if flag.valueExists}
+			{#if flag.type === 'BOOLEAN'}
+				<div class="flex flex-col">
+					<FormToggle title="Value" bind:checked={flag.value} />
+				</div>
+			{:else if flag.type === 'INTEGER'}
+				<div class="flex flex-col">
+					<FormInput title="Value" type="number" bind:value={flag.value} />
+				</div>
+			{:else if flag.type === 'STRING'}
+				<div class="flex flex-col">
+					<FormInput title="Value" type="text" bind:value={flag.value} />
+				</div>
+			{:else if flag.type === 'ENUM'}
+				<FormSelect
+					items={convertStringsToSelectInput(
+						flag.enumValues,
+						flag.allowEmpty ? { name: '[Not set]', value: '' } : undefined
+					)}
+					title="Value"
+					bind:value={flag.value}
+				/>
+			{:else if flag.type === 'TAG'}
+				<FormMultiSelect
+					items={convertStringsToSelectInput(flag.tagValues)}
+					title="Value"
+					bind:value={flag.value}
+				/>
+			{/if}
+			{#if !validity?.schema.message && validity?.value.message}
+				<Helper class="text-red-700">{validity.value.message}</Helper>
+			{/if}
 		{/if}
-		{#if !validity?.schema.message && validity?.value.message}
-			<Helper class="text-red-700">{validity.value.message}</Helper>
-		{/if}
+	{:else}
+		<div class="mt-4 flex flex-col items-center gap-8">
+			<Icon id="changingValue" size={64} />
+			<div class="text-center text-lg">
+				Dynamic flag value cannot be set, this will be calculated at runtime.
+			</div>
+		</div>
 	{/if}
 </div>
