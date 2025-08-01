@@ -102,7 +102,7 @@ class EtcdFlagMethods {
 					.map((v) => JSON.stringify(v))
 					.join(', ')}])`;
 			case 'TAG':
-				return `z.array(z.literal([${[...this.tagValues]
+				return `z.array(z.enum([${[...this.tagValues]
 					.sort()
 					.map((v) => JSON.stringify(v))
 					.join(', ')}]))`;
