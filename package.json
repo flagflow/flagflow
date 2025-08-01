@@ -21,7 +21,7 @@
 		"npm:reinstall": "rm -rf ./node_modules && rm -f ./package-lock.json && npm i && npm i",
 		"docker:build": "docker build --force-rm -t flagflow:$npm_package_version .",
 		"docker:run": "docker run --rm --env-file .env --name flagflow --network=host flagflow:$npm_package_version",
-		"docker:it": "docker run -it --rm --env-file .env --name flagflow --network=host flagflow:$npm_package_version /bin/bash",
+		"docker:it": "docker run -it --rm --env-file .env --name flagflow --network=host flagflow:$npm_package_version /bin/sh",
 		"test": "vitest run"
 	},
 	"devDependencies": {
