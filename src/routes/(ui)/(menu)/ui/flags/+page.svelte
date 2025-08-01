@@ -17,7 +17,7 @@
 
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
@@ -161,7 +161,7 @@
 				value={false}
 				bind:group={$listSettings['gridMode']}
 			>
-				<Icon id="formatListGroup" />
+				<Icon id="formatListExpanded" />
 			</RadioButton>
 		</div>
 	{/snippet}

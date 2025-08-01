@@ -2,7 +2,7 @@
 	import { Helper, Radio } from 'flowbite-svelte';
 
 	import FormContainer from '$components/form/FormContainer.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { focusInputById } from '$lib/form.svelte';
 	import { type EtcdFlagType, EtcdFlagTypeDescription, EtcdFlagTypeIcon } from '$types/etcd';
 

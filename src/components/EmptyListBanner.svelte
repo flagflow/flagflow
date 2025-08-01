@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Icon from './icon/Icon.svelte';
-	import type { IconId } from './icon/Icons';
+	import type { IconId } from './Icon.svelte';
+	import Icon from './Icon.svelte';
 
 	interface Properties {
 		icon: IconId;

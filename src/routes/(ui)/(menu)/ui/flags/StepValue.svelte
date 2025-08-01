@@ -6,7 +6,7 @@
 	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
 	import FormSelect from '$components/form/FormSelect.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { flagDefaultValueToString, flagSchemaToString } from '$lib/flag/flagToString';
 	import {
 		convertStringsToSelectInput,

@@ -2,7 +2,7 @@
 	import { Button, Kbd, RadioButton } from 'flowbite-svelte';
 
 	import CopyButton from '$components/CopyButton.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
 

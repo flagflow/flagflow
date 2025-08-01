@@ -7,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import FormInput from '$components/form/FormInput.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { setSessionCookie } from '$lib/cookies';
 	import { focusInputById, FormLogic } from '$lib/form.svelte';
 	import { rpcClient } from '$lib/rpc/client';

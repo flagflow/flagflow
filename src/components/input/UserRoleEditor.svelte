@@ -2,7 +2,7 @@
 	import clsx from 'clsx';
 	import { Toggle, Tooltip } from 'flowbite-svelte';
 
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { USER_ROLES_DESCRIPTOR, type UserRole } from '$types/UserRoles';
 
 	interface Properties {

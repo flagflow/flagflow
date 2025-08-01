@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { IconId } from '$components/icon/Icons';
+import type { IconId } from '$components/Icon.svelte';
 
 const EtcdBaseFlag = z.object({
 	description: z.string().trim()

@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 
 	import { page } from '$app/state';
-	import Icon from '$components/icon/Icon.svelte';
+	import Icon from '$components/Icon.svelte';
 	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
 	import { modalHandler } from '$lib/modals';
