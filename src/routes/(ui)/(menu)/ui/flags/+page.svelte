@@ -258,12 +258,15 @@
 									)}
 								>
 									<div class="flex flex-row items-center justify-between">
-										<h5 class={clsx('trimmed-content font-semibold text-gray-700')}>
+										<div class="row flex items-center gap-2">
 											<!-- svelte-ignore a11y_no_static_element_interactions -->
 											<div
-												class={clsx('inline-flex min-w-64 items-center gap-2', {
-													'cursor-pointer': hasRoleMaintainer
-												})}
+												class={clsx(
+													'trimmed-content inline-flex min-w-64 items-center gap-2 font-semibold text-gray-700',
+													{
+														'cursor-pointer': hasRoleMaintainer
+													}
+												)}
 												ondblclick={() => {
 													if (hasRoleMaintainer) modifyFlagSchema(flag.key);
 												}}
@@ -276,7 +279,7 @@
 											{#if $listSettings['displayMode'] === 'compactList'}
 												{@render flagValueKbd(flag)}
 											{/if}
-										</h5>
+										</div>
 										<Icon
 											id="dotsVertical"
 											class="dots-menu inline-flex cursor-pointer"
