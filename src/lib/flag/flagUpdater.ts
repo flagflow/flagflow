@@ -2,7 +2,9 @@ import type { EtcdFlag } from '$types/etcd';
 
 export const updateFlagSchema = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
 	if (current.type !== override.type)
-		throw new Error(`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`);
+		throw new Error(
+			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
+		);
 
 	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')
 		return {
@@ -50,7 +52,9 @@ export const updateFlagSchema = (current: EtcdFlag, override: EtcdFlag): EtcdFla
 
 export const updateFlagValue = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
 	if (current.type !== override.type)
-		throw new Error(`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`);
+		throw new Error(
+			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
+		);
 
 	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')
 		return {

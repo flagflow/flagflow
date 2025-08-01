@@ -259,7 +259,7 @@
 								>
 									<div class="flex flex-row items-center justify-between">
 										<div class="row flex items-center gap-2">
-											<div class="flex min-w-64 items-center">
+											<div class="flex min-w-72 items-center">
 												<!-- svelte-ignore a11y_no_static_element_interactions -->
 												<div
 													class={clsx(
