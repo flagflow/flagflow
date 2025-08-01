@@ -183,7 +183,6 @@
 {#snippet flagValueKbd(flag: EtcdWithKey<EtcdFlag>)}
 	<Kbd
 		class={clsx('bg-primary-50 inline-flex decoration-dashed underline-offset-4', {
-			//italic: 'valueExists' in flag && !flag.valueExists,
 			underline: 'valueExists' in flag && !flag.valueExists,
 			'cursor-pointer': hasRoleEditor
 		})}
