@@ -24,6 +24,7 @@
 	import PageTitle from '$components/PageTitle.svelte';
 	import { flagValueToString } from '$lib/flagHandler/flagToString';
 	import { focusInputById } from '$lib/form.svelte';
+	import { clamp } from '$lib/mathEx';
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
 	import { urlParameterStore } from '$lib/stores/urlParameterStore';
@@ -62,11 +63,17 @@
 		}))
 	);
 	filterItemGroup.unshift({ value: '', name: 'All' });
+	const longestFlagNameLength = $state(
+		data.flagGroups.reduce((max, [, flags]) => {
+			const maxFlagNameLength = Math.max(...flags.map((f) => f.flagName.length));
+			return Math.max(max, maxFlagNameLength);
+		}, 0)
+	);
 
 	const addFlag = async (groupName = '') => {
 		try {
 			const result = await showModalNewFlag(hasRoleEditor, groupName);
-			if (result.isOk) await invalidatePage(); //window.location.reload();
+			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
 		}
@@ -258,7 +265,10 @@
 								>
 									<div class="flex flex-row items-center justify-between">
 										<div class="row flex items-center gap-2">
-											<div class="flex min-w-72 items-center">
+											<div
+												style={`min-width: ${clamp(longestFlagNameLength, 5, 30) * 12}px`}
+												class="flex items-center"
+											>
 												<!-- svelte-ignore a11y_no_static_element_interactions -->
 												<div
 													class={clsx(
