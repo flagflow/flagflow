@@ -125,7 +125,7 @@
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem href="/ui/export" label="Export / import" {spanClass}>
+			<SidebarItem href="/ui/migration" label="Migration" {spanClass}>
 				{#snippet icon()}
 					<Icon id="export" />
 				{/snippet}
