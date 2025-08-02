@@ -16,7 +16,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import { showModalError } from '$components/modal/ModalError.svelte';
-	import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
+	import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
 	import { ExternalValidator, FormLogic } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';

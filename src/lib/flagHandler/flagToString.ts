@@ -47,24 +47,44 @@ export const flagDefaultValueToString = (flag: EtcdFlag): string => {
 	}
 };
 
-export const flagValueToString = (flag: EtcdFlag): string => {
+export const flagValueToString = (
+	flag: EtcdFlag
+): {
+	isDefaultValue: boolean;
+	value: string | number | boolean | string[];
+} => {
 	switch (flag.type) {
 		case 'BOOLEAN':
-			return (flag.valueExists ? flag.value : flag.defaultValue) ? 'true' : 'false';
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
 		case 'INTEGER':
-			return `${flag.valueExists ? flag.value : flag.defaultValue}`;
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
 		case 'STRING':
-			return `"${flag.valueExists ? flag.value : flag.defaultValue}"`;
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
 		case 'ENUM':
-			return `(${flag.valueExists ? flag.value : flag.defaultValue})`;
-		case 'TAG': {
-			const defaultValue = [...(flag.valueExists ? flag.value : flag.defaultValue)];
-			defaultValue.sort();
-			return `[${defaultValue.join(', ')}]`;
-		}
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
+		case 'TAG':
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
 		case 'AB-TEST':
-			return Math.random() * 100 < flag.chanceBPercent ? 'B' : 'A';
+			return {
+				isDefaultValue: false,
+				value: Math.random() * 100 < flag.chanceBPercent ? 'B' : 'A'
+			};
 		default:
-			return 'Unknown flag type';
+			return { isDefaultValue: false, value: 'unknown' };
 	}
 };

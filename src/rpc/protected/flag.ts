@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { updateFlagSchema, updateFlagValue } from '$lib/flag/flagUpdater';
-import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
+import { updateFlagSchema, updateFlagValue } from '$lib/flagHandler/flagUpdater';
+import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { EtcdFlag } from '$types/etcd';
 import { EtcdFlagKey, etcdRecordToArray } from '$types/etcd';

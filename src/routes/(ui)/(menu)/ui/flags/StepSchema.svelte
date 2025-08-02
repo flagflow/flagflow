@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Helper } from 'flowbite-svelte';
+	import { Button, Helper } from 'flowbite-svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
@@ -9,6 +10,7 @@
 	import FormTag from '$components/form/FormTag.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
+	import { flagValueToString } from '$lib/flagHandler/flagToString';
 	import {
 		convertStringsToSelectInput,
 		focusInputById,
@@ -38,6 +40,20 @@
 		['^test_.*_(control|variant)$', 'Test groups'],
 		['^(dev|staging)_feature_[a-z_]+_v[0-9]+$', 'Environment + feature + version']
 	];
+
+	const runABSimulation = (flag: EtcdFlag) => {
+		const ITERATIONS = 1000;
+		const values: SvelteMap<string, number> = new SvelteMap();
+		for (let index = 0; index < ITERATIONS; index++) {
+			const valueString = String(flagValueToString(flag).value);
+			values.set(valueString, (values.get(valueString) ?? 0) + 1);
+		}
+		showModalInformation(
+			`AB simulation ${ITERATIONS} iterations`,
+			`A: ${values.get('A') ?? 0}<br />B: ${values.get('B') ?? 0}`,
+			{ size: 'sm', align: 'left' }
+		);
+	};
 
 	focusInputById('default');
 </script>
@@ -130,6 +146,11 @@
 		<div class="grid grid-cols-2 gap-4 text-center">
 			<div>A = <span class="font-bold">{100 - flag.chanceBPercent} %</span></div>
 			<div>B = <span class="font-bold">{flag.chanceBPercent} %</span></div>
+		</div>
+		<div class="mt-8 flex items-center justify-center">
+			<Button class="w-fit" color="alternative" onclick={() => runABSimulation(flag)}
+				>Run AB simulation</Button
+			>
 		</div>
 	{/if}
 	{#if validity?.schema.message}

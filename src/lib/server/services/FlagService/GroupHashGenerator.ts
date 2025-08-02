@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
 
+import { flagHashInfo } from '$lib/flagHandler/flagTypescript';
 import { sortObjectByKey } from '$lib/objectEx';
-import type { EtcdFlagObject } from '$types/etcd/flagObject';
+import type { EtcdFlag } from '$types/etcd';
 
-export const generateHashInfo = (flags: Record<string, EtcdFlagObject>): Map<string, string> => {
-	const groups: Map<string, Record<string, EtcdFlagObject | string>> = new Map();
+export const generateHashInfo = (flags: Record<string, EtcdFlag>): Map<string, string> => {
+	const groups: Map<string, Record<string, EtcdFlag | string>> = new Map();
 
 	// Generate groups
 	for (const [key, flag] of Object.entries(flags)) {
@@ -30,7 +31,7 @@ export const generateHashInfo = (flags: Record<string, EtcdFlagObject>): Map<str
 		for (const [flagName, flag] of Object.entries(sortObjectByKey(groups.get(groupName) || {})))
 			if (typeof flag === 'string')
 				hashInfo.push(flagName, generateGroupHash((groupName ? groupName + '__' : '') + flagName));
-			else hashInfo.push(flagName, flag.getHashInfo());
+			else hashInfo.push(flagName, flagHashInfo(flag));
 
 		return createHash('sha1').update(hashInfo.join('\n')).digest('hex');
 	};

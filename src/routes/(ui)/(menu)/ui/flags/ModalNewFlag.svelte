@@ -13,7 +13,7 @@
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import Icon from '$components/Icon.svelte';
 	import Stepper from '$components/Stepper.svelte';
-	import { flagSchemaValidator, flagValueValidator } from '$lib/flag/flagValidator';
+	import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
 	import {
 		ExternalValidator,
 		FormLogic,
