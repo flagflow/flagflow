@@ -30,11 +30,11 @@
 				}
 
 				const migration = MigrationFile.parse(jsonData);
-				const steps: MigrationSummary = await rpcClient.migration.prepareFromFile.query({
+				const summary: MigrationSummary = await rpcClient.migration.prepareFromFile.query({
 					mode,
 					migration
 				});
-				await showModalMigrationExecutor(steps);
+				await showModalMigrationExecutor(summary);
 			} catch (error) {
 				await showModalError(error);
 			}
@@ -42,8 +42,8 @@
 
 	const fetchMigrationFromUrl = async () => {
 		try {
-			const steps: MigrationSummary = await rpcClient.migration.prepareFromRemoteUrl.query();
-			await showModalMigrationExecutor(steps);
+			const summary: MigrationSummary = await rpcClient.migration.prepareFromRemoteUrl.query();
+			await showModalMigrationExecutor(summary);
 		} catch (error) {
 			await showModalError(error);
 		}

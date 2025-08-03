@@ -11,7 +11,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	const flagService = event.locals.container.resolve('flagService');
 
 	// Collect export data
-	const migrationData = await flagService.getMigration();
+	const migrationData = await flagService.getMigrationFileContent();
 	if (!migrationData) return error(404, 'Failed to generate migration data');
 
 	// Prepare filename

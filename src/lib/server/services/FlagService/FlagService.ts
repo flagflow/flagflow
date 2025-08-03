@@ -1,11 +1,11 @@
 import type { Watcher } from 'etcd3';
 
 import { EtcdFlag } from '$types/etcd';
-import type { MigrationFile } from '$types/Migration';
+import type { MigrationFile, MigrationSummary } from '$types/Migration';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
-import { generateMigration } from './Migration';
+import { generateMigrationFile, generateMigrationSteps } from './Migration';
 import { generateTSTypeFileContent, generateTSZodFileContent } from './TSFileGenerator';
 
 type FlagServiceParameters = {
@@ -120,9 +120,13 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 			const types = await accessTypeDescriptor();
 			return types.zodFileContent;
 		},
-		getMigration: async (): Promise<MigrationFile> => {
+		getMigrationFileContent: async (): Promise<MigrationFile> => {
 			const flags = await accessFlags();
-			return generateMigration(configService.environment, flags);
+			return generateMigrationFile(configService.environment, flags);
+		},
+		prepareMigration: async (migrationFile: MigrationFile): Promise<MigrationSummary> => {
+			const flags = await accessFlags();
+			return generateMigrationSteps(migrationFile, flags);
 		}
 	};
 };
