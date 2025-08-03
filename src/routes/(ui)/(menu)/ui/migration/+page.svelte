@@ -3,16 +3,15 @@
 
 	import Icon from '$components/Icon.svelte';
 	import FileInput from '$components/input/FileInput.svelte';
-	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
-	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
-	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
+	import type { MigrationSummary } from '$types/Migration';
 	import { MigrationFile } from '$types/Migration';
 
 	import type { PageProps as PageProperties } from './$types';
+	import { showModalMigrationExecutor } from './ModalMigrationExecutor.svelte';
 
 	let { data }: PageProperties = $props();
 	let fileInput: FileInput;
@@ -30,23 +29,25 @@
 					return;
 				}
 
-				const result = MigrationFile.safeParse(jsonData);
-				if (!result.success) {
-					await showModalError(`Invalid migration file format: ${result.error.message}`);
-					return;
-				}
-
-				showModalInformation('data', data);
-				console.log(data);
-
-				// rpcClient.migration[mode]
-				// 	.mutate({ fileName: filename, fileData: data })
-				// 	.then(() => invalidatePage())
-				// 	.catch((error) => showModalError(error));
+				const migration = MigrationFile.parse(jsonData);
+				const steps: MigrationSummary = await rpcClient.migration.prepareFromFile.query({
+					mode,
+					migration
+				});
+				await showModalMigrationExecutor(steps);
 			} catch (error) {
 				await showModalError(error);
 			}
 		});
+
+	const fetchMigrationFromUrl = async () => {
+		try {
+			const steps: MigrationSummary = await rpcClient.migration.prepareFromRemoteUrl.query();
+			await showModalMigrationExecutor(steps);
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
 </script>
 
 <FileInput bind:this={fileInput} accept="application/json" />
@@ -75,7 +76,7 @@
 				Upload a previously exported file to restore the flag schema and values. The file must
 				contains exported data <span class="font-semibold">from this environment</span>.
 			</p>
-			<Button class="w-full" color="alternative" href="/migration/import">
+			<Button class="w-full" color="alternative" onclick={() => uploadFile('restore')}>
 				Import
 				<Icon id="upload" align="right" />
 			</Button>
@@ -87,7 +88,7 @@
 				file must contains exported data <span class="font-semibold">from another environment</span
 				>.
 			</p>
-			<Button class="w-full" color="alternative" href="/migration/import">
+			<Button class="w-full" color="alternative" onclick={() => uploadFile('migration')}>
 				Import
 				<Icon id="upload" align="right" />
 			</Button>
@@ -103,7 +104,7 @@
 					>as another environment</span
 				>.
 			</p>
-			<Button class="w-full" color="alternative" onclick={() => uploadFile('migration')}>
+			<Button class="w-full" color="alternative" onclick={() => fetchMigrationFromUrl()}>
 				Execute
 				<Icon id="uploadNetwork" align="right" />
 			</Button>

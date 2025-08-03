@@ -10,3 +10,17 @@ export const MigrationFile = z.object({
 	flags: z.record(EtcdFlagKey, EtcdFlag)
 });
 export type MigrationFile = z.infer<typeof MigrationFile>;
+
+export const MigrationStep = z.object({
+	mode: z.enum(['create', 'update', 'delete']),
+	name: z.string()
+});
+export type MigrationStep = z.infer<typeof MigrationStep>;
+
+export const MigrationSummary = z.object({
+	environment: z.string(),
+	version: z.string(),
+	createdAt: z.coerce.date(),
+	steps: z.array(MigrationStep)
+});
+export type MigrationSummary = z.infer<typeof MigrationSummary>;
