@@ -1,9 +1,11 @@
 import type { Watcher } from 'etcd3';
 
 import { EtcdFlag } from '$types/etcd';
+import type { MigrationFile } from '$types/Migration';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
+import { generateMigration } from './Migration';
 import { generateTSTypeFileContent, generateTSZodFileContent } from './TSFileGenerator';
 
 type FlagServiceParameters = {
@@ -22,7 +24,7 @@ let flags: Record<string, EtcdFlag> | undefined;
 let flagWatcher: Watcher | undefined;
 let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
-export const FlagService = ({ etcdService, logService }: FlagServiceParameters) => {
+export const FlagService = ({ configService, etcdService, logService }: FlagServiceParameters) => {
 	const log = logService('flag');
 	const logWatch = logService('flag-watch');
 
@@ -117,6 +119,10 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		getZodFileContent: async (): Promise<string> => {
 			const types = await accessTypeDescriptor();
 			return types.zodFileContent;
+		},
+		getMigration: async (): Promise<MigrationFile> => {
+			const flags = await accessFlags();
+			return generateMigration(configService.environment, flags);
 		}
 	};
 };

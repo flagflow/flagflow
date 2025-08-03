@@ -25,7 +25,8 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	switch (urlParsed.format) {
 		case 'json':
 			return createJsonResponse(
-				formatFlagApiResponseJson(Object.fromEntries([[event.params.flagname, flagData]]))
+				formatFlagApiResponseJson(Object.fromEntries([[event.params.flagname, flagData]])),
+				{ prettyJson: true }
 			);
 		case 'env':
 			return createTextResponse(

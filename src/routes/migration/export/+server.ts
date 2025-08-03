@@ -11,17 +11,18 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	const flagService = event.locals.container.resolve('flagService');
 
 	// Collect export data
-	const tsFileContent = await flagService.getTSFileContent();
-	if (!tsFileContent) return error(404, 'Failed to generate TypeScript types');
+	const migrationData = await flagService.getMigration();
+	if (!migrationData) return error(404, 'Failed to generate migration data');
 
 	// Prepare filename
 	const filenameParts = [
 		'flagflow',
+		'migration',
 		configService.environment,
-		formatDate(new Date(), 'yyyyMMdd_HHmmss')
+		formatDate(new Date(), 'yyyyMMdd-HHmmss')
 	];
 	const filename = filenameParts.filter(Boolean).join('_') + '.json';
 
 	// Response
-	return createDownloadResponse(tsFileContent, filename);
+	return createDownloadResponse(migrationData, filename, { prettyJson: true });
 };

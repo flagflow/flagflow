@@ -32,14 +32,14 @@
 />
 
 <PageContainer>
-	<div class="grid grid-cols-2 gap-8">
+	<div class="grid gap-8 md:grid-cols-2">
 		<Card class="p-6" size="lg">
 			<h5 class="mb-2 text-xl font-bold">Export to file</h5>
 			<p class="mb-3 font-normal text-gray-700">
 				Download the complete flag schema of this environment, which can be imported into another
 				(or this) instance of FlagFlow.
 			</p>
-			<Button class="w-full" color="alternative" href="/migration/export">
+			<Button class="w-full" color="primary" href="/migration/export">
 				Export
 				<Icon id="download" align="right" />
 			</Button>
