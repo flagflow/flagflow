@@ -116,7 +116,7 @@
 	type AutoTableDateColumn<T> = AutoTablePropertyColumn<T> & {
 		property: NullableDateKeys<T>;
 		subProperty?: NullableStringKeys<T> | NullableStringKeys<T>[];
-		align: 'left';
+		align?: 'left';
 		dateFormat: string;
 		indicatorColor?: ValueOrFunction<T, IndicatorColors | undefined>;
 	};
@@ -130,11 +130,11 @@
 		property: NullableArrayStringKeys<T>;
 		subProperty?: NullableStringKeys<T> | NullableStringKeys<T>[];
 		statusProperty?: NullableStringKeys<T>;
-		align: 'left';
+		align?: 'left';
 		isTagLarge: boolean;
 	};
 	type AutoTableInfoColumn<T> = AutoTableColumn<T> & {
-		align: 'left';
+		align?: 'left';
 		calcInfoItems: (row: T) => (string | undefined)[];
 	};
 	type AutoTableCustomColumn<T> = AutoTablePropertyColumn<T> & {
