@@ -2,29 +2,54 @@
 	import { Badge, Button, Card } from 'flowbite-svelte';
 
 	import Icon from '$components/Icon.svelte';
+	import FileInput from '$components/input/FileInput.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
+	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
+	import { MigrationFile } from '$types/Migration';
 
 	import type { PageProps as PageProperties } from './$types';
 
 	let { data }: PageProperties = $props();
+	let fileInput: FileInput;
 
-	const exportX = async (sessionId: string, name: string) => {
-		try {
-			const result = await showModalConfirmationDelete(`session of ${name}`);
-			if (!result.isOk) return;
+	const uploadFile = async (mode: 'restore' | 'migration') =>
+		fileInput.selectFile(async (filename: string, data: string | undefined) => {
+			try {
+				if (!data) return;
 
-			await rpcClient.session.delete.mutate({ sessionId });
-			await invalidatePage();
-		} catch (error) {
-			await showModalError(error);
-		}
-	};
+				let jsonData;
+				try {
+					jsonData = JSON.parse(data);
+				} catch {
+					await showModalError('Invalid JSON format');
+					return;
+				}
+
+				const result = MigrationFile.safeParse(jsonData);
+				if (!result.success) {
+					await showModalError(`Invalid migration file format: ${result.error.message}`);
+					return;
+				}
+
+				showModalInformation('data', data);
+				console.log(data);
+
+				// rpcClient.migration[mode]
+				// 	.mutate({ fileName: filename, fileData: data })
+				// 	.then(() => invalidatePage())
+				// 	.catch((error) => showModalError(error));
+			} catch (error) {
+				await showModalError(error);
+			}
+		});
 </script>
+
+<FileInput bind:this={fileInput} accept="application/json" />
 
 <PageTitle
 	description="You can execute backup/restore or migration task between FlagFlow instances"
@@ -78,7 +103,7 @@
 					>as another environment</span
 				>.
 			</p>
-			<Button class="w-full" color="alternative" onclick={() => exportX('a', 'b')}>
+			<Button class="w-full" color="alternative" onclick={() => uploadFile('migration')}>
 				Execute
 				<Icon id="uploadNetwork" align="right" />
 			</Button>
