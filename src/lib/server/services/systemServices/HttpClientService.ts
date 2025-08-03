@@ -7,7 +7,7 @@ type HttpClientServiceParameters = {
 };
 
 export const HttpClientService = ({ logService }: HttpClientServiceParameters) => ({
-	createClient: (baseURL: string) => getAxiosInstance(baseURL, logService('httpClient'))
+	createClient: (baseURL = '') => getAxiosInstance(baseURL, logService('httpClient'))
 });
 
 export type HttpClientService = ReturnType<typeof HttpClientService>;
