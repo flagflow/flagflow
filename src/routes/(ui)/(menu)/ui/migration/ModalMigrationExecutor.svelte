@@ -123,7 +123,7 @@
 			{currentEnvironment || 'THIS'}
 			<br />
 			<span class="font-light">
-				{formatDate(summary.createdAt.toISOString(), 'yyyy-MM-dd HH:mm')}
+				{formatDate(summary.createdAt, 'yyyy-MM-dd HH:mm')}
 			</span>
 		</div>
 	{/snippet}
