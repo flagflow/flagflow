@@ -79,7 +79,7 @@
 	const executeSteps = async () => {
 		try {
 			const selectedSteps = summary.steps.filter((step) => selectedIds.has(step.id));
-			if (selectedSteps.length === 0) throw new Error('No steps selected for execution');
+			if (selectedSteps.length === 0) throw new Error('Please select at least one step to execute the migration.');
 			await rpcClient.migration.execute.mutate({ steps: selectedSteps });
 
 			dispatch('resolve', { isOk: true });
