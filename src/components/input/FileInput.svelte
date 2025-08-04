@@ -4,7 +4,7 @@
 	}
 	const { accept = '' }: Properties = $props();
 
-	type OnSelect = (filename: string, data: string | undefined) => void;
+	type OnSelect = (filename: string, fileContent: string | undefined) => void;
 	export const selectFile = (onSelect: OnSelect) => {
 		_onSelect = onSelect;
 		fileInput.value = '';
