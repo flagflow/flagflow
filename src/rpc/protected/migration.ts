@@ -3,8 +3,6 @@ import { z } from 'zod';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
 
-//const generateMigration =
-
 export const migrationRpc = createRpcRouter({
 	prepareFromFile: rpcProcedure
 		.meta({ permission: 'admin' })
@@ -54,7 +52,7 @@ export const migrationRpc = createRpcRouter({
 				steps: z.array(MigrationStep)
 			})
 		)
-		.query(async ({ ctx, input }) => {
+		.mutation(async ({ ctx, input }) => {
 			const etcdService = ctx.container.resolve('etcdService');
 			const user = await etcdService.getOrThrow('user', '1');
 			return {
