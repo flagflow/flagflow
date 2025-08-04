@@ -22,16 +22,16 @@ export const isEqualFlagSchema = (current: EtcdFlag, override: EtcdFlag): boolea
 		);
 	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return (
-			current.enumValues === override.enumValues &&
+			current.enumValues.join(',') === override.enumValues.join(',') &&
 			current.allowEmpty === override.allowEmpty &&
 			current.defaultValue === override.defaultValue
 		);
 	if (current.type === 'TAG' && override.type === 'TAG')
 		return (
-			current.tagValues === override.tagValues &&
+			current.tagValues.join(',') === override.tagValues.join(',') &&
 			current.minCount === override.minCount &&
 			current.maxCount === override.maxCount &&
-			current.defaultValue === override.defaultValue
+			current.defaultValue.join(',') === override.defaultValue.join(',')
 		);
 	if (current.type === 'AB-TEST' && override.type === 'AB-TEST')
 		return current.chanceBPercent === override.chanceBPercent;
@@ -51,7 +51,10 @@ export const isEqualFlagValue = (current: EtcdFlag, override: EtcdFlag): boolean
 	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return current.valueExists === override.valueExists && current.value === override.value;
 	if (current.type === 'TAG' && override.type === 'TAG')
-		return current.valueExists === override.valueExists && current.value === override.value;
+		return (
+			current.valueExists === override.valueExists &&
+			current.value.join(',') === override.value.join(',')
+		);
 	if (current.type === 'AB-TEST' && override.type === 'AB-TEST') return true;
 
 	throw new Error(`Unknown flag type: ${current.type}`);

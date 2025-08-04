@@ -63,6 +63,7 @@
 		tag: 'mdi:tag',
 		abTest: 'mdi:ab-testing',
 
+		check: 'mdi:checkbox-outline',
 		error: 'mdi:error',
 		warning: 'mdi:warning',
 		information: 'mdi:information'

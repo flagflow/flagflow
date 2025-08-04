@@ -53,10 +53,7 @@ export const migrationRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const user = await etcdService.getOrThrow('user', '1');
-			return {
-				name: input.steps.length.toString() + user.name
-			};
+			const flagService = ctx.container.resolve('flagService');
+			await flagService.executeMigration(input.steps);
 		})
 });

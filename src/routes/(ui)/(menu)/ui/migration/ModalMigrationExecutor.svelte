@@ -81,6 +81,8 @@
 			const selectedSteps = summary.steps.filter((step) => selectedIds.has(step.id));
 			if (selectedSteps.length === 0) throw new Error('No steps selected for execution');
 			await rpcClient.migration.execute.mutate({ steps: selectedSteps });
+
+			dispatch('resolve', { isOk: true });
 		} catch (error) {
 			await showModalError(error);
 		}
@@ -108,8 +110,12 @@
 >
 	{#snippet header()}
 		<div class="flex justify-between gap-4">
-			Execute {selectedIds.size} of {summary.steps.length}
-			{mode === 'migration' ? 'migrations' : 'restore'} steps
+			{#if summary.steps.length > 0}
+				Execute {selectedIds.size} of {summary.steps.length}
+				{mode === 'migration' ? 'migrations' : 'restore'} steps
+			{:else}
+				Nothing to migrate
+			{/if}
 		</div>
 		<div class="text-right text-sm">
 			{summary.environment || 'UNNAMED'}
@@ -122,22 +128,35 @@
 		</div>
 	{/snippet}
 
-	<div class="mb-4 text-sm">
-		The steps will be executed in the order they are listed. You can select or deselect steps to
-		control which ones will be executed.
-		{#if mode === 'migration'}
-			<span class="font-semibold">Note:</span> This is a migration task, so the selected steps do
-			not contain set value steps, because the values will be set in the target environment. You can
-			add set value steps: <A onclick={appendAllSetValueSteps}>click here</A>.
-		{/if}
-	</div>
+	{#if summary.steps.length > 0}
+		<div class="mb-4 text-sm">
+			The steps will be executed in the order they are listed. You can select or deselect steps to
+			control which ones will be executed.
+			{#if mode === 'migration'}
+				<span class="font-semibold">Note:</span> This is a migration task, so the selected steps do
+				not contain set value steps, because the values will be set in the target environment. You
+				can add set value steps: <A onclick={appendAllSetValueSteps}>click here</A>.
+			{/if}
+		</div>
 
-	{#each summary.steps as step}
-		{@render divStep(step)}
-	{/each}
+		{#each summary.steps as step}
+			{@render divStep(step)}
+		{/each}
+	{:else}
+		<div class="flex-col gap-8 text-center text-lg text-gray-700">
+			<Icon id="check" class="mx-auto" color="green" size={50} />
+			<div class="mb-4 text-xl font-semibold">Hurray!</div>
+			<div>
+				It looks like there is no difference between source migration file and this environment. You
+				are ready!
+			</div>
+		</div>
+	{/if}
 
 	<div class="mt-4 flex justify-center space-x-4">
-		<Button class="w-20" disabled={selectedIds.size === 0} onclick={executeSteps}>Execute</Button>
+		{#if summary.steps.length > 0}
+			<Button class="w-20" disabled={selectedIds.size === 0} onclick={executeSteps}>Execute</Button>
+		{/if}
 		<Button class="w-20" color="alternative" onclick={() => dispatch('resolve', { isOk: false })}
 			>Cancel</Button
 		>

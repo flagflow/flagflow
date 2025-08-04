@@ -1,7 +1,7 @@
 import type { Watcher } from 'etcd3';
 
 import { EtcdFlag } from '$types/etcd';
-import type { MigrationFile, MigrationSummary } from '$types/Migration';
+import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
@@ -127,6 +127,38 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 		prepareMigration: async (migrationFile: MigrationFile): Promise<MigrationSummary> => {
 			const flags = await accessFlags();
 			return generateMigrationSteps(migrationFile, flags);
+		},
+		executeMigration: async (migrations: MigrationStep[]) => {
+			for (const step of migrations)
+				if (step.dependentId && !migrations.some((s) => s.id === step.dependentId))
+					throw new Error(
+						`Dependent step with id ${step.dependentId} not found for step ${step.id}`
+					);
+
+			for (const step of migrations)
+				switch (step.mode) {
+					case 'CREATE_DEFAULTVALUE':
+						await etcdService.throwIfExists('flag', step.flagKey);
+						if ('valueExists' in step.flag) step.flag.valueExists = false;
+						await etcdService.put('flag', step.flagKey, step.flag);
+						break;
+					case 'UPDATE_SCHEMA_DEFAULTVALUE':
+						await etcdService.throwIfNotExists('flag', step.flagKey);
+						if ('valueExists' in step.flag) step.flag.valueExists = false;
+						await etcdService.overwrite('flag', step.flagKey, step.flag);
+						break;
+					case 'SET_VALUE':
+						await etcdService.throwIfNotExists('flag', step.flagKey);
+						if ('value' in step.flag)
+							await etcdService.overwrite('flag', step.flagKey, {
+								value: step.flag.value,
+								valueExists: step.flag.valueExists
+							});
+						break;
+					case 'DELETE':
+						await etcdService.delete('flag', step.flagKey);
+						break;
+				}
 		}
 	};
 };

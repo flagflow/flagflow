@@ -37,24 +37,23 @@ export const generateMigrationSteps = (
 	const steps: MigrationStep[] = [];
 	for (const [migrationKey, migrationFlag] of Object.entries(migrationFile.flags)) {
 		const existingFlag = existingFlags[migrationKey];
-		if (!existingFlag)
-			steps.push(
-				{
-					id: id++,
-					mode: 'CREATE_DEFAULTVALUE',
-					flagKey: migrationKey,
-					flag: migrationFile.flags[migrationKey]
-				},
-				{
+		if (!existingFlag) {
+			steps.push({
+				id: id++,
+				mode: 'CREATE_DEFAULTVALUE',
+				flagKey: migrationKey,
+				flag: migrationFile.flags[migrationKey]
+			});
+			if ('value' in migrationFlag)
+				steps.push({
 					id: id++,
 					mode: 'SET_VALUE',
 					flagKey: migrationKey,
 					flag: migrationFile.flags[migrationKey],
 					dependentId: id - 2,
 					indent: 1
-				}
-			);
-		else if (existingFlag.type !== migrationFlag.type)
+				});
+		} else if (existingFlag.type !== migrationFlag.type) {
 			steps.push(
 				{ id: id++, mode: 'DELETE', flagKey: migrationKey },
 				{
@@ -64,34 +63,34 @@ export const generateMigrationSteps = (
 					flag: migrationFile.flags[migrationKey],
 					dependentId: id - 2,
 					indent: 1
-				},
-				{
+				}
+			);
+			if ('value' in migrationFlag)
+				steps.push({
 					id: id++,
 					mode: 'SET_VALUE',
 					flagKey: migrationKey,
 					flag: migrationFile.flags[migrationKey],
 					dependentId: id - 2,
 					indent: 2
-				}
-			);
-		else if (!isEqualFlagSchema(existingFlag, migrationFlag))
-			steps.push(
-				{
-					id: id++,
-					mode: 'UPDATE_SCHEMA_DEFAULTVALUE',
-					flagKey: migrationKey,
-					flag: migrationFile.flags[migrationKey]
-				},
-				{
+				});
+		} else if (!isEqualFlagSchema(existingFlag, migrationFlag)) {
+			steps.push({
+				id: id++,
+				mode: 'UPDATE_SCHEMA_DEFAULTVALUE',
+				flagKey: migrationKey,
+				flag: migrationFile.flags[migrationKey]
+			});
+			if ('value' in migrationFlag)
+				steps.push({
 					id: id++,
 					mode: 'SET_VALUE',
 					flagKey: migrationKey,
 					flag: migrationFile.flags[migrationKey],
 					dependentId: id - 2,
 					indent: 1
-				}
-			);
-		else if (!isEqualFlagValue(existingFlag, migrationFlag))
+				});
+		} else if (!isEqualFlagValue(existingFlag, migrationFlag))
 			steps.push({
 				id: id++,
 				mode: 'SET_VALUE',
