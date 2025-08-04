@@ -29,7 +29,7 @@
 
 <HtmlTitle {title} />
 
-<div class="sticky top-0 mb-4 flex min-h-10 flex-col gap-4 bg-white p-4 pb-0">
+<div class="sticky top-0 mb-4 flex min-h-10 flex-col gap-4 bg-white p-4">
 	<div class="flex flex-row items-center gap-4">
 		<span class:line-through={titleLineThrough}>
 			<span class="text-xl font-medium">{title}</span>

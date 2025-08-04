@@ -28,5 +28,5 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	// Response
 	return urlParsed.format === 'env'
 		? createTextResponse(formatFlagApiMapResponseENV(hashes).join('\n'))
-		: createJsonResponse(hashes);
+		: createJsonResponse(hashes, { prettyJson: true });
 };

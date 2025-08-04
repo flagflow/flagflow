@@ -22,9 +22,9 @@ const createResponse = (
 
 export const createJsonResponse = (
 	body: object,
-	options: { headers?: Record<string, string>; status?: number } = {}
+	options: { headers?: Record<string, string>; status?: number; prettyJson?: boolean } = {}
 ) =>
-	createResponse(JSON.stringify(body), {
+	createResponse(JSON.stringify(body, undefined, options.prettyJson ? 2 : 0), {
 		...options,
 		contentType: 'application/json',
 		status: options.status ?? 200
@@ -38,13 +38,16 @@ export const createTextResponse = (
 export const createDownloadResponse = (
 	body: string | object,
 	filename: string,
-	options: { headers?: Record<string, string> } = {}
+	options: { headers?: Record<string, string>; prettyJson?: boolean } = {}
 ) =>
-	createResponse(typeof body === 'string' ? body : JSON.stringify(body), {
-		contentType: 'application/octet-stream',
-		headers: {
-			'Content-Disposition': `attachment; filename="${filename}"`,
-			...options.headers
-		},
-		status: 200
-	});
+	createResponse(
+		typeof body === 'string' ? body : JSON.stringify(body, undefined, options.prettyJson ? 2 : 0),
+		{
+			contentType: 'application/octet-stream',
+			headers: {
+				'Content-Disposition': `attachment; filename="${filename}"`,
+				...options.headers
+			},
+			status: 200
+		}
+	);

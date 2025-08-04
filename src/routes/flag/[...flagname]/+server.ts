@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 
+import { flagValueToString } from '$lib/flagHandler/flagToString';
 import { createJsonResponse, createTextResponse } from '$lib/Response';
 import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
@@ -24,14 +25,15 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	switch (urlParsed.format) {
 		case 'json':
 			return createJsonResponse(
-				formatFlagApiResponseJson(Object.fromEntries([[event.params.flagname, flagData]]))
+				formatFlagApiResponseJson(Object.fromEntries([[event.params.flagname, flagData]])),
+				{ prettyJson: true }
 			);
 		case 'env':
 			return createTextResponse(
 				formatFlagApiResponseENV(Object.fromEntries([[event.params.flagname, flagData]])).join('\n')
 			);
 		case 'plain':
-			return createTextResponse(String(flagData.getDisplayValue().value));
+			return createTextResponse(String(flagValueToString(flagData).value));
 		default:
 			return error(500, 'Unsupported format: ' + urlParsed.format);
 	}

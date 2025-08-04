@@ -1,12 +1,17 @@
 /* eslint-disable unicorn/prefer-single-call */
+import {
+	flagTypescriptDefaultValue,
+	flagTypescriptType,
+	flagTypescriptZodMethod
+} from '$lib/flagHandler/flagTypescript';
 import { sortMapByKey, sortObjectByKey } from '$lib/objectEx';
 import { capitalizeWords } from '$lib/stringEx';
-import type { EtcdFlagObject } from '$types/etcd/flagObject';
+import type { EtcdFlag } from '$types/etcd';
 
 const ROOT_TYPE_NAME = 'FlagFlow';
 const generateGroupTypeCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlagObject | string>
+	groupFlags: Record<string, EtcdFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -19,9 +24,9 @@ const generateGroupTypeCode = (
 		} else {
 			tsFileLines.push(`\t/**`);
 			if (flag.description) tsFileLines.push(`\t* ${flag.description}`);
-			tsFileLines.push(`\t* @default ${flag.getTypescriptDefaultValue()}`);
+			tsFileLines.push(`\t* @default ${flagTypescriptDefaultValue(flag)}`);
 			tsFileLines.push(`\t*/`);
-			tsFileLines.push(`\treadonly ${flagName}: ${flag.getTypescriptType()};`);
+			tsFileLines.push(`\treadonly ${flagName}: ${flagTypescriptType(flag)};`);
 		}
 	}
 	tsFileLines.push(`};`, '');
@@ -32,7 +37,7 @@ const generateGroupTypeCode = (
 const ROOT_DEFAULTOBJECT_NAME = 'defaultFlagFlow';
 const generateGroupDefaultObjectCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlagObject | string>
+	groupFlags: Record<string, EtcdFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -46,7 +51,7 @@ const generateGroupDefaultObjectCode = (
 				ROOT_DEFAULTOBJECT_NAME + (flag ? `__${capitalizeWords(flag, '__')}` : '');
 			tsFileLines.push(`\t${flagName}: ${subConstTypeName},`);
 		} else {
-			tsFileLines.push(`\t${flagName}: ${flag.getTypescriptDefaultValue()},`);
+			tsFileLines.push(`\t${flagName}: ${flagTypescriptDefaultValue(flag)},`);
 		}
 	}
 	tsFileLines.push(`};`, '');
@@ -57,7 +62,7 @@ const generateGroupDefaultObjectCode = (
 const ROOT_ZOD_NAME = 'FlagFlow';
 const generateGroupZodCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlagObject | string>
+	groupFlags: Record<string, EtcdFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -69,7 +74,7 @@ const generateGroupZodCode = (
 			tsFileLines.push(`\t${flagName}: ${subConstTypeName},`);
 		} else {
 			tsFileLines.push(
-				`\t${flagName}: ${flag.getTypescriptZodMethod()}.default(${flag.getTypescriptDefaultValue()}),`
+				`\t${flagName}: ${flagTypescriptZodMethod(flag)}.default(${flagTypescriptDefaultValue(flag)}),`
 			);
 		}
 	}
@@ -81,9 +86,9 @@ const generateGroupZodCode = (
 };
 
 const generateGroups = (
-	flags: Record<string, EtcdFlagObject>
-): Map<string, Record<string, EtcdFlagObject | string>> => {
-	const groups: Map<string, Record<string, EtcdFlagObject | string>> = new Map();
+	flags: Record<string, EtcdFlag>
+): Map<string, Record<string, EtcdFlag | string>> => {
+	const groups: Map<string, Record<string, EtcdFlag | string>> = new Map();
 
 	for (const [key, flag] of Object.entries(flags)) {
 		const keyParts = key.split('/');
@@ -105,7 +110,7 @@ const generateGroups = (
 };
 
 export const generateTSTypeFileContent = (
-	flags: Record<string, EtcdFlagObject>,
+	flags: Record<string, EtcdFlag>,
 	groupTypeHash: Map<string, string>
 ): string => {
 	const groups = generateGroups(flags);
@@ -235,7 +240,7 @@ export const createFetchFunctionWithCache = <K extends keyof FlagFlow_Descriptor
 	return tsFileContent.join('\n');
 };
 
-export const generateTSZodFileContent = (flags: Record<string, EtcdFlagObject>): string => {
+export const generateTSZodFileContent = (flags: Record<string, EtcdFlag>): string => {
 	const groups = generateGroups(flags);
 
 	// Generate TypeScript file content

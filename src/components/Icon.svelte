@@ -51,6 +51,9 @@
 		sortNumericAscending: 'mdi:sort-numeric-ascending',
 		sortNumericDescending: 'mdi:sort-numeric-descending',
 		changingValue: 'mdi:track-changes',
+		download: 'mdi:download',
+		upload: 'mdi:upload',
+		uploadNetwork: 'mdi:upload-network',
 
 		boolean: 'mdi:toggle-switch',
 		integer: 'mdi:numeric',
@@ -60,6 +63,7 @@
 		tag: 'mdi:tag',
 		abTest: 'mdi:ab-testing',
 
+		check: 'mdi:checkbox-outline',
 		error: 'mdi:error',
 		warning: 'mdi:warning',
 		information: 'mdi:information'

@@ -49,7 +49,8 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	switch (urlParsed.format) {
 		case 'json':
 			return createJsonResponse(formatFlagApiResponseJson(processedFlagData), {
-				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash }
+				headers: { [HEADER_FLAGGROUP_HASH]: flagGroupHash },
+				prettyJson: true
 			});
 		case 'env':
 			return createTextResponse(formatFlagApiResponseENV(processedFlagData).join('\n'), {

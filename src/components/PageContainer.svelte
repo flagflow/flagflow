@@ -10,7 +10,7 @@
 	const { children }: Properties = $props();
 </script>
 
-<div class="px-4">
+<div class="px-4 pb-4">
 	{@render children()}
 </div>
 <ScrollToTop />

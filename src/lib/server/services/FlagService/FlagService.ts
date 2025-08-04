@@ -1,9 +1,11 @@
 import type { Watcher } from 'etcd3';
 
-import { createEtcdFlagObject, EtcdFlagObject } from '$types/etcd/flagObject';
+import { EtcdFlag } from '$types/etcd';
+import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
 
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
+import { generateMigrationFile, generateMigrationSteps } from './Migration';
 import { generateTSTypeFileContent, generateTSZodFileContent } from './TSFileGenerator';
 
 type FlagServiceParameters = {
@@ -18,20 +20,18 @@ type FlagTypeDescriptor = {
 	groupTypeHash: Map<string, string>;
 };
 
-let flags: Record<string, EtcdFlagObject> | undefined;
+let flags: Record<string, EtcdFlag> | undefined;
 let flagWatcher: Watcher | undefined;
 let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
-export const FlagService = ({ etcdService, logService }: FlagServiceParameters) => {
+export const FlagService = ({ configService, etcdService, logService }: FlagServiceParameters) => {
 	const log = logService('flag');
 	const logWatch = logService('flag-watch');
 
-	const accessFlags = async (): Promise<Record<string, EtcdFlagObject>> => {
+	const accessFlags = async (): Promise<Record<string, EtcdFlag>> => {
 		if (flags === undefined) {
 			const { list } = await etcdService.list('flag');
-
-			flags = {};
-			for (const [key, value] of Object.entries(list)) flags[key] = createEtcdFlagObject(value);
+			flags = list;
 			log.info({ count: Object.keys(flags).length }, 'Initialized flags');
 		}
 
@@ -51,7 +51,7 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 					try {
 						const value = etcdKeyValue.value.toString();
 						const valueObject = JSON.parse(value);
-						const flag = EtcdFlagObject.parse(valueObject);
+						const flag = EtcdFlag.parse(valueObject);
 						flags[name] = flag;
 						logWatch.debug({ key: name }, 'Updated flag');
 					} catch {
@@ -95,11 +95,11 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 
 	return {
 		list: async () => await accessFlags(),
-		getFlag: async (key: string): Promise<EtcdFlagObject | undefined> => {
+		getFlag: async (key: string): Promise<EtcdFlag | undefined> => {
 			const flags = await accessFlags();
 			return flags?.[key] ?? undefined;
 		},
-		getFlags: async (prefix: string): Promise<Record<string, EtcdFlagObject>> => {
+		getFlags: async (prefix: string): Promise<Record<string, EtcdFlag>> => {
 			const flags = await accessFlags();
 			prefix = prefix ? prefix + '/' : '';
 			return Object.fromEntries(Object.entries(flags).filter(([name]) => name.startsWith(prefix)));
@@ -119,6 +119,46 @@ export const FlagService = ({ etcdService, logService }: FlagServiceParameters) 
 		getZodFileContent: async (): Promise<string> => {
 			const types = await accessTypeDescriptor();
 			return types.zodFileContent;
+		},
+		getMigrationFileContent: async (): Promise<MigrationFile> => {
+			const flags = await accessFlags();
+			return generateMigrationFile(configService.environment, flags);
+		},
+		prepareMigration: async (migrationFile: MigrationFile): Promise<MigrationSummary> => {
+			const flags = await accessFlags();
+			return generateMigrationSteps(migrationFile, flags);
+		},
+		executeMigration: async (migrations: MigrationStep[]) => {
+			for (const step of migrations)
+				if (step.dependentId && !migrations.some((s) => s.id === step.dependentId))
+					throw new Error(
+						`Dependent step with id ${step.dependentId} not found for step ${step.id}`
+					);
+
+			for (const step of migrations)
+				switch (step.mode) {
+					case 'CREATE_DEFAULTVALUE':
+						await etcdService.throwIfExists('flag', step.flagKey);
+						if ('valueExists' in step.flag) step.flag.valueExists = false;
+						await etcdService.put('flag', step.flagKey, step.flag);
+						break;
+					case 'UPDATE_SCHEMA_DEFAULTVALUE':
+						await etcdService.throwIfNotExists('flag', step.flagKey);
+						if ('valueExists' in step.flag) step.flag.valueExists = false;
+						await etcdService.overwrite('flag', step.flagKey, step.flag);
+						break;
+					case 'SET_VALUE':
+						await etcdService.throwIfNotExists('flag', step.flagKey);
+						if ('value' in step.flag)
+							await etcdService.overwrite('flag', step.flagKey, {
+								value: step.flag.value,
+								valueExists: step.flag.valueExists
+							});
+						break;
+					case 'DELETE':
+						await etcdService.delete('flag', step.flagKey);
+						break;
+				}
 		}
 	};
 };
