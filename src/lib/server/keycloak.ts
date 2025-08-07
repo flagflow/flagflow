@@ -17,17 +17,20 @@ const keycloakProtocolUrl = config.keycloak.host
 	: '';
 
 const generateKeycloakLoginUrl = (callbackHost: string) => {
-	const keycloakLoginUrl = new URL(combineUrls(keycloakProtocolUrl, 'auth'));
+	const keycloakLoginUrl = config.keycloak.host
+		? new URL(combineUrls(keycloakProtocolUrl, 'auth'))
+		: undefined;
 
-	keycloakLoginUrl.searchParams.append('client_id', config.keycloak.client);
-	keycloakLoginUrl.searchParams.append(
-		'redirect_uri',
-		combineUrls(callbackHost, postAcceptLoginPath)
-	);
-	keycloakLoginUrl.searchParams.append('response_type', 'code');
-	keycloakLoginUrl.searchParams.append('scope', 'openid profile email');
-
-	return keycloakLoginUrl.toString();
+	if (keycloakLoginUrl) {
+		keycloakLoginUrl.searchParams.append('client_id', config.keycloak.client);
+		keycloakLoginUrl.searchParams.append(
+			'redirect_uri',
+			combineUrls(callbackHost, postAcceptLoginPath)
+		);
+		keycloakLoginUrl.searchParams.append('response_type', 'code');
+		keycloakLoginUrl.searchParams.append('scope', 'openid profile email');
+	}
+	return keycloakLoginUrl?.toString();
 };
 
 const generateKeycloakLogoutUrl = (callbackHost: string, id_token: string | undefined) => {

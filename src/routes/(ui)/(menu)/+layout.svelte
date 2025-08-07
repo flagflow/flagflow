@@ -130,16 +130,18 @@
 					<Icon id="export" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Users">
-				{#snippet icon()}
-					<Icon id="user" />
-				{/snippet}
-				<SidebarItem href="/ui/users" label="Users" />
-				<SidebarItem href="/ui/sessions" label="Sessions" />
-			</SidebarDropdownWrapper>
+			{#if data.environmentContext.usersEnabled}
+				<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Users">
+					{#snippet icon()}
+						<Icon id="user" />
+					{/snippet}
+					<SidebarItem href="/ui/users" label="Users" {spanClass} />
+					<SidebarItem href="/ui/sessions" label="Sessions" {spanClass} />
+				</SidebarDropdownWrapper>
+			{/if}
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem href="#" label="Logout" onclick={logout}>
+			<SidebarItem href="#" label="Logout" onclick={logout} {spanClass}>
 				{#snippet icon()}
 					<Icon id="logout" />
 				{/snippet}

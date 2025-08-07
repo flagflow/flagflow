@@ -3,13 +3,8 @@ if (process.env?.['NODE_ENV'] !== 'production')
 
 import envVar from 'env-var';
 
-const defaults = {
-	LogLevel: 'info',
-	MetricsEnabled: false
-};
-
 export const config = {
-	logLevel: envVar.get('LOGLEVEL').asString() || defaults.LogLevel,
+	logLevel: envVar.get('LOGLEVEL').default('info').asString(),
 	environment: envVar.get('ENVIRONMENT').default('').asString(),
 	migration: {
 		sourceEnvironment: envVar.get('MIGRATION_SOURCE_ENVIRONMENT').default('').asString(),
@@ -27,14 +22,14 @@ export const config = {
 		client: envVar.get('KEYCLOAK_CLIENT').default('flagflow-frontend').asString()
 	},
 	session: {
-		enabled: envVar.get('SESSION_ENABLED').default('true').asBool(),
+		enabled: envVar.get('SESSION_USERS_ENABLED').default('true').asBool(),
 		timeoutSecs: envVar
 			.get('SESSION_TIMEOUT_SEC')
 			.default(30 * 60)
 			.asIntPositive()
 	},
 	metrics: {
-		enabled: envVar.get('METRICS_ENABLED').asBool() || defaults.MetricsEnabled
+		enabled: envVar.get('METRICS_ENABLED').asBool() || false
 	},
 	dev: {
 		rpcSlowdownMs: envVar.get('DEV_RPC_SLOWDOWN_MS').asIntPositive()
