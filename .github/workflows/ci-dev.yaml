@@ -1,24 +1,25 @@
 name: DEV pipeline
 
 on:
-  push:
-    branches-ignore:
+  pull_request:
+    branches:
       - main
 
 jobs:
   check:
     name: Source revision
     runs-on: ubuntu-latest
-    if: "!startsWith(github.event.head_commit.message, 'draft:')"
+    if: github.event.pull_request.draft == false
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24.4'
+          node-version: '24'
           cache: 'npm'
 
       - run: npm ci
       - run: node --run format:check
       - run: node --run lint:check
+      - run: node --run ts:check
       - run: node --run sync && node --run build
