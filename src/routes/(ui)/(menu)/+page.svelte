@@ -21,7 +21,7 @@
 			// If turning OFF, require confirmation
 			if (!recentValue) {
 				const result = await showModalConfirmation(
-					`Turn OFF kill switch **${flagName}**? This will disable the kill switch functionality. Are you sure you want to proceed?`,
+					`Turn OFF kill switch **${flagName}**? This will turn the kill switch OFF and may enable the functionality it was blocking. Are you sure you want to proceed?`,
 					'Disable'
 				);
 				if (!result.isOk) return;
