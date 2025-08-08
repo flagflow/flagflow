@@ -96,7 +96,7 @@
 			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Upload a previously exported <span class="font-semibold">backup</span> file to restore the
-				flag schema and values. The file must contains exported data
+				flag schema and values. The file must contain exported data
 				<span class="font-semibold">from this environment</span>.
 			</p>
 			<Button class="w-full" color="alternative" onclick={() => uploadFile('restore')}>
@@ -116,7 +116,7 @@
 			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Upload a previously exported <span class="font-semibold">migration</span> file to migrate
-				the flag schema and optionally flag values. The file must contains exported data
+				the flag schema and optionally flag values. The file must contain exported data
 				<span class="font-semibold">from another environment</span>.
 			</p>
 			<Button class="w-full" color="alternative" onclick={() => uploadFile('migration')}>
