@@ -12,6 +12,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Full pipeline**: `npm run all` (formats, lints, type-checks, and builds)
 - **Tests**: `npm run test` (runs vitest)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
+- **Docker**: `npm run docker:build` and `npm run docker:run`
+- **Full rebuild of npm packages**: `npm run npm:reinstall`
 
 ## Architecture Overview
 
@@ -60,11 +62,12 @@ The application follows a layered service architecture with dependency injection
 
 #### Feature Flag System
 
-- Real-time flag watching with etcd
+- Real-time flag watching with etcd watchers
 - TypeScript/Zod type generation from flag schemas
-- Support for BOOLEAN, INTEGER, STRING flag types with validation
-- Migration system for flag changes
+- Support for BOOLEAN (with killswitch), INTEGER, STRING, OBJECT, ENUM, TAG, AB-TEST flag types
+- Migration system for flag changes with export/import
 - Hash-based group validation for type safety
+- Kill switches: special boolean flags requiring confirmation to disable
 
 #### Authentication Flow
 
@@ -94,8 +97,28 @@ The application follows a layered service architecture with dependency injection
 - etcd is used for all persistent data storage
 - Real-time updates via etcd watchers
 - Comprehensive type safety from database to UI
+- Container runs maintenance tasks every 113 seconds for cleanup
+- Environment configuration via `.env` file (see `.env.example`)
+
+### Flag Type Patterns
+
+- **Boolean flags**: Can be marked as `isKillSwitch` for critical toggles
+- **Value precedence**: `value` (if `valueExists: true`) > `defaultValue`
+- **Group structure**: Flags organized in hierarchical groups using `/` separator
+- **Type safety**: All flag types have Zod schemas with runtime validation
+
+### UI Patterns
+
+- File-based routing with nested layouts in `src/routes`
+- Modal system using show functions (e.g., `showModalError`, `showModalConfirmation`)
+- Form components with validation in `src/components/form/`
+- Icons using Iconify with `src/components/Icon.svelte`
+- Responsive design with TailwindCSS and Flowbite components
 
 ### Rules
 
 - Do not use brackets {} if not needed, at one line command in blocks
 - Do not use dynamic import()
+- Always use confirmation dialogs for destructive actions (especially kill switches)
+- Maintain type safety from database to UI using Zod schemas
+- Use structured logging with trace IDs for all service operations
