@@ -60,7 +60,16 @@
 <PageContainer>
 	<div class="grid gap-8 md:grid-cols-2">
 		<Card class="p-6" size="lg">
-			<h5 class="mb-2 text-xl font-bold">Export to file</h5>
+			<div class="mb-4 flex flex-col items-center text-center">
+				<a href="/migration/export">
+					<Icon
+						id="download"
+						class="text-primary-600 hover:text-primary-700 mb-4 cursor-pointer"
+						size={64}
+					/>
+				</a>
+				<h5 class="mb-2 text-xl font-bold">Export to file</h5>
+			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Download the complete flag schema of this environment, which can be imported into this
 				(restore) or another (migration) instance of FlagFlow.
@@ -76,7 +85,15 @@
 
 	<div class="grid gap-8 md:grid-cols-2">
 		<Card class="p-6" size="lg">
-			<h5 class="mb-2 text-xl font-bold">Restore from file</h5>
+			<div class="mb-4 flex flex-col items-center text-center">
+				<Icon
+					id="restore"
+					class="text-primary-600 hover:text-primary-700 mb-4 cursor-pointer"
+					onclick={() => uploadFile('restore')}
+					size={64}
+				/>
+				<h5 class="mb-2 text-xl font-bold">Restore from file</h5>
+			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Upload a previously exported <span class="font-semibold">backup</span> file to restore the
 				flag schema and values. The file must contains exported data
@@ -88,7 +105,15 @@
 			</Button>
 		</Card>
 		<Card class="p-6" size="lg">
-			<h5 class="mb-2 text-xl font-bold">Migration from file</h5>
+			<div class="mb-4 flex flex-col items-center text-center">
+				<Icon
+					id="migration"
+					class="text-primary-600 hover:text-primary-700 mb-4 cursor-pointer"
+					onclick={() => uploadFile('migration')}
+					size={64}
+				/>
+				<h5 class="mb-2 text-xl font-bold">Migration from file</h5>
+			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Upload a previously exported <span class="font-semibold">migration</span> file to migrate
 				the flag schema and optionally flag values. The file must contains exported data
@@ -101,10 +126,18 @@
 		</Card>
 		{#if data.migration.sourceUrl}
 			<Card class="p-6" size="lg">
-				<h5 class="mb-2 text-xl font-bold">
-					Migration from remote
-					<Badge class="ml-2" color="secondary">{data.migration.sourceEnvironment}</Badge>
-				</h5>
+				<div class="mb-4 flex flex-col items-center text-center">
+					<Icon
+						id="uploadNetwork"
+						class="text-primary-600 hover:text-primary-700 mb-4 cursor-pointer"
+						onclick={() => fetchMigrationFromUrl()}
+						size={64}
+					/>
+					<h5 class="mb-2 text-xl font-bold">
+						Migration from remote
+						<Badge class="ml-2" color="secondary">{data.migration.sourceEnvironment}</Badge>
+					</h5>
+				</div>
 				<p class="mb-3 font-normal text-gray-700">
 					Migrate the flag schema and optionally flag values from a remote FlagFlow instance by
 					predefined URL. The remote instance must provide data marked <span class="font-semibold"

@@ -40,6 +40,9 @@
 		.filter((role) => data.authenticationContext.roles[role as UserRole])
 		.map((role) => role.slice(0, 1).toUpperCase())
 		.join('');
+	const userRolesStringFull = Object.keys(data.authenticationContext.roles)
+		.filter((role) => data.authenticationContext.roles[role as UserRole])
+		.join(', ');
 
 	const logout = async () => {
 		if (data.authenticationContext.type === 'JWT') deleteTokensCookies();
@@ -95,7 +98,7 @@
 	<Dropdown placement="bottom" simple triggeredBy="#avatar">
 		<DropdownHeader class="text-xs font-semibold">
 			{userName}
-			<Badge>{userRolesString}</Badge>
+			<Badge title={userRolesStringFull}>{userRolesString}</Badge>
 		</DropdownHeader>
 		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
