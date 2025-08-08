@@ -1,6 +1,6 @@
 <script lang="ts">
 	import clsx from 'clsx';
-	import { Badge, ButtonGroup, Card, Input, InputAddon, Toggle } from 'flowbite-svelte';
+	import { Badge, Button, ButtonGroup, Card, Input, InputAddon } from 'flowbite-svelte';
 
 	import { goto } from '$app/navigation';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
@@ -16,16 +16,16 @@
 	let { data }: PageProperties = $props();
 	let searchValue = $state('');
 
-	const toggleKillSwitch = async (flagKey: string, recentValue: boolean, flagName: string) => {
+	const toggleKillSwitch = async (flagKey: string, recentValue: boolean) => {
 		try {
 			// If turning OFF, require confirmation
-			if (!recentValue) {
-				const result = await showModalConfirmation(
-					`Turn OFF kill switch **${flagName}**? This will turn the kill switch OFF and may enable the functionality it was blocking. Are you sure you want to proceed?`,
-					'Disable'
-				);
-				if (!result.isOk) return;
-			}
+			const result = await showModalConfirmation(
+				recentValue
+					? `Turn ON kill switch **${flagKey}**? This will enable the functionality it was disabling. Are you sure you want to proceed?`
+					: `Turn OFF kill switch **${flagKey}**? This will disable the functionality it was enabling. Are you sure you want to proceed?`,
+				recentValue ? 'Enable' : 'Disable'
+			);
+			if (!result.isOk) return;
 
 			await rpcClient.flag.updateKillSwitch.mutate({
 				key: flagKey,
@@ -92,24 +92,21 @@
 										<p class="text-md mb-2 text-gray-600">{flag.flagGroup}</p>
 									</div>
 									<div class="flex flex-col gap-1">
-										<div class="ml-4">
-											<Toggle
-												checked={flagValue}
-												color="green"
-												onchange={() => toggleKillSwitch(flag.key, !flagValue, flag.flagName)}
-												size="large"
-											/>
-										</div>
-										<div class="text-center">
-											<span
-												class={clsx('text-xl font-semibold', {
-													'text-green-700': flagValue,
-													'text-red-700': !flagValue
-												})}
-											>
-												{flagValue ? 'ON' : 'OFF'}
-											</span>
-										</div>
+										<Button
+											color={flagValue ? 'green' : 'red'}
+											onclick={() => toggleKillSwitch(flag.key, !flagValue)}
+											size="lg"
+										>
+											{flagValue ? 'Disable' : 'Enable'}
+										</Button>
+										<span
+											class={clsx('text-center text-xl font-semibold', {
+												'text-green-700': flagValue,
+												'text-red-700': !flagValue
+											})}
+										>
+											{flagValue ? 'ON' : 'OFF'}
+										</span>
 									</div>
 								</div>
 								{#if flag.description}
