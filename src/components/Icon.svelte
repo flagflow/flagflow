@@ -54,8 +54,12 @@
 		download: 'mdi:download',
 		upload: 'mdi:upload',
 		uploadNetwork: 'mdi:upload-network',
+		restore: 'mdi:restore-clock',
+		migration: 'mdi:database-import',
+		online: 'mdi:server-network',
 
 		boolean: 'mdi:toggle-switch',
+		killswitch: 'mdi:shield-key',
 		integer: 'mdi:numeric',
 		string: 'mdi:format-text',
 		object: 'mdi:bracket',

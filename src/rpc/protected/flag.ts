@@ -137,6 +137,29 @@ export const flagRpc = createRpcRouter({
 
 			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
+	updateKillSwitch: rpcProcedure
+		.meta({ permission: 'editor' })
+		.input(
+			z.object({
+				key: EtcdFlagKey.trim(),
+				value: z.boolean()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const etcdService = ctx.container.resolve('etcdService');
+			const currentFlag = await etcdService.getOrThrow('flag', input.key);
+
+			if (currentFlag.type !== 'BOOLEAN' || !currentFlag.isKillSwitch)
+				throw new Error(`Flag type must be BOOLEAN and a kill switch`);
+
+			currentFlag.valueExists = true;
+			currentFlag.value = input.value;
+
+			const valueError = flagValueValidator(currentFlag);
+			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
+
+			await etcdService.overwrite('flag', input.key, currentFlag);
+		}),
 	delete: rpcProcedure
 		.meta({ permission: 'maintainer' })
 		.input(

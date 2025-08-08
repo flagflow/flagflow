@@ -26,6 +26,7 @@
 	import type { LayoutProps as LayoutProperties } from './$types';
 
 	const spanClass = 'flex-1 ms-3 whitespace-nowrap';
+	const spanClassDisabled = spanClass + ' ' + 'opacity-50 cursor-not-allowed';
 
 	const { data, children }: LayoutProperties = $props();
 
@@ -39,6 +40,9 @@
 		.filter((role) => data.authenticationContext.roles[role as UserRole])
 		.map((role) => role.slice(0, 1).toUpperCase())
 		.join('');
+	const userRolesStringFull = Object.keys(data.authenticationContext.roles)
+		.filter((role) => data.authenticationContext.roles[role as UserRole])
+		.join(', ');
 
 	const logout = async () => {
 		if (data.authenticationContext.type === 'JWT') deleteTokensCookies();
@@ -94,7 +98,7 @@
 	<Dropdown placement="bottom" simple triggeredBy="#avatar">
 		<DropdownHeader class="text-xs font-semibold">
 			{userName}
-			<Badge>{userRolesString}</Badge>
+			<Badge title={userRolesStringFull}>{userRolesString}</Badge>
 		</DropdownHeader>
 		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
@@ -106,6 +110,7 @@
 		activeUrl={page.url.pathname}
 		backdrop={false}
 		classes={{ active: 'p-2 text-white bg-primary-600 hover:bg-primary-800', nonactive: 'p-2' }}
+		isSingle={false}
 		params={{ x: 0, duration: 0 }}
 		position="absolute"
 	>
@@ -115,7 +120,7 @@
 					<Icon id="dashboard" />
 				{/snippet}
 			</SidebarItem>
-			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Flags">
+			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} isOpen label="Flags">
 				{#snippet icon()}
 					<Icon id="flag" />
 				{/snippet}
@@ -125,21 +130,38 @@
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem href="/ui/migration" label="Migration" {spanClass}>
-				{#snippet icon()}
-					<Icon id="export" />
-				{/snippet}
-			</SidebarItem>
-			<SidebarDropdownWrapper classes={{ btn: 'p-2' }} label="Users">
-				{#snippet icon()}
-					<Icon id="user" />
-				{/snippet}
-				<SidebarItem href="/ui/users" label="Users" />
-				<SidebarItem href="/ui/sessions" label="Sessions" />
-			</SidebarDropdownWrapper>
+			{#if data.authenticationContext.roles.admin}
+				<SidebarItem href="/ui/migration" label="Migration" {spanClass}>
+					{#snippet icon()}
+						<Icon id="export" />
+					{/snippet}
+				</SidebarItem>
+			{:else}
+				<SidebarItem label="Migration" spanClass={spanClassDisabled}>
+					{#snippet icon()}
+						<Icon id="export" class="opacity-50" />
+					{/snippet}
+				</SidebarItem>
+			{/if}
+
+			{#if data.environmentContext.usersEnabled && data.authenticationContext.roles.admin}
+				<SidebarDropdownWrapper classes={{ btn: 'p-2' }} isOpen label="Users">
+					{#snippet icon()}
+						<Icon id="user" />
+					{/snippet}
+					<SidebarItem href="/ui/users" label="Users" {spanClass} />
+					<SidebarItem href="/ui/sessions" label="Sessions" {spanClass} />
+				</SidebarDropdownWrapper>
+			{:else}
+				<SidebarItem label="Users" spanClass={spanClassDisabled}>
+					{#snippet icon()}
+						<Icon id="user" class="opacity-50" />
+					{/snippet}
+				</SidebarItem>
+			{/if}
 		</SidebarGroup>
 		<SidebarGroup border>
-			<SidebarItem href="#" label="Logout" onclick={logout}>
+			<SidebarItem href="#" label="Logout" onclick={logout} {spanClass}>
 				{#snippet icon()}
 					<Icon id="logout" />
 				{/snippet}

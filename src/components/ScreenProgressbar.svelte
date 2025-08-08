@@ -26,12 +26,12 @@
 
 {#if localVisible}
 	<Progressbar
-		class="absolute -z-50"
+		class="absolute"
 		animate
-		color="yellow"
+		color="primary"
 		easing={circOut}
 		progress={100}
-		size="h-4"
+		size="h-1"
 		tweenDuration={durationMs}
 	/>
 {/if}

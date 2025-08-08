@@ -1,4 +1,5 @@
 <script lang="ts">
+	import clsx from 'clsx';
 	import { Helper, Radio } from 'flowbite-svelte';
 
 	import FormContainer from '$components/form/FormContainer.svelte';
@@ -16,12 +17,12 @@
 
 <FormContainer class="flex flex-col gap-3 px-4" mandatory title="Type">
 	{#each Object.entries(EtcdFlagTypeDescription) as [flagType, description]}
-		<div class="ml-2 flex flex-col">
-			<Radio value={flagType} bind:group={type}>
+		<div class={clsx('ml-2 flex flex-col', { 'opacity-50': !description.enabled })}>
+			<Radio disabled={!description.enabled} value={flagType} bind:group={type}>
 				{flagType}
 				<Icon id={EtcdFlagTypeIcon[flagType as EtcdFlagType]} align="right" size={20} />
 			</Radio>
-			<Helper class="ps-6">{description}</Helper>
+			<Helper class="ps-6">{description.text}</Helper>
 		</div>
 	{/each}
 </FormContainer>

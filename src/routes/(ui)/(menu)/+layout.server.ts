@@ -13,7 +13,8 @@ export const load: LayoutServerLoad = async ({
 
 	const configService = container.resolve('configService');
 	const environmentContext = {
-		name: configService.environment
+		name: configService.environment,
+		usersEnabled: configService.session.enabled
 	};
 
 	const url = new URL(request.url);

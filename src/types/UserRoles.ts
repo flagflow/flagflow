@@ -14,6 +14,8 @@ export const USER_ROLES_DESCRIPTOR: Readonly<Record<UserRole, string>> = {
 	viewer: 'Can view flags and their configurations, but cannot create or edit flags'
 } as const;
 
+export const UserRoleAll = Object.keys(USER_ROLES_DESCRIPTOR) as UserRole[];
+
 export const UserRoleFromArray = (roles: string[]): Readonly<Record<UserRole, boolean>> =>
 	({
 		admin: roles.includes('admin'),

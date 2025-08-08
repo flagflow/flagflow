@@ -3,7 +3,7 @@ import { formatDate } from 'date-fns';
 
 import { createDownloadResponse } from '$lib/Response';
 
-import type { RequestEvent, RequestHandler } from '../$types';
+import type { RequestEvent, RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event: RequestEvent) => {
 	// Service

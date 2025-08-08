@@ -80,14 +80,14 @@ export const EtcdFlag = z.intersection(
 export type EtcdFlag = z.infer<typeof EtcdFlag>;
 export type EtcdFlagType = EtcdFlag['type'];
 
-export const EtcdFlagTypeDescription: Record<EtcdFlagType, string> = {
-	BOOLEAN: 'On/off functionality or kill switch',
-	INTEGER: 'Integer value, can be bounded',
-	STRING: 'Text value with optional length or format restrictions',
-	OBJECT: 'Structured data, like a JSON object',
-	ENUM: 'Select one element from a string valueset',
-	TAG: 'Select none, one or more elements from a string valueset',
-	'AB-TEST': 'Randomly select one of A and B'
+export const EtcdFlagTypeDescription: Record<EtcdFlagType, { text: string; enabled: boolean }> = {
+	BOOLEAN: { text: 'On/off functionality or kill switch', enabled: true },
+	INTEGER: { text: 'Integer value, can be bounded', enabled: true },
+	STRING: { text: 'Text value with optional length or format restrictions', enabled: true },
+	OBJECT: { text: 'Structured data, like a JSON object', enabled: false },
+	ENUM: { text: 'Select one element from a string valueset', enabled: true },
+	TAG: { text: 'Select none, one or more elements from a string valueset', enabled: true },
+	'AB-TEST': { text: 'Randomly select one of A and B', enabled: true }
 };
 
 export const EtcdFlagTypeIcon: Record<EtcdFlagType, IconId> = {

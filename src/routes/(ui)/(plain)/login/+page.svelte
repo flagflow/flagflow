@@ -112,7 +112,7 @@
 				</div>
 			</Card>
 		</form>
-		{#if data.keycloak.enabled}
+		{#if data.keycloak.loginUrl}
 			<Button class="mt-6 w-full bg-[#3F86B0] hover:bg-[#326B8E]" href={data.keycloak.loginUrl}>
 				<Icon id="keycloak" align="left" />
 				Keycloak login
