@@ -8,7 +8,6 @@
 	import { showModalConfirmation } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
-	import { focusInputById } from '$lib/form.svelte';
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
 
@@ -44,8 +43,6 @@
 			goto(`/ui/flags?search=${encodeURIComponent(searchValue.trim())}`);
 		}
 	};
-
-	focusInputById('search-input');
 </script>
 
 <HtmlTitle title="Dashboard" />
@@ -65,7 +62,7 @@
 				id="search-input"
 				onkeydown={handleSearchKeydown}
 				placeholder="Search flags..."
-				size="lg"
+				size="md"
 				type="search"
 				bind:value={searchValue}
 			/>
