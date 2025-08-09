@@ -56,8 +56,8 @@ export const UserService = ({ etcdService, logService }: UserServiceParameters) 
 		// 		.where(and(eq(schema.user.email, email)));
 
 		// 	if (updateResult.rowCount !== 1) {
-		// 		log.error({ email }, 'UsetSettings change failed');
-		// 		throw new Error('UsetSettings change failed');
+		// 		log.error({ email }, 'UserSettings change failed');
+		// 		throw new Error('UserSettings change failed');
 		// 	}
 		// },
 		// addUser: async (name: string, email: string, password: string) => {
