@@ -40,8 +40,9 @@
 
 	let { data }: PageProperties = $props();
 
-	const hasRoleEditor = data.authenticationContext.roles.editor;
-	const hasRoleMaintainer = data.authenticationContext.roles.maintainer;
+	const hasPermissionCreate = data.authenticationContext.permissions['flag-create'];
+	const hasPermissionSetValue = data.authenticationContext.permissions['flag-value'];
+	const hasPermissionEditSchema = data.authenticationContext.permissions['flag-schema'];
 
 	const GROUP_GENERAL_NAME = '#root';
 	const GROUP_NAME_SEPARATOR = ' › ';
@@ -72,7 +73,7 @@
 
 	const addFlag = async (groupName = '') => {
 		try {
-			const result = await showModalNewFlag(hasRoleEditor, groupName);
+			const result = await showModalNewFlag(hasPermissionSetValue, groupName);
 			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -92,7 +93,7 @@
 
 	const modifyFlagSchema = async (key: string) => {
 		try {
-			const result = await showModalModifyFlagSchema(key, hasRoleEditor);
+			const result = await showModalModifyFlagSchema(key, hasPermissionSetValue);
 			if (!result || !result.isOk) return;
 
 			await invalidatePage();
@@ -130,16 +131,18 @@
 </script>
 
 <PageTitle count={data.flagCount} hr title="Flags">
-	<ButtonGroup size="md">
-		<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
-	</ButtonGroup>
+	{#if hasPermissionCreate}
+		<ButtonGroup size="md">
+			<AsyncButton action={addFlag} size="lg">New flag</AsyncButton>
+		</ButtonGroup>
+	{/if}
 	<ButtonGroup class="w-72">
 		<InputAddon><Icon id="search" /></InputAddon>
 		<Input
 			id="search"
 			class="unfocused"
 			placeholder="Search flags..."
-			size="sm"
+			size="md"
 			type="search"
 			bind:value={$searchFilter}
 		/>
@@ -151,7 +154,7 @@
 				class="unfocused ml-4 w-64"
 				items={filterItemGroup}
 				placeholder="Group filter"
-				size="sm"
+				size="md"
 				bind:value={$groupFilter}
 			/>
 		{/if}
@@ -191,10 +194,10 @@
 	<Kbd
 		class={clsx('bg-primary-50 inline-flex decoration-dashed underline-offset-4', {
 			underline: 'valueExists' in flag && !flag.valueExists,
-			'cursor-pointer': hasRoleEditor
+			'cursor-pointer': hasPermissionSetValue
 		})}
 		ondblclick={() => {
-			if (hasRoleEditor) modifyFlagValue(flag.key);
+			if (hasPermissionSetValue) modifyFlagValue(flag.key);
 		}}
 	>
 		{flagValueToString(flag).value}
@@ -219,24 +222,30 @@
 							{/if}
 						</div>
 						{#if groupName}
-							<Icon
-								id="add"
-								class="dots-menu inline-flex cursor-pointer"
-								color="gray"
-								onclick={() => addFlag(groupName)}
-								size={24}
-							/>
-							<Tooltip placement="bottom-start" type="light">Add flag to this group</Tooltip>
+							{#if hasPermissionCreate}
+								<Icon
+									id="add"
+									class="dots-menu inline-flex cursor-pointer"
+									color="gray"
+									onclick={() => addFlag(groupName)}
+									size={24}
+								/>
+								<Tooltip placement="bottom-start" type="light">Add flag to this group</Tooltip>
+							{/if}
 						{/if}
 						<Icon id="dots" class="dots-menu inline-flex cursor-pointer" color="gray" size={24} />
 						<Dropdown simple transitionParams={{ duration: 0 }}>
-							<DropdownItem class="font-semibold" href="#" onclick={() => addFlag(groupName)}
-								>Add flag</DropdownItem
-							>
-							<DropdownDivider />
-							<DropdownItem href="#">Rename group</DropdownItem>
-							<DropdownItem href="#">Delete group</DropdownItem>
-							<DropdownDivider />
+							{#if hasPermissionCreate}
+								<DropdownItem class="font-semibold" href="#" onclick={() => addFlag(groupName)}
+									>Add flag</DropdownItem
+								>
+							{/if}
+							{#if hasPermissionEditSchema}
+								<DropdownDivider />
+								<DropdownItem href="#">Rename group</DropdownItem>
+								<DropdownItem href="#">Delete group</DropdownItem>
+								<DropdownDivider />
+							{/if}
 							<DropdownItem href="#" onclick={() => showModalFlagGroupUrl(groupName)}
 								>Show URLs</DropdownItem
 							>
@@ -274,11 +283,11 @@
 													class={clsx(
 														'trimmed-content inline-flex items-center gap-2 font-semibold text-gray-700',
 														{
-															'cursor-pointer': hasRoleMaintainer
+															'cursor-pointer': hasPermissionEditSchema
 														}
 													)}
 													ondblclick={() => {
-														if (hasRoleMaintainer) modifyFlagSchema(flag.key);
+														if (hasPermissionEditSchema) modifyFlagSchema(flag.key);
 													}}
 												>
 													<Icon id={flag.icon} class="mr-1 inline-flex" color="primary" />
@@ -299,14 +308,14 @@
 											size={24}
 										/>
 										<Dropdown simple transitionParams={{ duration: 0 }}>
-											{#if hasRoleEditor}
+											{#if hasPermissionSetValue}
 												<DropdownItem
 													class="font-semibold"
 													href="#"
 													onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
 												>
 											{/if}
-											{#if hasRoleMaintainer}
+											{#if hasPermissionEditSchema}
 												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
 													>Modify schema</DropdownItem
 												>

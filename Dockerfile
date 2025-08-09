@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:24.4.1-alpine3.22
+ARG NODE_IMAGE=node:24.5.0-alpine3.22
 
 
 # Builder

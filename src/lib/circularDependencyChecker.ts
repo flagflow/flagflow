@@ -1,4 +1,4 @@
-export const circularDepencencyChecker = (
+export const circularDependencyChecker = (
 	graph: Record<string, string[]>
 ): string[] | undefined => {
 	const visited = new Set<string>();

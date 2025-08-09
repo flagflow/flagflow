@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Formatting**: `npm run format:check` (check) or `npm run format:fix` (fix)
 - **Full pipeline**: `npm run all` (formats, lints, type-checks, and builds)
 - **Tests**: `npm run test` (runs vitest)
+- **Docker interactive**: `npm run docker:it` (interactive shell in container)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
 - **Docker**: `npm run docker:build` and `npm run docker:run`
 - **Full rebuild of npm packages**: `npm run npm:reinstall`
@@ -99,6 +100,13 @@ The application follows a layered service architecture with dependency injection
 - Comprehensive type safety from database to UI
 - Container runs maintenance tasks every 113 seconds for cleanup
 - Environment configuration via `.env` file (see `.env.example`)
+
+### Infrastructure Setup
+
+Before development, start required services:
+
+- etcd: `./infra/etcd.sh` (port 2379, root password: `flagflow`)
+- Keycloak: `./infra/keycloak.sh` (port 8080, admin: `admin`/`admin`)
 
 ### Flag Type Patterns
 

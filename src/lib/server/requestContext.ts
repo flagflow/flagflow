@@ -4,7 +4,7 @@ import { parse as parseCookie } from 'cookie';
 import { JWT_COOKIE_NAMES, SESSION_COOKIE_NAME } from '$lib/cookies';
 import { generateTraceId } from '$lib/genId';
 import type { Authentication } from '$types/Auth';
-import { UserRole } from '$types/UserRoles';
+import { UserPermission } from '$types/UserPermissions';
 
 import { config } from './config';
 import { asValue, type Container, container } from './container';
@@ -55,9 +55,9 @@ export const createRequestContext = async (
 				success: {
 					userName: accessTokenAuth.name,
 					email: accessTokenAuth.email,
-					roles: (accessTokenAuth.resource_access[config.keycloak.client]?.roles || []).filter(
-						(role) => UserRole.includes(role as UserRole)
-					) as UserRole[],
+					permissions: (
+						accessTokenAuth.resource_access[config.keycloak.client]?.roles || []
+					).filter((role) => UserPermission.includes(role as UserPermission)) as UserPermission[],
 					expiredAt: new Date(accessTokenAuth.exp * 1000)
 				}
 			};
@@ -85,7 +85,7 @@ export const createRequestContext = async (
 				success: session
 					? {
 							userName: session.userName,
-							roles: session.roles
+							permissions: session.permissions
 						}
 					: undefined
 			};

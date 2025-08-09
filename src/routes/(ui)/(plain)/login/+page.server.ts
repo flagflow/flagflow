@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import { SESSION_COOKIE_NAME } from '$lib/cookies';
 import { config } from '$lib/server/config';
 import { keycloakUrls } from '$lib/server/keycloak';
-import { UserRoleAll } from '$types/UserRoles';
+import { UserPermissionAll } from '$types/UserPermissions';
 
 import type { PageServerLoad } from './$types';
 
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ request, locals: { container }, coo
 				userKey: 'admin',
 				userName: 'Demo User',
 				createdAt: new Date(),
-				roles: UserRoleAll
+				permissions: UserPermissionAll
 			});
 			cookies.set(SESSION_COOKIE_NAME, sessionId, { path: '/' });
 			return redirect(302, '/');

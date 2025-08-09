@@ -1,7 +1,7 @@
 <script lang="ts">
-	import UserRoleEditor from '$components/input/UserRoleEditor.svelte';
+	import UserPermissionsEditor from '$components/input/UserPermissionEditor.svelte';
 	import type { ValidityItem } from '$lib/form.svelte';
-	import type { UserRole } from '$types/UserRoles';
+	import type { UserPermission } from '$types/UserPermissions';
 
 	import FormContainer from './FormContainer.svelte';
 
@@ -9,7 +9,7 @@
 		class?: string;
 		id?: string;
 		title?: string;
-		roles: UserRole[];
+		permissions: UserPermission[];
 		mandatory?: boolean;
 		inProgress?: boolean;
 		validity?: ValidityItem | undefined;
@@ -19,7 +19,7 @@
 		class: aClass = '',
 		id = '',
 		title = '',
-		roles = $bindable(),
+		permissions = $bindable(),
 		mandatory = false,
 		inProgress = false,
 		validity = { isError: false }
@@ -27,5 +27,10 @@
 </script>
 
 <FormContainer class={aClass} {mandatory} {title} {validity}>
-	<UserRoleEditor id={id || title} class="m-4 gap-4" disabled={inProgress} bind:roles />
+	<UserPermissionsEditor
+		id={id || title}
+		class="m-4 gap-4"
+		disabled={inProgress}
+		bind:permissions
+	/>
 </FormContainer>

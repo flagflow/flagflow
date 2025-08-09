@@ -21,7 +21,7 @@
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
 	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
-	import type { UserRole } from '$types/UserRoles';
+	import type { UserPermission } from '$types/UserPermissions';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
 
@@ -36,12 +36,12 @@
 			? userName.split(' ')[0].slice(0, 1) + userName.split(' ')[1].slice(0, 1)
 			: userName.slice(0, 2);
 
-	const userRolesString = Object.keys(data.authenticationContext.roles)
-		.filter((role) => data.authenticationContext.roles[role as UserRole])
-		.map((role) => role.slice(0, 1).toUpperCase())
+	const userPermissionsString = Object.keys(data.authenticationContext.permissions)
+		.filter((permissions) => data.authenticationContext.permissions[permissions as UserPermission])
+		.map((permissions) => permissions.slice(0, 1).toUpperCase())
 		.join('');
-	const userRolesStringFull = Object.keys(data.authenticationContext.roles)
-		.filter((role) => data.authenticationContext.roles[role as UserRole])
+	const userPermissionsStringFull = Object.keys(data.authenticationContext.permissions)
+		.filter((permissions) => data.authenticationContext.permissions[permissions as UserPermission])
 		.join(', ');
 
 	const logout = async () => {
@@ -98,7 +98,7 @@
 	<Dropdown placement="bottom" simple triggeredBy="#avatar">
 		<DropdownHeader class="text-xs font-semibold">
 			{userName}
-			<Badge title={userRolesStringFull}>{userRolesString}</Badge>
+			<Badge title={userPermissionsStringFull}>{userPermissionsString}</Badge>
 		</DropdownHeader>
 		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
@@ -130,7 +130,7 @@
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
-			{#if data.authenticationContext.roles.admin}
+			{#if data.authenticationContext.permissions.migration}
 				<SidebarItem href="/ui/migration" label="Migration" {spanClass}>
 					{#snippet icon()}
 						<Icon id="export" />
@@ -144,7 +144,7 @@
 				</SidebarItem>
 			{/if}
 
-			{#if data.environmentContext.usersEnabled && data.authenticationContext.roles.admin}
+			{#if data.environmentContext.usersEnabled && data.authenticationContext.permissions.users}
 				<SidebarDropdownWrapper classes={{ btn: 'p-2' }} isOpen label="Users">
 					{#snippet icon()}
 						<Icon id="user" />

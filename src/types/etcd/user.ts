@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserRoleZodEnum } from '$types/UserRoles';
+import { UserPermissionZodEnum } from '$types/UserPermissions';
 
 export const EtcdUserKey = z
 	.string()
@@ -14,7 +14,7 @@ export const EtcdUser = z
 		enabled: z.boolean(),
 		passwordHash: z.string(),
 		passwordExpireAt: z.number().int().positive().optional(),
-		roles: z.array(UserRoleZodEnum)
+		permissions: z.array(UserPermissionZodEnum)
 	})
 	.readonly();
 export type EtcdUser = z.infer<typeof EtcdUser>;

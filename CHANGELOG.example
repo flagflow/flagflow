@@ -1,0 +1,45 @@
+## Future Releases
+
+Future versions will follow this changelog format:
+
+### [Unreleased]
+#### Added
+- New features
+
+#### Changed  
+- Changes in existing functionality
+
+#### Deprecated
+- Soon-to-be removed features
+
+#### Removed
+- Removed features
+
+#### Fixed
+- Bug fixes
+
+#### Security
+- Security improvements
+
+---
+
+## Release Notes Template
+
+```markdown
+## [X.Y.Z] - YYYY-MM-DD
+
+### Added
+- Feature A with description
+- Feature B with description
+
+### Changed
+- Changed behavior of feature C
+- Updated dependency D to version X.Y
+
+### Fixed  
+- Fixed bug in feature E
+- Resolved issue with F
+
+### Security
+- Updated vulnerable dependency G
+```
