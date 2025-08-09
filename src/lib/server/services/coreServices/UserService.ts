@@ -28,7 +28,7 @@ export const UserService = ({ etcdService, logService }: UserServiceParameters) 
 			return {
 				username,
 				name: user.name,
-				roles: user.roles
+				permisions: user.permissions
 			};
 		}
 		// changePassword: async (email: string, currentPassword: string, nextPassword: string) => {

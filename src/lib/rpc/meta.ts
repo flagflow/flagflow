@@ -1,5 +1,5 @@
-import type { UserRole } from '$types/UserRoles';
+import type { UserPermission } from '$types/UserPermissions';
 
 export type Meta = {
-	permission: UserRole | undefined;
+	permission: UserPermission | undefined;
 };

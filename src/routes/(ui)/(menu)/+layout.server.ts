@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import { keycloakUrls } from '$lib/server/keycloak';
-import { UserRoleFromArray } from '$types/UserRoles';
+import { UserPermissionFromArray } from '$types/UserPermissions';
 
 import type { LayoutServerLoad } from './$types';
 
@@ -23,7 +23,7 @@ export const load: LayoutServerLoad = async ({
 	const authenticationContext = {
 		type: authentication.type,
 		userName: authentication.success.userName,
-		roles: UserRoleFromArray(authentication.success.roles),
+		permissions: UserPermissionFromArray(authentication.success.permissions),
 		jwtExpiredAt: authentication.type === 'JWT' ? authentication.success?.expiredAt : new Date(),
 		logoutUrl:
 			authentication.type === 'SESSION'

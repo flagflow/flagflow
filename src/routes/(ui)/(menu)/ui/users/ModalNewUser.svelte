@@ -11,7 +11,7 @@
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
-	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
+	import FormUserPermissionEditor from '$components/form/FormUserPermissionEditor.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
 	import { focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
@@ -19,7 +19,7 @@
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
 	import { EtcdUserKey } from '$types/etcd';
-	import { type UserRole } from '$types/UserRoles';
+	import { type UserPermission } from '$types/UserPermissions';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -30,7 +30,7 @@
 		name: 'John Doe',
 		password: '',
 		password2: '',
-		roles: ['flag-value'] as UserRole[],
+		permissions: ['flag-value'] as UserPermission[],
 		mustChangePassword: true
 	};
 
@@ -152,11 +152,11 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-4">
-				<FormUserRoleEditor
+				<FormUserPermissionEditor
 					inProgress={$stateInProgress}
 					mandatory
-					title="Assigned roles"
-					bind:roles={formData.roles}
+					title="Assigned permissions"
+					bind:permissions={formData.permissions}
 				/>
 			</div>
 		</div>

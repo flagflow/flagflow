@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserRoleZodEnum } from '$types/UserRoles';
+import { UserPermissionZodEnum } from '$types/UserPermissions';
 
 import { EtcdTouchable } from './base';
 
@@ -11,7 +11,7 @@ export const EtcdSession = z
 			userKey: z.string().trim(),
 			userName: z.string().trim(),
 			createdAt: z.coerce.date(),
-			roles: z.array(UserRoleZodEnum)
+			permissions: z.array(UserPermissionZodEnum)
 		})
 	)
 	.readonly();

@@ -33,8 +33,8 @@
 					property: 'name'
 				},
 				{
-					title: 'Roles',
-					property: 'roles',
+					title: 'Permissions',
+					property: 'permissions',
 					isTagLarge: false
 				},
 				{

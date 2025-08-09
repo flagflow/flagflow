@@ -15,14 +15,14 @@ export const authMiddleware: MiddlewareFunction<Context, Meta, void, void, any> 
 	if (meta?.permission)
 		switch (ctx.authentication.type) {
 			case 'JWT':
-				if (!ctx.authentication.success.roles.includes(meta.permission))
+				if (!ctx.authentication.success.permissions.includes(meta.permission))
 					throw new TRPCError({
 						code: 'FORBIDDEN',
 						message: `Permission error (${meta.permission})`
 					});
 				break;
 			case 'SESSION':
-				if (!ctx.authentication.success.roles.includes(meta.permission))
+				if (!ctx.authentication.success.permissions.includes(meta.permission))
 					throw new TRPCError({
 						code: 'FORBIDDEN',
 						message: `Permission error (${meta.permission})`

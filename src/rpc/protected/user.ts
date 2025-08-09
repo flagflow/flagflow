@@ -5,7 +5,7 @@ import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import { ZNonEmptyString } from '$rpc/zodTypes';
 import type { EtcdUser } from '$types/etcd';
 import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
-import { type UserRole, UserRoleZodEnum } from '$types/UserRoles';
+import { type UserPermission, UserPermissionZodEnum } from '$types/UserPermissions';
 
 const rpcProcedureUsersPermission = rpcProcedure.meta({ permission: 'users' });
 
@@ -30,7 +30,7 @@ export const userRpc = createRpcRouter({
 			return {
 				name: user.name,
 				enabled: user.enabled,
-				roles: user.roles as UserRole[],
+				permissions: user.permissions as UserPermission[],
 				mustChangePassword: !!user.passwordExpireAt && user.passwordExpireAt > Date.now()
 			};
 		}),
@@ -40,7 +40,7 @@ export const userRpc = createRpcRouter({
 				key: EtcdUserKey.trim(),
 				name: z.string().trim(),
 				password: ZNonEmptyString(),
-				roles: z.array(UserRoleZodEnum),
+				permissions: z.array(UserPermissionZodEnum),
 				mustChangePassword: z.boolean()
 			})
 		)
@@ -52,7 +52,7 @@ export const userRpc = createRpcRouter({
 				enabled: true,
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined,
-				roles: input.roles
+				permissions: input.permissions
 			});
 		}),
 	update: rpcProcedureUsersPermission
@@ -60,14 +60,14 @@ export const userRpc = createRpcRouter({
 			z.object({
 				key: EtcdUserKey.trim(),
 				name: z.string().trim(),
-				roles: z.array(UserRoleZodEnum)
+				permissions: z.array(UserPermissionZodEnum)
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
 			const etcdService = ctx.container.resolve('etcdService');
 			await etcdService.overwrite('user', input.key, {
 				name: input.name,
-				roles: input.roles
+				permissions: input.permissions
 			});
 		}),
 	setPassword: rpcProcedureUsersPermission

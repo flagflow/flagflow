@@ -22,11 +22,11 @@
 
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormLabel from '$components/form/FormLabel.svelte';
-	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
+	import FormUserPermissionEditor from '$components/form/FormUserPermissionEditor.svelte';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import { type UserRole } from '$types/UserRoles';
+	import { type UserPermission } from '$types/UserPermissions';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };
@@ -36,7 +36,7 @@
 		user: {
 			userName: string;
 			name: string;
-			roles: UserRole[];
+			permissions: UserPermission[];
 		};
 	}
 	const { user }: Properties = $props();
@@ -59,7 +59,7 @@
 				return {
 					user: {
 						name: new StringValidator(source.name, 'trim').required().maxLength(100).error,
-						roles: new ArrayValidator(source.roles).required().error
+						permissions: new ArrayValidator(source.permissions).required().error
 					}
 				};
 			}
@@ -98,12 +98,12 @@
 				validity={$stateIsValid?.user.name}
 				bind:value={formData.name}
 			/>
-			<FormUserRoleEditor
+			<FormUserPermissionEditor
 				inProgress={$stateInProgress}
 				mandatory
-				title="Assigned roles"
-				validity={$stateIsValid?.user.roles}
-				bind:roles={formData.roles}
+				title="Assigned permissions"
+				validity={$stateIsValid?.user.permissions}
+				bind:permissions={formData.permissions}
 			/>
 		</div>
 
