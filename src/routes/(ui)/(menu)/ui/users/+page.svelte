@@ -34,7 +34,7 @@
 				},
 				{
 					title: 'Roles',
-					property: 'rolesToDisplay',
+					property: 'roles',
 					isTagLarge: false
 				},
 				{

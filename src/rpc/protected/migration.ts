@@ -5,7 +5,7 @@ import { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration
 
 export const migrationRpc = createRpcRouter({
 	prepareFromFile: rpcProcedure
-		.meta({ permission: 'admin' })
+		.meta({ permission: 'migration' })
 		.input(
 			z.object({
 				mode: z.enum(['restore', 'migration']),
@@ -26,7 +26,7 @@ export const migrationRpc = createRpcRouter({
 			return await flagService.prepareMigration(input.migration);
 		}),
 	prepareFromRemoteUrl: rpcProcedure
-		.meta({ permission: 'admin' })
+		.meta({ permission: 'migration' })
 		.output(MigrationSummary)
 		.query(async ({ ctx }) => {
 			const configService = ctx.container.resolve('configService');
@@ -46,7 +46,7 @@ export const migrationRpc = createRpcRouter({
 			return await flagService.prepareMigration(migrationData.data);
 		}),
 	execute: rpcProcedure
-		.meta({ permission: 'admin' })
+		.meta({ permission: 'migration' })
 		.input(
 			z.object({
 				steps: z.array(MigrationStep)

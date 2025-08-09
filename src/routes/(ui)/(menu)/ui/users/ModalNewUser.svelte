@@ -14,7 +14,7 @@
 	import FormUserRoleEditor from '$components/form/FormUserRoleEditor.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
-	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
+	import { focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
@@ -30,7 +30,7 @@
 		name: 'John Doe',
 		password: '',
 		password2: '',
-		roles: ['viewer'] as UserRole[],
+		roles: ['flag-value'] as UserRole[],
 		mustChangePassword: true
 	};
 
@@ -61,8 +61,7 @@
 							.required()
 							.minLength(8)
 							.equalsWith(source.password, 'password').error,
-						name: new StringValidator(source.name, 'trim').required().maxLength(100).error,
-						roles: new ArrayValidator(source.roles).required().error
+						name: new StringValidator(source.name, 'trim').required().maxLength(100).error
 					}
 				};
 			}
@@ -157,7 +156,6 @@
 					inProgress={$stateInProgress}
 					mandatory
 					title="Assigned roles"
-					validity={$stateIsValid?.user.roles}
 					bind:roles={formData.roles}
 				/>
 			</div>

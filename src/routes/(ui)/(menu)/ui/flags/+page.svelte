@@ -40,8 +40,8 @@
 
 	let { data }: PageProperties = $props();
 
-	const hasRoleEditor = data.authenticationContext.roles.editor;
-	const hasRoleMaintainer = data.authenticationContext.roles.maintainer;
+	const hasRoleSetValue = data.authenticationContext.roles['flag-value'];
+	const hasRoleEditSchema = data.authenticationContext.roles['flag-schema'];
 
 	const GROUP_GENERAL_NAME = '#root';
 	const GROUP_NAME_SEPARATOR = ' › ';
@@ -72,7 +72,7 @@
 
 	const addFlag = async (groupName = '') => {
 		try {
-			const result = await showModalNewFlag(hasRoleEditor, groupName);
+			const result = await showModalNewFlag(hasRoleSetValue, groupName);
 			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -92,7 +92,7 @@
 
 	const modifyFlagSchema = async (key: string) => {
 		try {
-			const result = await showModalModifyFlagSchema(key, hasRoleEditor);
+			const result = await showModalModifyFlagSchema(key, hasRoleSetValue);
 			if (!result || !result.isOk) return;
 
 			await invalidatePage();
@@ -191,10 +191,10 @@
 	<Kbd
 		class={clsx('bg-primary-50 inline-flex decoration-dashed underline-offset-4', {
 			underline: 'valueExists' in flag && !flag.valueExists,
-			'cursor-pointer': hasRoleEditor
+			'cursor-pointer': hasRoleSetValue
 		})}
 		ondblclick={() => {
-			if (hasRoleEditor) modifyFlagValue(flag.key);
+			if (hasRoleSetValue) modifyFlagValue(flag.key);
 		}}
 	>
 		{flagValueToString(flag).value}
@@ -274,11 +274,11 @@
 													class={clsx(
 														'trimmed-content inline-flex items-center gap-2 font-semibold text-gray-700',
 														{
-															'cursor-pointer': hasRoleMaintainer
+															'cursor-pointer': hasRoleEditSchema
 														}
 													)}
 													ondblclick={() => {
-														if (hasRoleMaintainer) modifyFlagSchema(flag.key);
+														if (hasRoleEditSchema) modifyFlagSchema(flag.key);
 													}}
 												>
 													<Icon id={flag.icon} class="mr-1 inline-flex" color="primary" />
@@ -299,14 +299,14 @@
 											size={24}
 										/>
 										<Dropdown simple transitionParams={{ duration: 0 }}>
-											{#if hasRoleEditor}
+											{#if hasRoleSetValue}
 												<DropdownItem
 													class="font-semibold"
 													href="#"
 													onclick={() => modifyFlagValue(flag.key)}>Set value</DropdownItem
 												>
 											{/if}
-											{#if hasRoleMaintainer}
+											{#if hasRoleEditSchema}
 												<DropdownItem href="#" onclick={() => modifyFlagSchema(flag.key)}
 													>Modify schema</DropdownItem
 												>

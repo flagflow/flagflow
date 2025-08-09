@@ -25,7 +25,7 @@ export const flagRpc = createRpcRouter({
 			return await etcdService.getOrThrow('flag', input.key);
 		}),
 	create: rpcProcedure
-		.meta({ permission: 'maintainer' })
+		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -44,7 +44,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.put('flag', input.key, input.flag);
 		}),
 	rename: rpcProcedure
-		.meta({ permission: 'maintainer' })
+		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
 				oldKey: EtcdFlagKey.trim(),
@@ -66,7 +66,7 @@ export const flagRpc = createRpcRouter({
 			}
 		}),
 	updateSchema: rpcProcedure
-		.meta({ permission: 'maintainer' })
+		.meta({ permission: 'flag-schema' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -96,7 +96,7 @@ export const flagRpc = createRpcRouter({
 						input.flag.valueExists &&
 						(recentFlag.value !== input.flag.value ||
 							recentFlag.valueExists !== input.flag.valueExists) &&
-						!ctx.authentication.success?.roles.includes('editor')
+						!ctx.authentication.success?.roles.includes('flag-value')
 					)
 						throw new Error('You do not have permission to update flag value');
 					recentFlag.valueExists = input.flag.valueExists;
@@ -109,7 +109,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
 	updateValue: rpcProcedure
-		.meta({ permission: 'editor' })
+		.meta({ permission: 'flag-value' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -138,7 +138,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.overwrite('flag', input.key, recentFlag);
 		}),
 	updateKillSwitch: rpcProcedure
-		.meta({ permission: 'editor' })
+		.meta({ permission: 'flag-value' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim(),
@@ -161,7 +161,7 @@ export const flagRpc = createRpcRouter({
 			await etcdService.overwrite('flag', input.key, currentFlag);
 		}),
 	delete: rpcProcedure
-		.meta({ permission: 'maintainer' })
+		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
 				key: EtcdFlagKey.trim()

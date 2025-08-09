@@ -130,7 +130,7 @@
 			</SidebarDropdownWrapper>
 		</SidebarGroup>
 		<SidebarGroup border>
-			{#if data.authenticationContext.roles.admin}
+			{#if data.authenticationContext.roles.migration}
 				<SidebarItem href="/ui/migration" label="Migration" {spanClass}>
 					{#snippet icon()}
 						<Icon id="export" />
@@ -144,7 +144,7 @@
 				</SidebarItem>
 			{/if}
 
-			{#if data.environmentContext.usersEnabled && data.authenticationContext.roles.admin}
+			{#if data.environmentContext.usersEnabled && data.authenticationContext.roles.users}
 				<SidebarDropdownWrapper classes={{ btn: 'p-2' }} isOpen label="Users">
 					{#snippet icon()}
 						<Icon id="user" />
