@@ -23,6 +23,10 @@ export const config = {
 	},
 	session: {
 		enabled: envVar.get('SESSION_USERS_ENABLED').default('true').asBool(),
+		defaultUser: {
+			username: envVar.get('SESSION_DEFAULT_USERNAME').asString(),
+			password: envVar.get('SESSION_DEFAULT_PASSWORD').asString()
+		},
 		timeoutSecs: envVar
 			.get('SESSION_TIMEOUT_SEC')
 			.default(30 * 60)

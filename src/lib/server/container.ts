@@ -54,6 +54,19 @@ const maintenanceTimer = setInterval(async () => {
 	await maintenanceService.deleteExpiredSessions();
 }, 113 * 1000);
 
+// Create default user if needed
+const maintenanceCreateDefaultUser = async () => {
+	const scope = container.createScope();
+	scope.register({
+		traceId: asValue(generateTraceId()),
+		userName: asValue(undefined)
+	});
+
+	const maintenanceService = scope.resolve('maintenanceService');
+	await maintenanceService.createDefaultUser();
+};
+maintenanceCreateDefaultUser();
+
 // Done function to clean up the container
 export const doneContainer = async () => {
 	await container.dispose();
