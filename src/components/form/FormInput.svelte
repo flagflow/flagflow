@@ -52,7 +52,7 @@
 		preText,
 		postText,
 		postButton,
-		maxLength = 0,
+		maxLength,
 		minNumber,
 		maxNumber,
 		regexp = /.*/,
@@ -64,7 +64,13 @@
 
 	let showPassword = $state(false);
 	const onKeypress = (event: KeyboardEvent) => {
-		if (value && maxLength > 0 && typeof value === 'string' && value.length >= maxLength)
+		if (
+			value &&
+			maxLength &&
+			maxLength > 0 &&
+			typeof value === 'string' &&
+			value.length >= maxLength
+		)
 			event.preventDefault();
 		if (!regexp.test(event.key)) event.preventDefault();
 	};
