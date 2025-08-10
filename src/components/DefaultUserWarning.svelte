@@ -1,14 +1,15 @@
 <script lang="ts">
 	import clsx from 'clsx';
-	import { Alert } from 'flowbite-svelte';
+	import { A, Alert } from 'flowbite-svelte';
 
 	import Icon from './Icon.svelte';
 
 	interface Properties {
+		displayButton?: boolean;
 		class?: string;
 	}
 
-	const { class: aClass = '' }: Properties = $props();
+	const { class: aClass = '', displayButton = false }: Properties = $props();
 </script>
 
 <Alert class={clsx('items-start', aClass)} color="red">
@@ -25,4 +26,12 @@
 		<li>Change password <strong>to something secure</strong></li>
 		<li>Remove ENV variables <strong>related to the default user</strong></li>
 	</ul>
+	{#if displayButton}
+		<div class="text-md mt-2 flex gap-2">
+			<A color="red" href="/ui/users" outline
+				>Jump to Users
+				<Icon id="arrowRight" align="right" />
+			</A>
+		</div>
+	{/if}
 </Alert>

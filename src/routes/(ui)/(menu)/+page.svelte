@@ -50,7 +50,7 @@
 
 <PageContainer>
 	{#if data.isDefaultUserExists}
-		<DefaultUserWarning class="my-4" />
+		<DefaultUserWarning class="my-4" displayButton />
 	{/if}
 
 	<!-- Quick Search -->
