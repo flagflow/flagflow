@@ -1,6 +1,6 @@
 {
 	"name": "flagflow",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"type": "module",
 	"engines": {
 		"node": ">=22"
