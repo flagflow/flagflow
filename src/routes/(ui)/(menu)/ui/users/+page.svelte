@@ -2,6 +2,7 @@
 	import { ButtonGroup } from 'flowbite-svelte';
 
 	import AsyncButton from '$components/AsyncButton.svelte';
+	import DefaultUserWarning from '$components/DefaultUserWarning.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
 	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
@@ -103,6 +104,9 @@
 
 {#if data.users.length > 0}
 	<PageContainer>
+		{#if data.isDefaultUserExists}
+			<DefaultUserWarning class="my-4" />
+		{/if}
 		{#key data}
 			<AutoTable descriptor={createDescriptor()} />
 		{/key}

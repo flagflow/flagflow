@@ -3,6 +3,7 @@
 	import { Badge, Button, ButtonGroup, Card, Input, InputAddon } from 'flowbite-svelte';
 
 	import { goto } from '$app/navigation';
+	import DefaultUserWarning from '$components/DefaultUserWarning.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { showModalConfirmation } from '$components/modal/ModalConfirmation.svelte';
@@ -48,6 +49,10 @@
 <HtmlTitle title="Dashboard" />
 
 <PageContainer>
+	{#if data.isDefaultUserExists}
+		<DefaultUserWarning class="my-4" displayButton />
+	{/if}
+
 	<!-- Quick Search -->
 	<div class="mb-8">
 		<h2 class="mb-4 text-xl font-semibold text-gray-900">

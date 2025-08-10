@@ -44,12 +44,43 @@ Copy the example environment file and configure:
 cp .env.example .env
 ```
 
-Key configuration options:
+### Configuration Options
 
-- `ETCD_SERVER`: etcd connection string (default: localhost:2379)
-- `KEYCLOAK_HOST`: Keycloak server URL
-- `ENVIRONMENT`: Environment identifier (DEV, STAGING, PROD)
-- `LOGLEVEL`: Logging level (trace, debug, info, warn, error)
+#### Core Settings
+
+- `LOGLEVEL`: Logging level (default: `info`)
+  - Options: `trace`, `debug`, `info`, `warn`, `error`
+- `ENVIRONMENT`: Environment identifier (e.g., `DEV`, `STAGING`, `PROD`)
+
+#### Database (etcd) Configuration
+
+- `ETCD_SERVER`: etcd connection string (default: `localhost:2379`)
+- `ETCD_USERNAME`: etcd username (e.g., `root`)
+- `ETCD_PASSWORD`: etcd password
+- `ETCD_NAMESPACE`: etcd namespace (default: `default`)
+
+#### Authentication (Keycloak) Configuration
+
+- `KEYCLOAK_HOST`: Keycloak server URL (e.g., `http://localhost:8080/`)
+- `KEYCLOAK_REALM`: Keycloak realm (default: `master`)
+- `KEYCLOAK_CLIENT`: Keycloak client ID (default: `flagflow-frontend`)
+
+#### Session Management
+
+- `SESSION_USERS_ENABLED`: Enable built-in user sessions (default: `true`)
+- `SESSION_DEFAULT_USERNAME`: Default user username for auto-creation
+- `SESSION_DEFAULT_PASSWORD`: Default user password for auto-creation
+- `SESSION_TIMEOUT_SEC`: Session timeout in seconds (default: `1800` = 30 minutes)
+
+#### Migration & Import/Export
+
+- `MIGRATION_SOURCE_ENVIRONMENT`: Source environment name for migrations
+- `MIGRATION_SOURCE_URL`: Source URL for flag export/import operations
+
+#### Monitoring & Development
+
+- `METRICS_ENABLED`: Enable Prometheus metrics (default: `false`)
+- `DEV_RPC_SLOWDOWN_MS`: Artificial RPC delay for development (default: `0`)
 
 ### 3. Install Dependencies
 

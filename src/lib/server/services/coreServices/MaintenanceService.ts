@@ -1,14 +1,45 @@
-import type { EtcdService, LogService } from '../index';
+import type { ConfigService, EtcdService, LogService } from '../index';
+import { hashPassword } from './UserService';
 
 type MaintenanceServiceParameters = {
-	etcdService: EtcdService;
 	logService: LogService;
+	configService: ConfigService;
+	etcdService: EtcdService;
 };
 
-export const MaintenanceService = ({ etcdService, logService }: MaintenanceServiceParameters) => {
+export const MaintenanceService = ({
+	etcdService,
+	logService,
+	configService
+}: MaintenanceServiceParameters) => {
 	const log = logService('maintenance');
 
 	return {
+		createDefaultUser: async () => {
+			const { username, password } = configService.session.defaultUser;
+			if (username && password) {
+				const user = await etcdService.get('user', username);
+				if (!user)
+					await etcdService.put('user', username, {
+						name: username,
+						enabled: true,
+						passwordHash: hashPassword(password),
+						passwordExpireAt: undefined,
+						permissions: ['users']
+					});
+			}
+		},
+		isDefaultUserExistsWithoutModification: async (): Promise<boolean> => {
+			const { username, password } = configService.session.defaultUser;
+			if (!username || !password) return false;
+
+			const user = await etcdService.get('user', username);
+			if (!user) return false;
+
+			if (user.passwordHash !== hashPassword(password)) return false;
+
+			return true;
+		},
 		deleteExpiredSessions: async () => {
 			const { list, undefs } = await etcdService.list('session', 0, 'Key');
 

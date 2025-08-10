@@ -5,6 +5,9 @@ import { etcdRecordToArray } from '$types/etcd';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { container } }) => {
+	const maintenanceService = container.resolve('maintenanceService');
+	const isDefaultUserExists = await maintenanceService.isDefaultUserExistsWithoutModification();
+
 	const flagService = container.resolve('flagService');
 
 	const flagGroups = await flagService.getFlagGroups();
@@ -23,6 +26,7 @@ export const load: PageServerLoad = async ({ locals: { container } }) => {
 		}));
 
 	return {
+		isDefaultUserExists,
 		killSwitchFlags,
 		totalFlagsCount: flags.length,
 		killSwitchCount: killSwitchFlags.length,
