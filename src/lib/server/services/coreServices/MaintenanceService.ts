@@ -1,3 +1,5 @@
+import { UserPermissionAll } from '$types/UserPermissions';
+
 import type { ConfigService, EtcdService, LogService } from '../index';
 import { hashPassword } from './UserService';
 
@@ -25,7 +27,7 @@ export const MaintenanceService = ({
 						enabled: true,
 						passwordHash: hashPassword(password),
 						passwordExpireAt: undefined,
-						permissions: ['users']
+						permissions: UserPermissionAll
 					});
 			}
 		},
