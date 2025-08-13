@@ -1,6 +1,17 @@
 # FlagFlow
 
+[![Built with SvelteKit](https://img.shields.io/badge/Built%20with-SvelteKit-FF3E00?style=flat&logo=svelte)](https://kit.svelte.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![etcd](https://img.shields.io/badge/etcd-419EDA?style=flat&logo=etcd&logoColor=white)](https://etcd.io/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+
 A modern feature flag management system built with SvelteKit 5, TypeScript, and etcd. FlagFlow provides real-time flag management with role-based access control, type-safe client integration, and a web-based administration interface.
+
+🌐 **Live Demo**: [demo.flagflow.net](https://demo.flagflow.net)
+
+🌐 **Document site**: [flagflow.net](https://flagflow.net)
 
 ## Features
 
@@ -11,6 +22,10 @@ A modern feature flag management system built with SvelteKit 5, TypeScript, and 
 - **Migration system** for flag import/export between environments
 - **Web administration interface** with responsive design
 - **API endpoints** for programmatic flag access
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and version history.
 
 ## Prerequisites
 
