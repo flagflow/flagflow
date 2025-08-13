@@ -13,6 +13,7 @@ RUN node --run sync && node --run build
 
 # Runner
 FROM ${NODE_IMAGE} AS runner
+RUN apk add --no-cache curl
 WORKDIR /app
 
 COPY package.json package-lock.json .
