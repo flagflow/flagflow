@@ -5,6 +5,25 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2025-08-13
+
+### Added
+
+- curl command line tool added to Docker container for debugging and health checks
+
+### Changed
+
+- Updated dependencies to latest versions
+- First user is now automatically created with all permissions for easier initial setup
+
+### Fixed
+
+- Improved GitHub Actions permissions for proper CI/CD pipeline execution
+
+## [1.4.2] - 2025-08-09
+
+### First release built by github pipeline
+
 ## [1.4.0] - 2025-08-09
 
 ### 🎉 First Public Release
