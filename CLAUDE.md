@@ -16,6 +16,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Docker**: `npm run docker:build` and `npm run docker:run`
 - **Full rebuild of npm packages**: `npm run npm:reinstall`
 
+### Testing Commands
+
+- **Run tests**: `npm run test` (Vitest with @testing-library/svelte)
+- **Test environment**: Node.js with integration setup at `tests/integration.setup.ts`
+- **Test exclusions**: Svelte files are excluded from testing by default
+
 ## Architecture Overview
 
 ### Core Technology Stack
@@ -30,21 +36,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Service Architecture
 
-The application follows a layered service architecture with dependency injection:
+The application follows a layered service architecture with Awilix dependency injection:
 
 1. **System Services** (`src/lib/server/services/systemServices/`):
-   - `ConfigService`: Environment configuration management
-   - `EtcdService`: etcd client and operations
-   - `HttpClientService`: HTTP client with interceptors
-   - `LogService`: Structured logging with Pino
+   - `ConfigService`: Environment configuration management using env-var
+   - `EtcdService`: etcd client wrapper with namespace support and connection pooling
+   - `HttpClientService`: HTTP client with interceptors and timeout handling
+   - `LogService`: Structured logging with Pino and trace ID correlation
 
 2. **Core Services** (`src/lib/server/services/coreServices/`):
-   - `SessionService`: User session management
-   - `UserService`: User operations and authentication
-   - `MaintenanceService`: Background cleanup tasks
+   - `SessionService`: User session management with debounced touching (5s) and TTL
+   - `UserService`: User operations, authentication, and permission validation
+   - `MaintenanceService`: Background cleanup tasks running every 113 seconds
 
 3. **Business Services**:
-   - `FlagService`: Feature flag management with real-time watching
+   - `FlagService`: Feature flag management with real-time etcd watching, TypeScript generation
 
 ### Key Architectural Components
 
@@ -56,10 +62,11 @@ The application follows a layered service architecture with dependency injection
 
 #### RPC Layer (`src/lib/rpc/`)
 
-- tRPC setup with superjson transformer for type safety
-- Context creation with authentication and tracing
-- Middleware for authentication (`auth.ts`) and logging (`logger.ts`)
-- Separate public and protected procedure types
+- tRPC setup with superjson transformer for complex type serialization
+- Context creation with authentication, tracing, and service injection
+- Middleware chain: logging → authentication → permission-based authorization
+- Route organization: `public/` (login/auth) and `protected/` (flag/user/session operations)
+- Enhanced Zod error formatting with detailed validation messages
 
 #### Feature Flag System
 
@@ -86,10 +93,20 @@ The application follows a layered service architecture with dependency injection
 
 ### Frontend Structure
 
-- **Routes**: File-based routing with nested layouts
-- **Components**: Reusable UI components with form helpers
-- **Stores**: Svelte stores for client-side state management
-- **Modal System**: Centralized modal management
+#### Route Organization (`src/routes/`)
+
+- **File-based routing** with nested layouts and server load functions
+- **Route groups**: `(ui)/` for authenticated pages, `(menu)/` with navigation, `(plain)/` for simple pages
+- **API endpoints**: `/flag/{flagname}`, `/flags/{flaggroup}`, `/type/typescript`, `/migration/export`
+- **Authentication callbacks**: `/auth/` for Keycloak integration
+
+#### Component Architecture (`src/components/`)
+
+- **Atomic design principles** with reusable components
+- **Form components** with validation in `form/` directory
+- **Modal portal system** with show functions (`showModalError`, `showModalConfirmation`)
+- **Icon system** using Iconify with centralized Icon.svelte component
+- **Path aliases**: $components, $lib, $rpc, $types for clean imports
 
 ### Development Notes
 
@@ -123,10 +140,37 @@ Before development, start required services:
 - Icons using Iconify with `src/components/Icon.svelte`
 - Responsive design with TailwindCSS and Flowbite components
 
-### Rules
+### Development Patterns & Best Practices
 
-- Do not use brackets {} if not needed, at one line command in blocks
-- Do not use dynamic import()
+#### Code Style Rules
+
+- Do not use brackets `{}` if not needed, especially for single-line command blocks
+- Do not use dynamic `import()` - use static imports for better type safety
+- Prefer TypeScript strict mode with comprehensive type annotations
+- Use path aliases (`$lib`, `$components`, etc.) for clean import statements
+
+#### Security & Safety Rules
+
 - Always use confirmation dialogs for destructive actions (especially kill switches)
-- Maintain type safety from database to UI using Zod schemas
+- Maintain comprehensive type safety from database to UI using Zod schemas
 - Use structured logging with trace IDs for all service operations
+- Never commit secrets or environment variables to the repository
+- All etcd data must use Zod schemas for runtime validation
+
+#### Architecture Rules
+
+- Services must be registered in the Awilix container with proper lifecycle (singleton/scoped)
+- All database operations should go through service layer, never direct etcd access
+- Use permission-based access control via tRPC middleware
+- Real-time updates should use etcd watchers, not polling
+- Session management uses debounced touching with 5-second intervals
+
+#### Permission System
+
+FlagFlow uses role-based permissions:
+
+- `flag-create`: Create, rename/move, and delete flags
+- `flag-schema`: Manage flag schemas and types
+- `flag-value`: Manage flag values and configurations
+- `users`: Add, modify, or remove users and manage sessions
+- `migration`: Restore backups or execute migrations
