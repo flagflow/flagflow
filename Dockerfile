@@ -13,6 +13,10 @@ RUN node --run sync && node --run build
 
 # Runner
 FROM ${NODE_IMAGE} AS runner
+LABEL org.opencontainers.image.description="Flagflow engine"
+LABEL org.opencontainers.image.vendor="Flagflow"
+LABEL org.opencontainers.image.source="https://github.com/flagflow/flagflow/blob/main/Dockerfile"
+LABEL org.opencontainers.image.url="https://flagflow.net"
 RUN apk add --no-cache curl
 WORKDIR /app
 

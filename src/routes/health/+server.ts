@@ -4,6 +4,7 @@ import { verifyKeycloakCommunication } from '$lib/server/keycloak';
 import type { RequestEvent, RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event: RequestEvent) => {
+	const configService = event.locals.container.resolve('configService');
 	const etcdService = event.locals.container.resolve('etcdService');
 
 	let etcdVersion: string | undefined;
@@ -13,10 +14,15 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 		etcdVersion = undefined;
 	}
 
+	let keycloakStatus: 'OK' | 'ERROR' | 'NOTUSED' = 'NOTUSED';
 	let keycloakError: string | undefined;
 	try {
-		await verifyKeycloakCommunication();
+		if (configService.keycloak.host) {
+			await verifyKeycloakCommunication();
+			keycloakStatus = 'OK';
+		}
 	} catch (error) {
+		keycloakStatus = 'ERROR';
 		keycloakError =
 			error instanceof AggregateError
 				? error.errors.map((error_) => error_.message).join(', ')
@@ -36,14 +42,19 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 						version: 'unknown',
 						status: 'ERROR'
 					},
-			keycloak: keycloakError
-				? {
-						status: 'ERROR',
-						message: keycloakError
-					}
-				: {
-						status: 'OK'
-					}
+			keycloak:
+				keycloakStatus === 'ERROR'
+					? {
+							status: 'ERROR',
+							message: keycloakError
+						}
+					: keycloakStatus === 'NOTUSED'
+						? {
+								status: 'NOTUSED'
+							}
+						: {
+								status: 'OK'
+							}
 		},
 		{ status: etcdVersion && !keycloakError ? 200 : 500 }
 	);

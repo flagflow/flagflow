@@ -5,11 +5,12 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.3] - 2025-08-13
+## [1.4.4] - 2025-08-13
 
 ### Added
 
 - curl command line tool added to Docker container for debugging and health checks
+- OCI container image labels for better metadata and registry compatibility
 
 ### Changed
 
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improved GitHub Actions permissions for proper CI/CD pipeline execution
+- Health check endpoint now properly handles configurations where Keycloak is not used (returns NOTUSED status)
 
 ## [1.4.2] - 2025-08-09
 
