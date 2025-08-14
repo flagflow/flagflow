@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import { ZNonEmptyString } from '$rpc/zodTypes';
-import type { EtcdUser } from '$types/etcd';
-import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
+import type { PersistentUser } from '$types/persistent';
+import { persistentRecordToArray, PersistentUserKey } from '$types/persistent';
 import { type UserPermission, UserPermissionZodEnum } from '$types/UserPermissions';
 
 const rpcProcedureUsersPermission = rpcProcedure.meta({ permission: 'users' });
@@ -13,7 +13,7 @@ export const userRpc = createRpcRouter({
 	getList: rpcProcedureUsersPermission.query(async ({ ctx }) => {
 		const persistentService = ctx.container.resolve('persistentService');
 		const { list: usersAsRecord } = await persistentService.list('user');
-		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
+		const users = persistentRecordToArray<PersistentUser>(usersAsRecord);
 
 		return users;
 	}),
@@ -21,7 +21,7 @@ export const userRpc = createRpcRouter({
 		.meta({ permission: 'users' })
 		.input(
 			z.object({
-				key: EtcdUserKey.trim()
+				key: PersistentUserKey.trim()
 			})
 		)
 		.query(async ({ ctx, input }) => {
@@ -37,7 +37,7 @@ export const userRpc = createRpcRouter({
 	create: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				name: z.string().trim(),
 				password: ZNonEmptyString(),
 				permissions: z.array(UserPermissionZodEnum),
@@ -58,7 +58,7 @@ export const userRpc = createRpcRouter({
 	update: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				name: z.string().trim(),
 				permissions: z.array(UserPermissionZodEnum)
 			})
@@ -73,7 +73,7 @@ export const userRpc = createRpcRouter({
 	setPassword: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				password: ZNonEmptyString(),
 				mustChangePassword: z.boolean()
 			})
@@ -88,7 +88,7 @@ export const userRpc = createRpcRouter({
 	setEnabled: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				enabled: z.boolean()
 			})
 		)
@@ -101,7 +101,7 @@ export const userRpc = createRpcRouter({
 	delete: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim()
+				key: PersistentUserKey.trim()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {

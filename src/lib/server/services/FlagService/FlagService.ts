@@ -1,7 +1,7 @@
 import type { Watcher } from 'etcd3';
 
-import { EtcdFlag } from '$types/etcd';
 import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
+import { PersistentFlag } from '$types/persistent';
 
 import type { ConfigService, LogService, PersistentService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
@@ -20,7 +20,7 @@ type FlagTypeDescriptor = {
 	groupTypeHash: Map<string, string>;
 };
 
-let flags: Record<string, EtcdFlag> | undefined;
+let flags: Record<string, PersistentFlag> | undefined;
 let flagWatcher: Watcher | undefined;
 let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
@@ -32,7 +32,7 @@ export const FlagService = ({
 	const log = logService('flag');
 	const logWatch = logService('flag-watch');
 
-	const accessFlags = async (): Promise<Record<string, EtcdFlag>> => {
+	const accessFlags = async (): Promise<Record<string, PersistentFlag>> => {
 		if (flags === undefined) {
 			const { list } = await persistentService.list('flag');
 			flags = list;
@@ -55,7 +55,7 @@ export const FlagService = ({
 					try {
 						const value = etcdKeyValue.value.toString();
 						const valueObject = JSON.parse(value);
-						const flag = EtcdFlag.parse(valueObject);
+						const flag = PersistentFlag.parse(valueObject);
 						flags[name] = flag;
 						logWatch.debug({ key: name }, 'Updated flag');
 					} catch {
@@ -99,11 +99,11 @@ export const FlagService = ({
 
 	return {
 		list: async () => await accessFlags(),
-		getFlag: async (key: string): Promise<EtcdFlag | undefined> => {
+		getFlag: async (key: string): Promise<PersistentFlag | undefined> => {
 			const flags = await accessFlags();
 			return flags?.[key] ?? undefined;
 		},
-		getFlags: async (prefix: string): Promise<Record<string, EtcdFlag>> => {
+		getFlags: async (prefix: string): Promise<Record<string, PersistentFlag>> => {
 			const flags = await accessFlags();
 			prefix = prefix ? prefix + '/' : '';
 			return Object.fromEntries(Object.entries(flags).filter(([name]) => name.startsWith(prefix)));

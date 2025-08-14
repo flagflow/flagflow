@@ -1,6 +1,6 @@
 import { basename, dirname } from '$lib/pathEx';
-import type { EtcdFlag } from '$types/etcd';
-import { etcdRecordToArray } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
+import { persistentRecordToArray } from '$types/persistent';
 
 import type { PageServerLoad } from './$types';
 
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals: { container } }) => {
 	const flagGroups = await flagService.getFlagGroups();
 
 	const flagsAsRecord = await flagService.list();
-	const flags = etcdRecordToArray<EtcdFlag>(flagsAsRecord);
+	const flags = persistentRecordToArray<PersistentFlag>(flagsAsRecord);
 
 	// Filter only boolean flags that are killswitches
 	const killSwitchFlags = flags

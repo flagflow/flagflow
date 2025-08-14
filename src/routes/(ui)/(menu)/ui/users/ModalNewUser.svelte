@@ -18,7 +18,7 @@
 	import { generatePassword } from '$lib/genId';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import { EtcdUserKey } from '$types/etcd';
+	import { PersistentUserKey } from '$types/persistent';
 	import { type UserPermission } from '$types/UserPermissions';
 
 	const dispatch = createEventDispatcher<{
@@ -55,7 +55,7 @@
 							.required()
 							.noSpace()
 							.maxLength(64)
-							.zod(EtcdUserKey).error,
+							.zod(PersistentUserKey).error,
 						password: new StringValidator(source.password).required().minLength(8).error,
 						password2: new StringValidator(source.password2)
 							.required()

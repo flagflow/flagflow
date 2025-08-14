@@ -1,8 +1,8 @@
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
 const regExpCache = new Map<string, RegExp>();
 
-export const flagSchemaValidator = (flag: EtcdFlag): string => {
+export const flagSchemaValidator = (flag: PersistentFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':
 			return '';
@@ -55,7 +55,7 @@ export const flagSchemaValidator = (flag: EtcdFlag): string => {
 	}
 };
 
-export const flagValueValidator = (flag: EtcdFlag): string => {
+export const flagValueValidator = (flag: PersistentFlag): string => {
 	if ('valueExists' in flag && !flag.valueExists) return '';
 	switch (flag.type) {
 		case 'BOOLEAN':

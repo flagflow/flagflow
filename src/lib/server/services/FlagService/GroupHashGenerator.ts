@@ -2,10 +2,10 @@ import { createHash } from 'node:crypto';
 
 import { flagHashInfo } from '$lib/flagHandler/flagTypescript';
 import { sortObjectByKey } from '$lib/objectEx';
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
-export const generateHashInfo = (flags: Record<string, EtcdFlag>): Map<string, string> => {
-	const groups: Map<string, Record<string, EtcdFlag | string>> = new Map();
+export const generateHashInfo = (flags: Record<string, PersistentFlag>): Map<string, string> => {
+	const groups: Map<string, Record<string, PersistentFlag | string>> = new Map();
 
 	// Generate groups
 	for (const [key, flag] of Object.entries(flags)) {

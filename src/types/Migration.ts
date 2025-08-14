@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-import { EtcdFlag } from './etcd';
+import { PersistentFlag } from './persistent';
 
 export const MigrationFile = z.object({
 	environment: z.string(),
 	version: z.string().regex(/^\d+\.\d+\.\d+$/),
 	createdAt: z.coerce.date(),
 
-	flags: z.record(z.string(), EtcdFlag)
+	flags: z.record(z.string(), PersistentFlag)
 });
 export type MigrationFile = z.infer<typeof MigrationFile>;
 
@@ -21,17 +21,17 @@ export const MigrationStep = z.intersection(
 		z.object({
 			mode: z.literal('CREATE_DEFAULTVALUE'),
 			flagKey: z.string(),
-			flag: EtcdFlag
+			flag: PersistentFlag
 		}),
 		z.object({
 			mode: z.literal('UPDATE_SCHEMA_DEFAULTVALUE'),
 			flagKey: z.string(),
-			flag: EtcdFlag
+			flag: PersistentFlag
 		}),
 		z.object({
 			mode: z.literal('SET_VALUE'),
 			flagKey: z.string(),
-			flag: EtcdFlag
+			flag: PersistentFlag
 		}),
 		z.object({
 			mode: z.literal('DELETE'),

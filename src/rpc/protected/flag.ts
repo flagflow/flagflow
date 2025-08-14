@@ -3,21 +3,21 @@ import { z } from 'zod';
 import { updateFlagSchema, updateFlagValue } from '$lib/flagHandler/flagUpdater';
 import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
-import { EtcdFlag } from '$types/etcd';
-import { EtcdFlagKey, etcdRecordToArray } from '$types/etcd';
+import { PersistentFlag } from '$types/persistent';
+import { PersistentFlagKey, persistentRecordToArray } from '$types/persistent';
 
 export const flagRpc = createRpcRouter({
 	getList: rpcProcedure.query(async ({ ctx }) => {
 		const flagService = ctx.container.resolve('flagService');
 		const flagsAsRecord = await flagService.list();
-		const flags = etcdRecordToArray<EtcdFlag>(flagsAsRecord);
+		const flags = persistentRecordToArray<PersistentFlag>(flagsAsRecord);
 
 		return flags;
 	}),
 	get: rpcProcedure
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim()
+				key: PersistentFlagKey.trim()
 			})
 		)
 		.query(async ({ ctx, input }) => {
@@ -28,8 +28,8 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim(),
-				flag: EtcdFlag
+				key: PersistentFlagKey.trim(),
+				flag: PersistentFlag
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -47,8 +47,8 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
-				oldKey: EtcdFlagKey.trim(),
-				recentKey: EtcdFlagKey.trim(),
+				oldKey: PersistentFlagKey.trim(),
+				recentKey: PersistentFlagKey.trim(),
 				description: z.string()
 			})
 		)
@@ -70,8 +70,8 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-schema' })
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim(),
-				flag: EtcdFlag,
+				key: PersistentFlagKey.trim(),
+				flag: PersistentFlag,
 				resetValue: z.boolean()
 			})
 		)
@@ -113,8 +113,8 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-value' })
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim(),
-				flag: EtcdFlag
+				key: PersistentFlagKey.trim(),
+				flag: PersistentFlag
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -142,7 +142,7 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-value' })
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim(),
+				key: PersistentFlagKey.trim(),
 				value: z.boolean()
 			})
 		)
@@ -165,7 +165,7 @@ export const flagRpc = createRpcRouter({
 		.meta({ permission: 'flag-create' })
 		.input(
 			z.object({
-				key: EtcdFlagKey.trim()
+				key: PersistentFlagKey.trim()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {

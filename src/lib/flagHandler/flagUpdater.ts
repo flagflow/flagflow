@@ -1,6 +1,9 @@
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
-export const updateFlagSchema = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
+export const updateFlagSchema = (
+	current: PersistentFlag,
+	override: PersistentFlag
+): PersistentFlag => {
 	if (current.type !== override.type)
 		throw new Error(
 			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
@@ -50,7 +53,10 @@ export const updateFlagSchema = (current: EtcdFlag, override: EtcdFlag): EtcdFla
 	throw new Error(`Unknown flag type: ${current.type}`);
 };
 
-export const updateFlagValue = (current: EtcdFlag, override: EtcdFlag): EtcdFlag => {
+export const updateFlagValue = (
+	current: PersistentFlag,
+	override: PersistentFlag
+): PersistentFlag => {
 	if (current.type !== override.type)
 		throw new Error(
 			`Flag type cannot be changed (current: ${current.type}, new: ${override.type})`
