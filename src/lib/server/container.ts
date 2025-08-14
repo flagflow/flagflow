@@ -71,5 +71,5 @@ maintenanceCreateDefaultUser();
 export const doneContainer = async () => {
 	await container.dispose();
 	clearInterval(maintenanceTimer);
-	doneEtcdClient();
+	await doneEtcdClient();
 };

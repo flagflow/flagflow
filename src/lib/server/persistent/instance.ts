@@ -1,4 +1,4 @@
-import { Etcd3, type SortTarget, type Watcher } from 'etcd3';
+import { Etcd3, type Watcher } from 'etcd3';
 
 import {
 	PersistentSchema,
@@ -45,10 +45,10 @@ const watchers: Set<Watcher> = new Set();
 const removeWatcher = (watcher: Watcher) => {
 	watchers.delete(watcher);
 };
-const cleanWatchers = () => {
+const cleanWatchers = async () => {
 	for (const watcher of watchers) {
 		try {
-			watcher.cancel();
+			await watcher.cancel();
 		} catch {
 			/**/
 		}
@@ -238,9 +238,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			}
 		},
 		list: async <K extends PersistentSchemaKey>(
-			store: K,
-			limit = 0,
-			sort: keyof typeof SortTarget = 'Key'
+			store: K
 		): Promise<{
 			list: Record<string, PersistentSchemaDataType<K>>;
 			undefs: string[];
@@ -249,8 +247,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			try {
 				const schema = PersistentSchema[store];
 
-				const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
-				if (limit > 0) getAllBuilder.limit(limit);
+				const getAllBuilder = client.getAll().prefix(prefix).sort('Key', 'Ascend');
 
 				const data = await getAllBuilder.strings();
 
@@ -269,7 +266,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 						failed++;
 					}
 
-				logger.debug({ prefix, limit, success, failed }, 'List');
+				logger.debug({ prefix, success, failed }, 'List');
 				return { list, undefs };
 			} catch (error) {
 				resetEtcdClient();
@@ -291,7 +288,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 	};
 };
 
-export const doneEtcdClient = () => {
-	cleanWatchers();
+export const doneEtcdClient = async () => {
+	await cleanWatchers();
 	cachedClient?.close();
 };

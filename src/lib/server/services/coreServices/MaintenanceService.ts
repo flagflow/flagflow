@@ -43,7 +43,7 @@ export const MaintenanceService = ({
 			return true;
 		},
 		deleteExpiredSessions: async () => {
-			const { list, undefs } = await persistentService.list('session', 0, 'Key');
+			const { list, undefs } = await persistentService.list('session');
 
 			let deleted = 0;
 			for (const [sessionId, session] of Object.entries(list))
