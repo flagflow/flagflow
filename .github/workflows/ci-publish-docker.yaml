@@ -27,8 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       # Extract and compare versions
       - name: Detect version change
@@ -49,12 +49,10 @@ jobs:
             echo "No version upgrade detected."
           fi
 
-      # Build the Docker image
-      - name: Build Docker image
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
         if: env.version_changed == 'true'
-        run: |
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/$REPOSITORY:${{ env.CURRENT_VERSION }} .
+        uses: docker/setup-buildx-action@v3
 
       # Login to GitHub Container Registry
       - name: Log in to GitHub Container Registry
@@ -65,9 +63,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Push the Docker image
-      - name: Push Docker image
+      # Multi-platform
+      - name: Build and push Docker image
         if: env.version_changed == 'true'
-        run: |
-          REPOSITORY=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
-          docker push ghcr.io/$REPOSITORY:${{ env.CURRENT_VERSION }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER }}/flagflow:${{ env.CURRENT_VERSION }}
+
+      # Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER }}/flagflow:${{ env.CURRENT_VERSION }}
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      # Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
