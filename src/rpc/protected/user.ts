@@ -11,8 +11,8 @@ const rpcProcedureUsersPermission = rpcProcedure.meta({ permission: 'users' });
 
 export const userRpc = createRpcRouter({
 	getList: rpcProcedureUsersPermission.query(async ({ ctx }) => {
-		const etcdService = ctx.container.resolve('etcdService');
-		const { list: usersAsRecord } = await etcdService.list('user');
+		const persistentService = ctx.container.resolve('persistentService');
+		const { list: usersAsRecord } = await persistentService.list('user');
 		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
 
 		return users;
@@ -25,8 +25,8 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.query(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const user = await etcdService.getOrThrow('user', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			const user = await persistentService.getOrThrow('user', input.key);
 			return {
 				name: user.name,
 				enabled: user.enabled,
@@ -45,9 +45,9 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfExists('user', input.key);
-			await etcdService.put('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfExists('user', input.key);
+			await persistentService.put('user', input.key, {
 				name: input.name,
 				enabled: true,
 				passwordHash: hashPassword(input.password),
@@ -64,8 +64,8 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				name: input.name,
 				permissions: input.permissions
 			});
@@ -79,8 +79,8 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
@@ -93,8 +93,8 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				enabled: input.enabled
 			});
 		}),
@@ -105,8 +105,8 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfNotExists('user', input.key);
-			await etcdService.delete('user', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfNotExists('user', input.key);
+			await persistentService.delete('user', input.key);
 		})
 });

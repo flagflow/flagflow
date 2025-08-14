@@ -1,16 +1,16 @@
 import { createHash } from 'node:crypto';
 
-import type { EtcdService, LogService } from '../index';
+import type { LogService, PersistentService } from '../index';
 
 type UserServiceParameters = {
-	etcdService: EtcdService;
+	persistentService: PersistentService;
 	logService: LogService;
 };
 
 export const hashPassword = (password: string) =>
 	createHash('sha1').update(password).digest('hex').toLowerCase();
 
-export const UserService = ({ etcdService, logService }: UserServiceParameters) => {
+export const UserService = ({ persistentService, logService }: UserServiceParameters) => {
 	const log = logService('user');
 
 	return {
@@ -18,7 +18,7 @@ export const UserService = ({ etcdService, logService }: UserServiceParameters) 
 		authUser: async (username: string, password: string) => {
 			const passwordHash = hashPassword(password);
 
-			let user = await etcdService.get('user', username);
+			let user = await persistentService.get('user', username);
 			if (user?.passwordHash != passwordHash) user = undefined;
 			if (!user) {
 				log.error({ username }, 'Login error');

@@ -8,8 +8,8 @@ const rpcProcedureUsersPermission = rpcProcedure.meta({ permission: 'users' });
 
 export const sessionRpc = createRpcRouter({
 	getList: rpcProcedureUsersPermission.query(async ({ ctx }) => {
-		const etcdService = ctx.container.resolve('etcdService');
-		const { list: sessionRecords } = await etcdService.list('session');
+		const persistentService = ctx.container.resolve('persistentService');
+		const { list: sessionRecords } = await persistentService.list('session');
 		const sessions = etcdRecordToArray<EtcdSession>(sessionRecords);
 
 		return sessions;

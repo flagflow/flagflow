@@ -2,11 +2,11 @@ import { getEtcd } from '$lib/server/etcd';
 
 import type { ConfigService, LogService } from '../index';
 
-type EtcdServiceParameters = {
+type PersistentServiceParameters = {
 	configService: ConfigService;
 	logService: LogService;
 };
 
-export const EtcdService = ({ configService, logService }: EtcdServiceParameters) =>
+export const PersistentService = ({ configService, logService }: PersistentServiceParameters) =>
 	getEtcd(configService.etcd, logService('etcd'));
-export type EtcdService = ReturnType<typeof EtcdService>;
+export type PersistentService = ReturnType<typeof PersistentService>;

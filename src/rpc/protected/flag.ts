@@ -21,8 +21,8 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.query(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			return await etcdService.getOrThrow('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			return await persistentService.getOrThrow('flag', input.key);
 		}),
 	create: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -33,15 +33,15 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfExists('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfExists('flag', input.key);
 
 			const schemaError = flagSchemaValidator(input.flag);
 			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
 			const valueError = flagValueValidator(input.flag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
-			await etcdService.put('flag', input.key, input.flag);
+			await persistentService.put('flag', input.key, input.flag);
 		}),
 	rename: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -53,16 +53,17 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const flag = await etcdService.getOrThrow('flag', input.oldKey);
+			const persistentService = ctx.container.resolve('persistentService');
+			const flag = await persistentService.getOrThrow('flag', input.oldKey);
 			flag.description = input.description;
 
-			if (input.oldKey === input.recentKey) await etcdService.put('flag', input.recentKey, flag);
+			if (input.oldKey === input.recentKey)
+				await persistentService.put('flag', input.recentKey, flag);
 			else {
-				await etcdService.throwIfExists('flag', input.recentKey);
+				await persistentService.throwIfExists('flag', input.recentKey);
 
-				await etcdService.put('flag', input.recentKey, flag);
-				await etcdService.delete('flag', input.oldKey);
+				await persistentService.put('flag', input.recentKey, flag);
+				await persistentService.delete('flag', input.oldKey);
 			}
 		}),
 	updateSchema: rpcProcedure
@@ -75,8 +76,8 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const currentFlag = await etcdService.getOrThrow('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			const currentFlag = await persistentService.getOrThrow('flag', input.key);
 
 			if (currentFlag.type !== input.flag.type)
 				throw new Error(
@@ -106,7 +107,7 @@ export const flagRpc = createRpcRouter({
 			const valueError = flagValueValidator(recentFlag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
-			await etcdService.overwrite('flag', input.key, recentFlag);
+			await persistentService.overwrite('flag', input.key, recentFlag);
 		}),
 	updateValue: rpcProcedure
 		.meta({ permission: 'flag-value' })
@@ -117,8 +118,8 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const currentFlag = await etcdService.getOrThrow('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			const currentFlag = await persistentService.getOrThrow('flag', input.key);
 
 			if (currentFlag.type !== input.flag.type)
 				throw new Error(
@@ -135,7 +136,7 @@ export const flagRpc = createRpcRouter({
 			const valueError = flagValueValidator(recentFlag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
-			await etcdService.overwrite('flag', input.key, recentFlag);
+			await persistentService.overwrite('flag', input.key, recentFlag);
 		}),
 	updateKillSwitch: rpcProcedure
 		.meta({ permission: 'flag-value' })
@@ -146,8 +147,8 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const currentFlag = await etcdService.getOrThrow('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			const currentFlag = await persistentService.getOrThrow('flag', input.key);
 
 			if (currentFlag.type !== 'BOOLEAN' || !currentFlag.isKillSwitch)
 				throw new Error(`Flag type must be BOOLEAN and a kill switch`);
@@ -158,7 +159,7 @@ export const flagRpc = createRpcRouter({
 			const valueError = flagValueValidator(currentFlag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
-			await etcdService.overwrite('flag', input.key, currentFlag);
+			await persistentService.overwrite('flag', input.key, currentFlag);
 		}),
 	delete: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -168,8 +169,8 @@ export const flagRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfNotExists('flag', input.key);
-			await etcdService.delete('flag', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfNotExists('flag', input.key);
+			await persistentService.delete('flag', input.key);
 		})
 });

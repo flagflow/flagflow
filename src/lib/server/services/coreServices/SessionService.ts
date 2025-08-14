@@ -3,17 +3,17 @@ import pDebounce from 'p-debounce';
 import { generateSessionId } from '$lib/genId';
 import type { UserSession } from '$types/UserSession';
 
-import type { ConfigService, EtcdService, LogService } from '../index';
+import type { ConfigService, LogService, PersistentService } from '../index';
 
 type SessionServiceParameters = {
 	configService: ConfigService;
-	etcdService: EtcdService;
+	persistentService: PersistentService;
 	logService: LogService;
 };
 
 export const SessionService = ({
 	configService,
-	etcdService,
+	persistentService,
 	logService
 }: SessionServiceParameters) => {
 	const log = logService('session');
@@ -21,7 +21,7 @@ export const SessionService = ({
 	const debounceTouchSession = pDebounce(
 		async (sessionId: string) => {
 			try {
-				await etcdService.touch('session', sessionId);
+				await persistentService.touch('session', sessionId);
 				log.debug({ sessionId }, 'Touch');
 			} catch {
 				log.warn({ sessionId }, 'Touch unknown');
@@ -32,7 +32,7 @@ export const SessionService = ({
 	);
 
 	const getSession = async (sessionId: string): Promise<UserSession | undefined> => {
-		const session = await etcdService.get('session', sessionId);
+		const session = await persistentService.get('session', sessionId);
 		if (!session) {
 			log.warn(`Not found ${sessionId}`);
 			return;
@@ -54,14 +54,14 @@ export const SessionService = ({
 				ttlSeconds: configService.session.timeoutSecs
 			};
 
-			await etcdService.put('session', sessionId, session);
+			await persistentService.put('session', sessionId, session);
 
 			log.debug({ sessionId }, 'Set');
 			return sessionId;
 		},
 		deleteSession: async (sessionId: string) => {
 			try {
-				await etcdService.delete('session', sessionId);
+				await persistentService.delete('session', sessionId);
 				log.debug({ sessionId }, 'Delete');
 			} catch {
 				log.warn({ sessionId }, 'Delete unknown');

@@ -4,7 +4,7 @@ import { asFunction, asValue, type AwilixContainer, createContainer } from 'awil
 import { generateTraceId } from '$lib/genId';
 
 import { doneEtcdClient } from './etcd';
-import { EtcdService, FlagService, SessionService, UserService } from './services';
+import { FlagService, PersistentService, SessionService, UserService } from './services';
 import { ConfigService, GlobalLogService, HttpClientService, LogService } from './services';
 import { MaintenanceService } from './services/coreServices/MaintenanceService';
 
@@ -17,7 +17,7 @@ type _Container = {
 	configService: ConfigService;
 	globalLogService: GlobalLogService;
 	logService: LogService;
-	etcdService: EtcdService;
+	persistentService: PersistentService;
 	httpClientService: HttpClientService;
 
 	maintenanceService: MaintenanceService;
@@ -32,7 +32,7 @@ export const container = createContainer<_Container>({ strict: true }).register(
 
 	globalLogService: asFunction(GlobalLogService).scoped(),
 	logService: asFunction(LogService).scoped(),
-	etcdService: asFunction(EtcdService).scoped(),
+	persistentService: asFunction(PersistentService).scoped(),
 	httpClientService: asFunction(HttpClientService).scoped(),
 
 	maintenanceService: asFunction(MaintenanceService).scoped(),

@@ -5,11 +5,11 @@ import type { RequestEvent, RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event: RequestEvent) => {
 	const configService = event.locals.container.resolve('configService');
-	const etcdService = event.locals.container.resolve('etcdService');
+	const persistentService = event.locals.container.resolve('persistentService');
 
 	let etcdVersion: string | undefined;
 	try {
-		etcdVersion = (await etcdService.status()).version;
+		etcdVersion = (await persistentService.status()).version;
 	} catch {
 		etcdVersion = undefined;
 	}
