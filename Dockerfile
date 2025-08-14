@@ -5,7 +5,7 @@ ARG NODE_IMAGE=node:24.5.0-alpine3.22
 FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
 
-COPY package.json package-lock.json .
+COPY .npmrc package.json package-lock.json .
 RUN npm ci
 COPY . .
 RUN node --run sync && node --run build
