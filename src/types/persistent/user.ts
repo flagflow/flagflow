@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 import { UserPermissionZodEnum } from '$types/UserPermissions';
 
-export const EtcdUserKey = z
+export const PersistentUserKey = z
 	.string()
 	.regex(
 		/^[\d.@a-z-]+$/,
 		"String must only contain lowercase letters, numbers, hyphens, '@', or '.'"
 	);
-export const EtcdUser = z
+export const PersistentUser = z
 	.object({
 		name: z.string().trim(),
 		enabled: z.boolean(),
@@ -17,4 +17,4 @@ export const EtcdUser = z
 		permissions: z.array(UserPermissionZodEnum)
 	})
 	.readonly();
-export type EtcdUser = z.infer<typeof EtcdUser>;
+export type PersistentUser = z.infer<typeof PersistentUser>;

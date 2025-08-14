@@ -1,4 +1,4 @@
-import { EtcdSession } from './etcd';
+import { PersistentSession } from './persistent';
 
-export const UserSession = EtcdSession;
-export type UserSession = EtcdSession;
+export const UserSession = PersistentSession;
+export type UserSession = PersistentSession;

@@ -28,8 +28,8 @@
 	import { invalidatePage } from '$lib/navigationEx';
 	import { rpcClient } from '$lib/rpc/client';
 	import { urlParameterStore } from '$lib/stores/urlParameterStore';
-	import type { EtcdFlag } from '$types/etcd';
-	import { type EtcdWithKey } from '$types/etcd';
+	import type { PersistentFlag } from '$types/persistent';
+	import { type PersistentWithKey } from '$types/persistent';
 
 	import type { PageProps as PageProperties } from './$types';
 	import { showModalFlagGroupUrl, showModalFlagUrl } from './ModalFlagUrl.svelte';
@@ -190,7 +190,7 @@
 	{/snippet}
 </PageTitle>
 
-{#snippet flagValueKbd(flag: EtcdWithKey<EtcdFlag>)}
+{#snippet flagValueKbd(flag: PersistentWithKey<PersistentFlag>)}
 	<Kbd
 		class={clsx('bg-primary-50 inline-flex decoration-dashed underline-offset-4', {
 			underline: 'valueExists' in flag && !flag.valueExists,

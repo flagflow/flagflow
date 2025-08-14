@@ -1,6 +1,6 @@
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
-export const flagSchemaToString = (flag: EtcdFlag): string => {
+export const flagSchemaToString = (flag: PersistentFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':
 			return 'true/false';
@@ -27,7 +27,7 @@ export const flagSchemaToString = (flag: EtcdFlag): string => {
 	}
 };
 
-export const flagDefaultValueToString = (flag: EtcdFlag): string => {
+export const flagDefaultValueToString = (flag: PersistentFlag): string => {
 	switch (flag.type) {
 		case 'BOOLEAN':
 			return flag.defaultValue ? 'true' : 'false';
@@ -48,7 +48,7 @@ export const flagDefaultValueToString = (flag: EtcdFlag): string => {
 };
 
 export const flagValueToString = (
-	flag: EtcdFlag
+	flag: PersistentFlag
 ): {
 	isDefaultValue: boolean;
 	value: string | number | boolean | string[];

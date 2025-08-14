@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import type { IconId } from '$components/Icon.svelte';
 
-const EtcdBaseFlag = z.object({
+const PersistentBaseFlag = z.object({
 	description: z.string().trim()
 });
 
-const EtcdBooleanFlag = z.object({
+const PersistentBooleanFlag = z.object({
 	type: z.literal('BOOLEAN'),
 	defaultValue: z.boolean(),
 	isKillSwitch: z.boolean(),
@@ -14,7 +14,7 @@ const EtcdBooleanFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.boolean()
 });
-const EtcdIntegerFlag = z.object({
+const PersistentIntegerFlag = z.object({
 	type: z.literal('INTEGER'),
 	defaultValue: z.number().int(),
 	minValue: z.number().int(),
@@ -23,7 +23,7 @@ const EtcdIntegerFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.number().int()
 });
-const EtcdStringFlag = z.object({
+const PersistentStringFlag = z.object({
 	type: z.literal('STRING'),
 	defaultValue: z.string().trim(),
 	maxLength: z.number().int(),
@@ -32,7 +32,7 @@ const EtcdStringFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.string().trim()
 });
-const EtcdObjectFlag = z.object({
+const PersistentObjectFlag = z.object({
 	type: z.literal('OBJECT'),
 	defaultValue: z.string().trim(),
 	schema: z.string().trim(),
@@ -40,7 +40,7 @@ const EtcdObjectFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.string().trim()
 });
-const EtcdEnumFlag = z.object({
+const PersistentEnumFlag = z.object({
 	type: z.literal('ENUM'),
 	defaultValue: z.string().trim(),
 	enumValues: z.array(z.string().trim()),
@@ -49,7 +49,7 @@ const EtcdEnumFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.string().trim()
 });
-const EtcdTagFlag = z.object({
+const PersistentTagFlag = z.object({
 	type: z.literal('TAG'),
 	defaultValue: z.array(z.string().trim()),
 	tagValues: z.array(z.string().trim()),
@@ -59,28 +59,31 @@ const EtcdTagFlag = z.object({
 	valueExists: z.boolean(),
 	value: z.array(z.string().trim())
 });
-const EtcdABFlag = z.object({
+const PersistentABFlag = z.object({
 	type: z.literal('AB-TEST'),
 
 	chanceBPercent: z.number().min(0).max(100)
 });
 
-export const EtcdFlag = z.intersection(
-	EtcdBaseFlag,
+export const PersistentFlag = z.intersection(
+	PersistentBaseFlag,
 	z.discriminatedUnion('type', [
-		EtcdBooleanFlag,
-		EtcdIntegerFlag,
-		EtcdStringFlag,
-		EtcdObjectFlag,
-		EtcdEnumFlag,
-		EtcdTagFlag,
-		EtcdABFlag
+		PersistentBooleanFlag,
+		PersistentIntegerFlag,
+		PersistentStringFlag,
+		PersistentObjectFlag,
+		PersistentEnumFlag,
+		PersistentTagFlag,
+		PersistentABFlag
 	])
 );
-export type EtcdFlag = z.infer<typeof EtcdFlag>;
-export type EtcdFlagType = EtcdFlag['type'];
+export type PersistentFlag = z.infer<typeof PersistentFlag>;
+export type PersistentFlagType = PersistentFlag['type'];
 
-export const EtcdFlagTypeDescription: Record<EtcdFlagType, { text: string; enabled: boolean }> = {
+export const PersistentFlagTypeDescription: Record<
+	PersistentFlagType,
+	{ text: string; enabled: boolean }
+> = {
 	BOOLEAN: { text: 'On/off functionality or kill switch', enabled: true },
 	INTEGER: { text: 'Integer value, can be bounded', enabled: true },
 	STRING: { text: 'Text value with optional length or format restrictions', enabled: true },
@@ -90,7 +93,7 @@ export const EtcdFlagTypeDescription: Record<EtcdFlagType, { text: string; enabl
 	'AB-TEST': { text: 'Randomly select one of A and B', enabled: true }
 };
 
-export const EtcdFlagTypeIcon: Record<EtcdFlagType, IconId> = {
+export const PersistentFlagTypeIcon: Record<PersistentFlagType, IconId> = {
 	BOOLEAN: 'boolean',
 	INTEGER: 'integer',
 	STRING: 'string',
@@ -100,4 +103,4 @@ export const EtcdFlagTypeIcon: Record<EtcdFlagType, IconId> = {
 	'AB-TEST': 'abTest'
 };
 
-export { EtcdHierarchicalKey as EtcdFlagKey } from './base';
+export { PersistentHierarchicalKey as PersistentFlagKey } from './base';

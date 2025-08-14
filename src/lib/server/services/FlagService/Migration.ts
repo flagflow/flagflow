@@ -1,11 +1,11 @@
 import { isEqualFlagSchema, isEqualFlagValue } from '$lib/flagHandler/flagComparer';
 import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
-import { type EtcdFlag, EtcdFlagKey } from '$types/etcd';
 import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
+import { type PersistentFlag, PersistentFlagKey } from '$types/persistent';
 
 export const generateMigrationFile = (
 	environment: string,
-	flags: Record<string, EtcdFlag>
+	flags: Record<string, PersistentFlag>
 ): MigrationFile => {
 	const createdAt = new Date();
 	const version = __APP_VERSION__;
@@ -20,10 +20,10 @@ export const generateMigrationFile = (
 
 export const generateMigrationSteps = (
 	migrationFile: MigrationFile,
-	existingFlags: Record<string, EtcdFlag>
+	existingFlags: Record<string, PersistentFlag>
 ): MigrationSummary => {
 	for (const [key, flag] of Object.entries(migrationFile.flags)) {
-		if (!EtcdFlagKey.safeParse(key).success)
+		if (!PersistentFlagKey.safeParse(key).success)
 			throw new Error(`Invalid flag key "${key}" in migration file`);
 		const schemaError = flagSchemaValidator(flag);
 		if (schemaError)

@@ -1,8 +1,8 @@
-import type { EtcdFlag } from './flag';
+import type { PersistentFlag } from './flag';
 
 const ENUM_DEFAULT_VALUES = ['one', 'two', 'three'] as const;
 
-export const EMPTY_BOOLEAN_FLAG: EtcdFlag = {
+export const EMPTY_BOOLEAN_FLAG: PersistentFlag = {
 	description: '',
 	type: 'BOOLEAN',
 	defaultValue: false,
@@ -12,7 +12,7 @@ export const EMPTY_BOOLEAN_FLAG: EtcdFlag = {
 	value: false
 } as const;
 
-export const EMPTY_INTEGER_FLAG: EtcdFlag = {
+export const EMPTY_INTEGER_FLAG: PersistentFlag = {
 	description: '',
 	type: 'INTEGER',
 	defaultValue: 0,
@@ -23,7 +23,7 @@ export const EMPTY_INTEGER_FLAG: EtcdFlag = {
 	value: 0
 } as const;
 
-export const EMPTY_STRING_FLAG: EtcdFlag = {
+export const EMPTY_STRING_FLAG: PersistentFlag = {
 	description: '',
 	type: 'STRING',
 	defaultValue: '',
@@ -34,7 +34,7 @@ export const EMPTY_STRING_FLAG: EtcdFlag = {
 	value: ''
 } as const;
 
-export const EMPTY_ENUM_FLAG: EtcdFlag = {
+export const EMPTY_ENUM_FLAG: PersistentFlag = {
 	description: '',
 	type: 'ENUM',
 	defaultValue: ENUM_DEFAULT_VALUES[0],
@@ -45,7 +45,7 @@ export const EMPTY_ENUM_FLAG: EtcdFlag = {
 	value: ''
 } as const;
 
-export const EMPTY_TAG_FLAG: EtcdFlag = {
+export const EMPTY_TAG_FLAG: PersistentFlag = {
 	description: '',
 	type: 'TAG',
 	defaultValue: [ENUM_DEFAULT_VALUES[0]],
@@ -57,7 +57,7 @@ export const EMPTY_TAG_FLAG: EtcdFlag = {
 	value: []
 } as const;
 
-export const EMPTY_AB_FLAG: EtcdFlag = {
+export const EMPTY_AB_FLAG: PersistentFlag = {
 	description: '',
 	type: 'AB-TEST',
 

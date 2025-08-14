@@ -6,12 +6,12 @@ import {
 } from '$lib/flagHandler/flagTypescript';
 import { sortMapByKey, sortObjectByKey } from '$lib/objectEx';
 import { capitalizeWords } from '$lib/stringEx';
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
 const ROOT_TYPE_NAME = 'FlagFlow';
 const generateGroupTypeCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlag | string>
+	groupFlags: Record<string, PersistentFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -37,7 +37,7 @@ const generateGroupTypeCode = (
 const ROOT_DEFAULTOBJECT_NAME = 'defaultFlagFlow';
 const generateGroupDefaultObjectCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlag | string>
+	groupFlags: Record<string, PersistentFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -62,7 +62,7 @@ const generateGroupDefaultObjectCode = (
 const ROOT_ZOD_NAME = 'FlagFlow';
 const generateGroupZodCode = (
 	groupName: string,
-	groupFlags: Record<string, EtcdFlag | string>
+	groupFlags: Record<string, PersistentFlag | string>
 ): string[] => {
 	const tsFileLines: string[] = [];
 
@@ -86,9 +86,9 @@ const generateGroupZodCode = (
 };
 
 const generateGroups = (
-	flags: Record<string, EtcdFlag>
-): Map<string, Record<string, EtcdFlag | string>> => {
-	const groups: Map<string, Record<string, EtcdFlag | string>> = new Map();
+	flags: Record<string, PersistentFlag>
+): Map<string, Record<string, PersistentFlag | string>> => {
+	const groups: Map<string, Record<string, PersistentFlag | string>> = new Map();
 
 	for (const [key, flag] of Object.entries(flags)) {
 		const keyParts = key.split('/');
@@ -110,7 +110,7 @@ const generateGroups = (
 };
 
 export const generateTSTypeFileContent = (
-	flags: Record<string, EtcdFlag>,
+	flags: Record<string, PersistentFlag>,
 	groupTypeHash: Map<string, string>
 ): string => {
 	const groups = generateGroups(flags);
@@ -240,7 +240,7 @@ export const createFetchFunctionWithCache = <K extends keyof FlagFlow_Descriptor
 	return tsFileContent.join('\n');
 };
 
-export const generateTSZodFileContent = (flags: Record<string, EtcdFlag>): string => {
+export const generateTSZodFileContent = (flags: Record<string, PersistentFlag>): string => {
 	const groups = generateGroups(flags);
 
 	// Generate TypeScript file content

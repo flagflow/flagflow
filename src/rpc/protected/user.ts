@@ -3,17 +3,17 @@ import { z } from 'zod';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { hashPassword } from '$lib/server/services/coreServices/UserService';
 import { ZNonEmptyString } from '$rpc/zodTypes';
-import type { EtcdUser } from '$types/etcd';
-import { etcdRecordToArray, EtcdUserKey } from '$types/etcd';
+import type { PersistentUser } from '$types/persistent';
+import { persistentRecordToArray, PersistentUserKey } from '$types/persistent';
 import { type UserPermission, UserPermissionZodEnum } from '$types/UserPermissions';
 
 const rpcProcedureUsersPermission = rpcProcedure.meta({ permission: 'users' });
 
 export const userRpc = createRpcRouter({
 	getList: rpcProcedureUsersPermission.query(async ({ ctx }) => {
-		const etcdService = ctx.container.resolve('etcdService');
-		const { list: usersAsRecord } = await etcdService.list('user');
-		const users = etcdRecordToArray<EtcdUser>(usersAsRecord);
+		const persistentService = ctx.container.resolve('persistentService');
+		const { list: usersAsRecord } = await persistentService.list('user');
+		const users = persistentRecordToArray<PersistentUser>(usersAsRecord);
 
 		return users;
 	}),
@@ -21,12 +21,12 @@ export const userRpc = createRpcRouter({
 		.meta({ permission: 'users' })
 		.input(
 			z.object({
-				key: EtcdUserKey.trim()
+				key: PersistentUserKey.trim()
 			})
 		)
 		.query(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			const user = await etcdService.getOrThrow('user', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			const user = await persistentService.getOrThrow('user', input.key);
 			return {
 				name: user.name,
 				enabled: user.enabled,
@@ -37,7 +37,7 @@ export const userRpc = createRpcRouter({
 	create: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				name: z.string().trim(),
 				password: ZNonEmptyString(),
 				permissions: z.array(UserPermissionZodEnum),
@@ -45,9 +45,9 @@ export const userRpc = createRpcRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfExists('user', input.key);
-			await etcdService.put('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfExists('user', input.key);
+			await persistentService.put('user', input.key, {
 				name: input.name,
 				enabled: true,
 				passwordHash: hashPassword(input.password),
@@ -58,14 +58,14 @@ export const userRpc = createRpcRouter({
 	update: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				name: z.string().trim(),
 				permissions: z.array(UserPermissionZodEnum)
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				name: input.name,
 				permissions: input.permissions
 			});
@@ -73,14 +73,14 @@ export const userRpc = createRpcRouter({
 	setPassword: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				password: ZNonEmptyString(),
 				mustChangePassword: z.boolean()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
@@ -88,25 +88,25 @@ export const userRpc = createRpcRouter({
 	setEnabled: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim(),
+				key: PersistentUserKey.trim(),
 				enabled: z.boolean()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.overwrite('user', input.key, {
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.overwrite('user', input.key, {
 				enabled: input.enabled
 			});
 		}),
 	delete: rpcProcedureUsersPermission
 		.input(
 			z.object({
-				key: EtcdUserKey.trim()
+				key: PersistentUserKey.trim()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const etcdService = ctx.container.resolve('etcdService');
-			await etcdService.throwIfNotExists('user', input.key);
-			await etcdService.delete('user', input.key);
+			const persistentService = ctx.container.resolve('persistentService');
+			await persistentService.throwIfNotExists('user', input.key);
+			await persistentService.delete('user', input.key);
 		})
 });

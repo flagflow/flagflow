@@ -1,6 +1,6 @@
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
-export const isEqualFlagSchema = (current: EtcdFlag, override: EtcdFlag): boolean => {
+export const isEqualFlagSchema = (current: PersistentFlag, override: PersistentFlag): boolean => {
 	if (current.type !== override.type) return false;
 
 	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')
@@ -39,7 +39,7 @@ export const isEqualFlagSchema = (current: EtcdFlag, override: EtcdFlag): boolea
 	throw new Error(`Unknown flag type: ${current.type}`);
 };
 
-export const isEqualFlagValue = (current: EtcdFlag, override: EtcdFlag): boolean => {
+export const isEqualFlagValue = (current: PersistentFlag, override: PersistentFlag): boolean => {
 	if (current.type !== override.type) return false;
 
 	if (current.type === 'BOOLEAN' && override.type === 'BOOLEAN')

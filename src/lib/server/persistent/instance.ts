@@ -1,13 +1,14 @@
-import { Etcd3, type SortTarget, type Watcher } from 'etcd3';
+import { Etcd3, type Watcher } from 'etcd3';
 
 import {
-	EtcdSchema,
-	type EtcdSchemaDataType,
-	type EtcdSchemaDataTypeWithKey,
-	type EtcdSchemaKey
-} from '$types/etcd';
+	PersistentSchema,
+	type PersistentSchemaDataType,
+	type PersistentSchemaDataTypeWithKey,
+	type PersistentSchemaKey
+} from '$types/persistent';
 
-import type { ChildLogger } from './log';
+import type { ChildLogger } from '../log';
+import type { LogService } from '../services';
 
 type EtcdConfig = {
 	server: string;
@@ -44,10 +45,10 @@ const watchers: Set<Watcher> = new Set();
 const removeWatcher = (watcher: Watcher) => {
 	watchers.delete(watcher);
 };
-const cleanWatchers = () => {
+const cleanWatchers = async () => {
 	for (const watcher of watchers) {
 		try {
-			watcher.cancel();
+			await watcher.cancel();
 		} catch {
 			/**/
 		}
@@ -55,13 +56,14 @@ const cleanWatchers = () => {
 	watchers.clear();
 };
 
-export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
-	const genEtcdPrefix = (store: EtcdSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
-	const genEtcdKey = (store: EtcdSchemaKey, name: string) => genEtcdPrefix(store) + name;
+export const getPersistenceInstance = (config: EtcdConfig, logService: LogService) => {
+	const genEtcdPrefix = (store: PersistentSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
+	const genEtcdKey = (store: PersistentSchemaKey, name: string) => genEtcdPrefix(store) + name;
 
+	const logger = logService('etcd');
 	const client = getEtcdClient(config, logger);
 
-	const existsFunction = async <K extends EtcdSchemaKey>(
+	const existsFunction = async <K extends PersistentSchemaKey>(
 		store: K,
 		name: string
 	): Promise<boolean> => {
@@ -75,17 +77,17 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		}
 	};
 
-	const getFunction = async <K extends EtcdSchemaKey>(
+	const getFunction = async <K extends PersistentSchemaKey>(
 		store: K,
 		name: string
-	): Promise<EtcdSchemaDataTypeWithKey<K> | undefined> => {
+	): Promise<PersistentSchemaDataTypeWithKey<K> | undefined> => {
 		const key = genEtcdKey(store, name);
 		try {
 			const etcdValue = await client.get(key).string();
 			if (etcdValue === null) return undefined;
 
-			const schema = EtcdSchema[store];
-			const data = schema.parse(JSON.parse(etcdValue)) as EtcdSchemaDataType<K>;
+			const schema = PersistentSchema[store];
+			const data = schema.parse(JSON.parse(etcdValue)) as PersistentSchemaDataType<K>;
 			if ('expiredAt' in data && data.expiredAt < Date.now()) {
 				logger.debug({ key }, 'Expired');
 				return undefined;
@@ -103,10 +105,10 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		}
 	};
 
-	const getOrThrowFunction = async <K extends EtcdSchemaKey>(
+	const getOrThrowFunction = async <K extends PersistentSchemaKey>(
 		store: K,
 		name: string
-	): Promise<EtcdSchemaDataTypeWithKey<K>> => {
+	): Promise<PersistentSchemaDataTypeWithKey<K>> => {
 		const data = await getFunction(store, name);
 		if (!data) throw new Error(`Key not exists or invalid: ${store}:${name}`);
 		return data;
@@ -116,30 +118,36 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 		get: getFunction,
 		getOrThrow: getOrThrowFunction,
 		exists: existsFunction,
-		convertEtcdKeyToName: <K extends EtcdSchemaKey>(store: K, key: string): string | undefined => {
+		convertEtcdKeyToName: <K extends PersistentSchemaKey>(
+			store: K,
+			key: string
+		): string | undefined => {
 			const prefix = genEtcdPrefix(store);
 			if (!key.startsWith(prefix)) return;
 			return key.slice(prefix.length);
 		},
-		throwIfExists: async <K extends EtcdSchemaKey>(store: K, name: string): Promise<void> => {
+		throwIfExists: async <K extends PersistentSchemaKey>(store: K, name: string): Promise<void> => {
 			const exists = await existsFunction(store, name);
 			if (exists) throw new Error(`Key already exists: ${store}:${name}`);
 		},
-		throwIfNotExists: async <K extends EtcdSchemaKey>(store: K, name: string): Promise<void> => {
+		throwIfNotExists: async <K extends PersistentSchemaKey>(
+			store: K,
+			name: string
+		): Promise<void> => {
 			const exists = await existsFunction(store, name);
 			if (!exists) throw new Error(`Key not exists: ${store}:${name}`);
 		},
-		put: async <K extends EtcdSchemaKey>(
+		put: async <K extends PersistentSchemaKey>(
 			store: K,
 			name: string,
-			data: EtcdSchemaDataType<K>
+			data: PersistentSchemaDataType<K>
 		): Promise<void> => {
 			const key = genEtcdKey(store, name);
 
 			try {
-				const putData: EtcdSchemaDataType<K> = EtcdSchema[store].parse(
+				const putData: PersistentSchemaDataType<K> = PersistentSchema[store].parse(
 					data
-				) as EtcdSchemaDataType<K>;
+				) as PersistentSchemaDataType<K>;
 
 				await client.put(key).value(JSON.stringify(putData));
 				logger.debug({ key }, 'Put');
@@ -149,18 +157,18 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		overwrite: async <K extends EtcdSchemaKey>(
+		overwrite: async <K extends PersistentSchemaKey>(
 			store: K,
 			name: string,
-			data: Partial<EtcdSchemaDataType<K>>
+			data: Partial<PersistentSchemaDataType<K>>
 		): Promise<void> => {
 			const key = genEtcdKey(store, name);
 			try {
 				const sourceData = await getOrThrowFunction(store, name);
-				const overwrittenData: EtcdSchemaDataType<K> = EtcdSchema[store].parse({
+				const overwrittenData: PersistentSchemaDataType<K> = PersistentSchema[store].parse({
 					...sourceData,
 					...data
-				}) as EtcdSchemaDataType<K>;
+				}) as PersistentSchemaDataType<K>;
 
 				await client.put(key).value(JSON.stringify(overwrittenData));
 				logger.debug({ key }, 'Overwrite');
@@ -170,7 +178,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		delete: async <K extends EtcdSchemaKey>(store: K, name: string) => {
+		delete: async <K extends PersistentSchemaKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
@@ -187,13 +195,13 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		touch: async <K extends EtcdSchemaKey>(store: K, name: string) => {
+		touch: async <K extends PersistentSchemaKey>(store: K, name: string) => {
 			const key = genEtcdKey(store, name);
 			try {
 				const etcdValue = await client.get(key).string();
 				if (etcdValue === null) return;
 
-				const schema = EtcdSchema[store];
+				const schema = PersistentSchema[store];
 				const data = schema.parse(JSON.parse(etcdValue));
 				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
@@ -211,7 +219,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		watch: async <K extends EtcdSchemaKey>(store: K) => {
+		watch: async <K extends PersistentSchemaKey>(store: K) => {
 			const prefix = genEtcdPrefix(store);
 			try {
 				const result = await client.watch().prefix(genEtcdPrefix(store)).create();
@@ -229,24 +237,21 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 				throw error;
 			}
 		},
-		list: async <K extends EtcdSchemaKey>(
-			store: K,
-			limit = 0,
-			sort: keyof typeof SortTarget = 'Key'
+		list: async <K extends PersistentSchemaKey>(
+			store: K
 		): Promise<{
-			list: Record<string, EtcdSchemaDataType<K>>;
+			list: Record<string, PersistentSchemaDataType<K>>;
 			undefs: string[];
 		}> => {
 			const prefix = genEtcdPrefix(store);
 			try {
-				const schema = EtcdSchema[store];
+				const schema = PersistentSchema[store];
 
-				const getAllBuilder = client.getAll().prefix(prefix).sort(sort, 'Ascend');
-				if (limit > 0) getAllBuilder.limit(limit);
+				const getAllBuilder = client.getAll().prefix(prefix).sort('Key', 'Ascend');
 
 				const data = await getAllBuilder.strings();
 
-				const list: Record<string, EtcdSchemaDataType<K>> = {};
+				const list: Record<string, PersistentSchemaDataType<K>> = {};
 				const undefs: string[] = [];
 				let success = 0;
 				let failed = 0;
@@ -254,14 +259,14 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 					try {
 						list[key.slice(prefix.length)] = schema.parse(
 							JSON.parse(data[key])
-						) as EtcdSchemaDataType<K>;
+						) as PersistentSchemaDataType<K>;
 						success++;
 					} catch {
 						undefs.push(key.slice(prefix.length));
 						failed++;
 					}
 
-				logger.debug({ prefix, limit, success, failed }, 'List');
+				logger.debug({ prefix, success, failed }, 'List');
 				return { list, undefs };
 			} catch (error) {
 				resetEtcdClient();
@@ -283,7 +288,7 @@ export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
 	};
 };
 
-export const doneEtcdClient = () => {
-	cleanWatchers();
+export const doneEtcdClient = async () => {
+	await cleanWatchers();
 	cachedClient?.close();
 };

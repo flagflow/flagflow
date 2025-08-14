@@ -14,11 +14,11 @@
 		type Validator,
 		type ValidityItem
 	} from '$lib/form.svelte';
-	import type { EtcdFlag } from '$types/etcd';
+	import type { PersistentFlag } from '$types/persistent';
 
 	interface Properties {
 		name: string;
-		flag: EtcdFlag;
+		flag: PersistentFlag;
 		headers?: boolean;
 		initial?: boolean;
 

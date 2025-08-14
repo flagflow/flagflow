@@ -1,16 +1,16 @@
 import type { Watcher } from 'etcd3';
 
-import { EtcdFlag } from '$types/etcd';
 import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
+import { PersistentFlag } from '$types/persistent';
 
-import type { ConfigService, EtcdService, LogService } from '../index';
+import type { ConfigService, LogService, PersistentService } from '../index';
 import { generateHashInfo } from './GroupHashGenerator';
 import { generateMigrationFile, generateMigrationSteps } from './Migration';
 import { generateTSTypeFileContent, generateTSZodFileContent } from './TSFileGenerator';
 
 type FlagServiceParameters = {
 	configService: ConfigService;
-	etcdService: EtcdService;
+	persistentService: PersistentService;
 	logService: LogService;
 };
 
@@ -20,28 +20,32 @@ type FlagTypeDescriptor = {
 	groupTypeHash: Map<string, string>;
 };
 
-let flags: Record<string, EtcdFlag> | undefined;
+let flags: Record<string, PersistentFlag> | undefined;
 let flagWatcher: Watcher | undefined;
 let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
-export const FlagService = ({ configService, etcdService, logService }: FlagServiceParameters) => {
+export const FlagService = ({
+	configService,
+	persistentService,
+	logService
+}: FlagServiceParameters) => {
 	const log = logService('flag');
 	const logWatch = logService('flag-watch');
 
-	const accessFlags = async (): Promise<Record<string, EtcdFlag>> => {
+	const accessFlags = async (): Promise<Record<string, PersistentFlag>> => {
 		if (flags === undefined) {
-			const { list } = await etcdService.list('flag');
+			const { list } = await persistentService.list('flag');
 			flags = list;
 			log.info({ count: Object.keys(flags).length }, 'Initialized flags');
 		}
 
 		if (flagWatcher === undefined) {
-			flagWatcher = await etcdService.watch('flag');
+			flagWatcher = await persistentService.watch('flag');
 			log.info('Watching flags');
 
 			flagWatcher.on('put', async (etcdKeyValue) => {
 				const key = etcdKeyValue.key.toString();
-				const name = etcdService.convertEtcdKeyToName('flag', key);
+				const name = persistentService.convertEtcdKeyToName('flag', key);
 				if (!name) {
 					log.warn({ key }, 'Invalid flag key');
 					return;
@@ -51,7 +55,7 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 					try {
 						const value = etcdKeyValue.value.toString();
 						const valueObject = JSON.parse(value);
-						const flag = EtcdFlag.parse(valueObject);
+						const flag = PersistentFlag.parse(valueObject);
 						flags[name] = flag;
 						logWatch.debug({ key: name }, 'Updated flag');
 					} catch {
@@ -61,7 +65,7 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 			});
 			flagWatcher.on('delete', (etcdKeyValue) => {
 				const key = etcdKeyValue.key.toString();
-				const name = etcdService.convertEtcdKeyToName('flag', key);
+				const name = persistentService.convertEtcdKeyToName('flag', key);
 				if (!name) {
 					log.warn({ key }, 'Invalid flag key');
 					return;
@@ -95,11 +99,11 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 
 	return {
 		list: async () => await accessFlags(),
-		getFlag: async (key: string): Promise<EtcdFlag | undefined> => {
+		getFlag: async (key: string): Promise<PersistentFlag | undefined> => {
 			const flags = await accessFlags();
 			return flags?.[key] ?? undefined;
 		},
-		getFlags: async (prefix: string): Promise<Record<string, EtcdFlag>> => {
+		getFlags: async (prefix: string): Promise<Record<string, PersistentFlag>> => {
 			const flags = await accessFlags();
 			prefix = prefix ? prefix + '/' : '';
 			return Object.fromEntries(Object.entries(flags).filter(([name]) => name.startsWith(prefix)));
@@ -138,25 +142,25 @@ export const FlagService = ({ configService, etcdService, logService }: FlagServ
 			for (const step of migrations)
 				switch (step.mode) {
 					case 'CREATE_DEFAULTVALUE':
-						await etcdService.throwIfExists('flag', step.flagKey);
+						await persistentService.throwIfExists('flag', step.flagKey);
 						if ('valueExists' in step.flag) step.flag.valueExists = false;
-						await etcdService.put('flag', step.flagKey, step.flag);
+						await persistentService.put('flag', step.flagKey, step.flag);
 						break;
 					case 'UPDATE_SCHEMA_DEFAULTVALUE':
-						await etcdService.throwIfNotExists('flag', step.flagKey);
+						await persistentService.throwIfNotExists('flag', step.flagKey);
 						if ('valueExists' in step.flag) step.flag.valueExists = false;
-						await etcdService.overwrite('flag', step.flagKey, step.flag);
+						await persistentService.overwrite('flag', step.flagKey, step.flag);
 						break;
 					case 'SET_VALUE':
-						await etcdService.throwIfNotExists('flag', step.flagKey);
+						await persistentService.throwIfNotExists('flag', step.flagKey);
 						if ('value' in step.flag)
-							await etcdService.overwrite('flag', step.flagKey, {
+							await persistentService.overwrite('flag', step.flagKey, {
 								value: step.flag.value,
 								valueExists: step.flag.valueExists
 							});
 						break;
 					case 'DELETE':
-						await etcdService.delete('flag', step.flagKey);
+						await persistentService.delete('flag', step.flagKey);
 						break;
 				}
 		}

@@ -2,7 +2,7 @@
 	import FormInput from '$components/form/FormInput.svelte';
 	import FormTextarea from '$components/form/FormTextarea.svelte';
 	import { focusInputById, type ValidityItem } from '$lib/form.svelte';
-	import { EtcdHierarchicalKeyInputRegExp } from '$types/etcd';
+	import { PersistentHierarchicalKeyInputRegExp } from '$types/persistent';
 
 	interface Properties {
 		name: string;
@@ -24,7 +24,7 @@
 		id="name"
 		mandatory
 		maxLength={128}
-		regexp={EtcdHierarchicalKeyInputRegExp}
+		regexp={PersistentHierarchicalKeyInputRegExp}
 		title="Name"
 		validity={validity?.name}
 		bind:value={name}
