@@ -1,4 +1,4 @@
-import { getEtcd } from '$lib/server/etcd';
+import { getPersistenceInstance } from '$lib/server/persistent/instance';
 
 import type { ConfigService, LogService } from '../index';
 
@@ -8,5 +8,5 @@ type PersistentServiceParameters = {
 };
 
 export const PersistentService = ({ configService, logService }: PersistentServiceParameters) =>
-	getEtcd(configService.etcd, logService('etcd'));
+	getPersistenceInstance(configService.etcd, logService);
 export type PersistentService = ReturnType<typeof PersistentService>;

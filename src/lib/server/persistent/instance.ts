@@ -7,7 +7,8 @@ import {
 	type PersistentSchemaKey
 } from '$types/persistent';
 
-import type { ChildLogger } from './log';
+import type { ChildLogger } from '../log';
+import type { LogService } from '../services';
 
 type EtcdConfig = {
 	server: string;
@@ -55,10 +56,11 @@ const cleanWatchers = () => {
 	watchers.clear();
 };
 
-export const getEtcd = (config: EtcdConfig, logger: ChildLogger) => {
+export const getPersistenceInstance = (config: EtcdConfig, logService: LogService) => {
 	const genEtcdPrefix = (store: PersistentSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
 	const genEtcdKey = (store: PersistentSchemaKey, name: string) => genEtcdPrefix(store) + name;
 
+	const logger = logService('etcd');
 	const client = getEtcdClient(config, logger);
 
 	const existsFunction = async <K extends PersistentSchemaKey>(

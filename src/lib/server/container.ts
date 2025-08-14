@@ -3,7 +3,7 @@ import { asFunction, asValue, type AwilixContainer, createContainer } from 'awil
 
 import { generateTraceId } from '$lib/genId';
 
-import { doneEtcdClient } from './etcd';
+import { doneEtcdClient } from './persistent/instance';
 import { FlagService, PersistentService, SessionService, UserService } from './services';
 import { ConfigService, GlobalLogService, HttpClientService, LogService } from './services';
 import { MaintenanceService } from './services/coreServices/MaintenanceService';
