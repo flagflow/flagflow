@@ -7,11 +7,11 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 	const configService = event.locals.container.resolve('configService');
 	const persistentService = event.locals.container.resolve('persistentService');
 
-	let etcdVersion: string | undefined;
+	let persistenceStatus: string | undefined;
 	try {
-		etcdVersion = (await persistentService.status()).version;
+		persistenceStatus = await persistentService.status();
 	} catch {
-		etcdVersion = undefined;
+		persistenceStatus = undefined;
 	}
 
 	let keycloakStatus: 'OK' | 'ERROR' | 'NOTUSED' = 'NOTUSED';
@@ -33,13 +33,11 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 
 	return createJsonResponse(
 		{
-			etcd: etcdVersion
+			persistence: persistenceStatus
 				? {
-						version: etcdVersion,
-						status: 'OK'
+						status: persistenceStatus
 					}
 				: {
-						version: 'unknown',
 						status: 'ERROR'
 					},
 			keycloak:
@@ -56,6 +54,6 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 								status: 'OK'
 							}
 		},
-		{ status: etcdVersion && !keycloakError ? 200 : 500 }
+		{ status: persistenceStatus && !keycloakError ? 200 : 500 }
 	);
 };

@@ -1,5 +1,6 @@
-if (process.env?.['NODE_ENV'] !== 'production')
-	(await import('@dotenvx/dotenvx')).config({ ignore: ['MISSING_ENV_FILE'] });
+const isProduction = process.env?.['NODE_ENV'] === 'production';
+
+if (!isProduction) (await import('@dotenvx/dotenvx')).config({ ignore: ['MISSING_ENV_FILE'] });
 
 import envVar from 'env-var';
 
@@ -8,6 +9,8 @@ export const config = {
 
 	environment: envVar.get('ENVIRONMENT').default('').asString(),
 
+	fsPersistentRoot: isProduction ? '/data' : './data',
+
 	// Remote migration settings
 	migration: {
 		sourceEnvironment: envVar.get('MIGRATION_SOURCE_ENVIRONMENT').default('').asString(),
@@ -15,7 +18,7 @@ export const config = {
 	},
 
 	etcd: {
-		server: envVar.get('ETCD_SERVER').default('localhost:2379').asString(),
+		server: envVar.get('ETCD_SERVER').default('').asString(),
 		username: envVar.get('ETCD_USERNAME').asString(),
 		password: envVar.get('ETCD_PASSWORD').asString(),
 		namespace: envVar.get('ETCD_NAMESPACE').default('default').asString()

@@ -2,14 +2,14 @@ import { z } from 'zod';
 
 import { createRpcRouter, publicRpcProcedure } from '$lib/rpc/init';
 import { refreshKeycloakTokens } from '$lib/server/keycloak';
-import { ZMinLengthString, ZNonEmptyString } from '$rpc/zodTypes';
+import { ZNonEmptyString } from '$rpc/zodTypes';
 
 export const loginRpc = createRpcRouter({
 	login: publicRpcProcedure
 		.input(
 			z.object({
 				username: ZNonEmptyString(),
-				password: ZMinLengthString(8)
+				password: ZNonEmptyString()
 			})
 		)
 		.mutation(async ({ ctx, input: { username, password } }) => {

@@ -1,5 +1,3 @@
-import { Etcd3, type Watcher } from 'etcd3';
-
 import {
 	PersistentSchema,
 	type PersistentSchemaDataType,
@@ -7,71 +5,29 @@ import {
 	type PersistentSchemaKey
 } from '$types/persistent';
 
-import type { ChildLogger } from '../log';
-import type { LogService } from '../services';
+import type { ConfigService, LogService } from '../services';
+import { getEtcdEngine } from './etcdEngine';
+import { getFsEngine } from './fsEngine';
+import type {
+	PersistentEngine,
+	PersistentEngineWatcherCallback,
+	PersistentEngineWatcherClose
+} from './types';
 
-type EtcdConfig = {
-	server: string;
-	username: string | undefined;
-	password: string | undefined;
-	namespace: string;
-};
-
-let cachedClient: Etcd3 | undefined;
-const getEtcdClient = (config: EtcdConfig, logger: ChildLogger) => {
-	if (!cachedClient) {
-		cachedClient =
-			config.username && config.password
-				? new Etcd3({
-						hosts: config.server,
-						auth: {
-							username: config.username,
-							password: config.password
-						}
-					})
-				: new Etcd3({ hosts: config.server });
-		logger.debug(`Connecting at ${config.server} with username ${config.username}`);
-	}
-	return cachedClient;
-};
-const resetEtcdClient = () => {
-	if (cachedClient) {
-		cachedClient.close();
-		cachedClient = undefined;
-	}
-};
-
-const watchers: Set<Watcher> = new Set();
-const removeWatcher = (watcher: Watcher) => {
-	watchers.delete(watcher);
-};
-const cleanWatchers = async () => {
-	for (const watcher of watchers) {
-		try {
-			await watcher.cancel();
-		} catch {
-			/**/
-		}
-	}
-	watchers.clear();
-};
-
-export const getPersistenceInstance = (config: EtcdConfig, logService: LogService) => {
-	const genEtcdPrefix = (store: PersistentSchemaKey) => `/flagflow/${config.namespace}/${store}/`;
-	const genEtcdKey = (store: PersistentSchemaKey, name: string) => genEtcdPrefix(store) + name;
-
-	const logger = logService('etcd');
-	const client = getEtcdClient(config, logger);
+export const getPersistenceInstance = (config: ConfigService, logService: LogService) => {
+	const logger = logService('persistence');
+	const engine: PersistentEngine = config.etcd.server
+		? getEtcdEngine(config.etcd, logService('etcd'))
+		: getFsEngine(config, logService('fs'));
 
 	const existsFunction = async <K extends PersistentSchemaKey>(
 		store: K,
 		name: string
 	): Promise<boolean> => {
-		const key = genEtcdKey(store, name);
+		const key = engine.getKey(store, name);
 		try {
-			return !!(await client.get(key).string());
+			return await engine.exists(key);
 		} catch (error) {
-			resetEtcdClient();
 			logger.error({ key, error }, 'Error when check exists');
 			throw error;
 		}
@@ -81,10 +37,10 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 		store: K,
 		name: string
 	): Promise<PersistentSchemaDataTypeWithKey<K> | undefined> => {
-		const key = genEtcdKey(store, name);
+		const key = engine.getKey(store, name);
 		try {
-			const etcdValue = await client.get(key).string();
-			if (etcdValue === null) return undefined;
+			const etcdValue = await engine.get(key);
+			if (!etcdValue) return undefined;
 
 			const schema = PersistentSchema[store];
 			const data = schema.parse(JSON.parse(etcdValue)) as PersistentSchemaDataType<K>;
@@ -99,7 +55,6 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 				...data
 			};
 		} catch (error) {
-			resetEtcdClient();
 			logger.error({ key, error }, 'Get error');
 			return undefined;
 		}
@@ -122,7 +77,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			store: K,
 			key: string
 		): string | undefined => {
-			const prefix = genEtcdPrefix(store);
+			const prefix = engine.getPrefix(store);
 			if (!key.startsWith(prefix)) return;
 			return key.slice(prefix.length);
 		},
@@ -142,17 +97,16 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			name: string,
 			data: PersistentSchemaDataType<K>
 		): Promise<void> => {
-			const key = genEtcdKey(store, name);
+			const key = engine.getKey(store, name);
 
 			try {
 				const putData: PersistentSchemaDataType<K> = PersistentSchema[store].parse(
 					data
 				) as PersistentSchemaDataType<K>;
 
-				await client.put(key).value(JSON.stringify(putData));
+				await engine.put(key, JSON.stringify(putData));
 				logger.debug({ key }, 'Put');
 			} catch (error) {
-				resetEtcdClient();
 				logger.error({ key, error }, 'Put error');
 				throw error;
 			}
@@ -162,7 +116,7 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			name: string,
 			data: Partial<PersistentSchemaDataType<K>>
 		): Promise<void> => {
-			const key = genEtcdKey(store, name);
+			const key = engine.getKey(store, name);
 			try {
 				const sourceData = await getOrThrowFunction(store, name);
 				const overwrittenData: PersistentSchemaDataType<K> = PersistentSchema[store].parse({
@@ -170,42 +124,41 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 					...data
 				}) as PersistentSchemaDataType<K>;
 
-				await client.put(key).value(JSON.stringify(overwrittenData));
+				await engine.put(key, JSON.stringify(overwrittenData));
 				logger.debug({ key }, 'Overwrite');
 			} catch (error) {
-				resetEtcdClient();
 				logger.error({ key, error }, 'Overwrite error');
 				throw error;
 			}
 		},
 		delete: async <K extends PersistentSchemaKey>(store: K, name: string) => {
-			const key = genEtcdKey(store, name);
+			const key = engine.getKey(store, name);
 			try {
-				const etcdValue = await client.get(key).string();
-				if (etcdValue === null) {
+				const etcdValue = await engine.get(key);
+				if (!etcdValue) {
 					logger.warn({ key }, 'Key not found for deletion');
 					return;
 				}
 
-				await client.delete().key(key);
+				await engine.delete(key);
 				logger.debug({ key }, 'Delete');
 			} catch (error) {
-				resetEtcdClient();
 				logger.error({ key, error }, 'Delete error');
 				throw error;
 			}
 		},
 		touch: async <K extends PersistentSchemaKey>(store: K, name: string) => {
-			const key = genEtcdKey(store, name);
+			const key = engine.getKey(store, name);
 			try {
-				const etcdValue = await client.get(key).string();
-				if (etcdValue === null) return;
+				const etcdValue = await engine.get(key);
+				if (!etcdValue) return;
 
 				const schema = PersistentSchema[store];
 				const data = schema.parse(JSON.parse(etcdValue));
 				if (!('expiredAt' in data) || !('ttlSeconds' in data)) return;
 
-				await client.put(key).value(
+				await engine.put(
+					key,
 					JSON.stringify({
 						...data,
 						expiredAt: Date.now() + data.ttlSeconds * 1000
@@ -214,25 +167,19 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 
 				logger.debug({ key }, 'Touch');
 			} catch (error) {
-				resetEtcdClient();
 				logger.error({ key, error }, 'Touch error');
 				throw error;
 			}
 		},
-		watch: async <K extends PersistentSchemaKey>(store: K) => {
-			const prefix = genEtcdPrefix(store);
+		watch: async <K extends PersistentSchemaKey>(
+			store: K,
+			onEvent: PersistentEngineWatcherCallback
+		): Promise<PersistentEngineWatcherClose> => {
+			const prefix = engine.getPrefix(store);
 			try {
-				const result = await client.watch().prefix(genEtcdPrefix(store)).create();
-				watchers.add(result);
-				logger.debug({ prefix, id: result.id }, 'Watch');
-
-				result.on('end', () => {
-					logger.debug({ prefix, id: result.id }, 'Unwatch');
-					removeWatcher(result);
-				});
-				return result;
+				logger.debug({ prefix }, 'Watch');
+				return await engine.watch(prefix, onEvent);
 			} catch (error) {
-				resetEtcdClient();
 				logger.debug({ prefix, error }, 'Watch error');
 				throw error;
 			}
@@ -243,13 +190,11 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 			list: Record<string, PersistentSchemaDataType<K>>;
 			undefs: string[];
 		}> => {
-			const prefix = genEtcdPrefix(store);
+			const prefix = engine.getPrefix(store);
 			try {
 				const schema = PersistentSchema[store];
 
-				const getAllBuilder = client.getAll().prefix(prefix).sort('Key', 'Ascend');
-
-				const data = await getAllBuilder.strings();
+				const data = await engine.list(prefix);
 
 				const list: Record<string, PersistentSchemaDataType<K>> = {};
 				const undefs: string[] = [];
@@ -269,26 +214,19 @@ export const getPersistenceInstance = (config: EtcdConfig, logService: LogServic
 				logger.debug({ prefix, success, failed }, 'List');
 				return { list, undefs };
 			} catch (error) {
-				resetEtcdClient();
 				logger.debug({ prefix, error }, 'List error');
 				throw error;
 			}
 		},
 		status: async () => {
 			try {
-				const result = await client.maintenance.status();
-				logger.debug({ version: result.version }, 'Status');
-				return result;
+				const status = await engine.status();
+				logger.debug({ status }, 'Status');
+				return status;
 			} catch (error) {
-				resetEtcdClient();
 				logger.debug({ error }, 'Status error');
 				throw error;
 			}
 		}
 	};
-};
-
-export const doneEtcdClient = async () => {
-	await cleanWatchers();
-	cachedClient?.close();
 };

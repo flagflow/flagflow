@@ -8,5 +8,5 @@ type PersistentServiceParameters = {
 };
 
 export const PersistentService = ({ configService, logService }: PersistentServiceParameters) =>
-	getPersistenceInstance(configService.etcd, logService);
+	getPersistenceInstance(configService, logService);
 export type PersistentService = ReturnType<typeof PersistentService>;

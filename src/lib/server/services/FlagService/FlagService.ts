@@ -1,5 +1,4 @@
-import type { Watcher } from 'etcd3';
-
+import type { PersistentEngineWatcherClose } from '$lib/server/persistent/types';
 import type { MigrationFile, MigrationStep, MigrationSummary } from '$types/Migration';
 import { PersistentFlag } from '$types/persistent';
 
@@ -21,7 +20,7 @@ type FlagTypeDescriptor = {
 };
 
 let flags: Record<string, PersistentFlag> | undefined;
-let flagWatcher: Watcher | undefined;
+let flagWatcher: PersistentEngineWatcherClose | undefined;
 let flagTypeDescriptor: FlagTypeDescriptor | undefined;
 
 export const FlagService = ({
@@ -40,43 +39,45 @@ export const FlagService = ({
 		}
 
 		if (flagWatcher === undefined) {
-			flagWatcher = await persistentService.watch('flag');
+			flagWatcher = await persistentService.watch('flag', (eventType, key, value) => {
+				switch (eventType) {
+					case 'data':
+						{
+							if (!key) {
+								log.warn({ key }, 'Invalid flag key');
+								return;
+							}
+
+							if (flags && value)
+								try {
+									const valueObject = JSON.parse(value);
+									const flag = PersistentFlag.parse(valueObject);
+									flags[key] = flag;
+									logWatch.debug({ key }, 'Updated flag');
+								} catch {
+									log.warn({ key }, 'Failed to parse updated flag value');
+								}
+							flagTypeDescriptor = undefined;
+						}
+						break;
+
+					case 'delete':
+						{
+							if (!key) {
+								log.warn({ key }, 'Invalid flag key');
+								return;
+							}
+
+							if (flags) {
+								delete flags[key];
+								logWatch.debug({ key }, 'Deleted flag');
+							}
+							flagTypeDescriptor = undefined;
+						}
+						break;
+				}
+			});
 			log.info('Watching flags');
-
-			flagWatcher.on('put', async (etcdKeyValue) => {
-				const key = etcdKeyValue.key.toString();
-				const name = persistentService.convertEtcdKeyToName('flag', key);
-				if (!name) {
-					log.warn({ key }, 'Invalid flag key');
-					return;
-				}
-
-				if (flags)
-					try {
-						const value = etcdKeyValue.value.toString();
-						const valueObject = JSON.parse(value);
-						const flag = PersistentFlag.parse(valueObject);
-						flags[name] = flag;
-						logWatch.debug({ key: name }, 'Updated flag');
-					} catch {
-						log.warn({ key: name }, 'Failed to parse updated flag value');
-					}
-				flagTypeDescriptor = undefined;
-			});
-			flagWatcher.on('delete', (etcdKeyValue) => {
-				const key = etcdKeyValue.key.toString();
-				const name = persistentService.convertEtcdKeyToName('flag', key);
-				if (!name) {
-					log.warn({ key }, 'Invalid flag key');
-					return;
-				}
-
-				if (flags) {
-					delete flags[name];
-					logWatch.debug({ key: name }, 'Deleted flag');
-				}
-				flagTypeDescriptor = undefined;
-			});
 		}
 
 		return flags;

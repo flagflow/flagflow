@@ -52,12 +52,7 @@
 		{
 			validator: (data) => ({
 				username: data.username.length === 0 ? { message: '', isError: true } : { isError: false },
-				password:
-					data.password.length === 0
-						? { message: '', isError: true }
-						: data.password.length < 8
-							? { message: '', isError: true }
-							: { isError: false }
+				password: data.password.length === 0 ? { message: '', isError: true } : { isError: false }
 			}),
 			changed: (target, property) => {
 				if (property === 'email') target.password = '';
