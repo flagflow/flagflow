@@ -102,8 +102,11 @@ export const getEtcdEngine = (config: EtcdConfig, logger: ChildLogger): Persiste
 		list: async (prefix: string) => {
 			try {
 				const result = await client.getAll().prefix(prefix).sort('Key', 'Ascend').strings();
-				logger.debug({ prefix, count: Object.keys(result).length }, 'List');
-				return result;
+				const resultNormalizedKeys = Object.fromEntries(
+					Object.entries(result).map(([key, value]) => [key.slice(prefix.length), value])
+				);
+				logger.debug({ prefix, count: Object.keys(resultNormalizedKeys).length }, 'List');
+				return resultNormalizedKeys;
 			} catch (error) {
 				resetEtcdClient();
 				logger.error({ prefix, error }, 'Error when listing keys');

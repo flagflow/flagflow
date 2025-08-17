@@ -80,13 +80,18 @@ export const getFsEngine = (config: ConfigService, logger: ChildLogger): Persist
 		},
 		list: async (prefix: string) => {
 			try {
+				prefix = path.normalize(prefix);
 				await mkdir(prefix, { recursive: true });
-				let files = await readdir(prefix, { recursive: true });
-				files = files.filter((file) => file.startsWith(prefix));
 
-				logger.debug({ prefix, count: files.length }, 'List');
+				const files = await readdir(prefix, { recursive: true, withFileTypes: true });
+				const realFiles = files
+					.filter((f) => f.isFile())
+					.map((f) => path.join(f.parentPath, f.name));
+				logger.debug({ prefix, count: realFiles.length }, 'List');
+
 				const result: Record<string, string> = {};
-				for (const file of files) result[file] = (await readFile(file)).toString();
+				for (const file of realFiles)
+					result[file.slice(prefix.length)] = (await readFile(file)).toString();
 				return result;
 			} catch (error) {
 				logger.error({ prefix, error }, 'Error when listing values');
@@ -96,27 +101,25 @@ export const getFsEngine = (config: ConfigService, logger: ChildLogger): Persist
 		watch: async (prefix: string, onEvent: PersistentEngineWatcherCallback) => {
 			logger.debug({ prefix }, 'Watch');
 			try {
+				prefix = path.normalize(prefix);
 				await mkdir(prefix, { recursive: true });
 				const watcher = watch(prefix, {
-					persistent: true,
-					awaitWriteFinish: true,
-					ignoreInitial: true,
 					usePolling: false,
-					alwaysStat: false
+					ignoreInitial: true,
+					persistent: true,
+
+					awaitWriteFinish: false,
+					alwaysStat: false,
+					atomic: true
 				});
-				watcher.add(prefix);
-				watcher.on('add', (path: string) => {
-					//console.log('add', path);
-					onEvent('data', path.slice(prefix.length), readFile(path).toString());
-				});
-				watcher.on('change', (path: string) => {
-					//console.log('change', path);
-					onEvent('data', path.slice(prefix.length), readFile(path).toString());
-				});
-				watcher.on('unlink', (path: string) => {
-					//console.log('unlink', path);
-					onEvent('delete', path.slice(prefix.length));
-				});
+				watcher.on('add', async (path: string) =>
+					onEvent('data', path.slice(prefix.length), (await readFile(path)).toString())
+				);
+				watcher.on('change', async (path: string) =>
+					onEvent('data', path.slice(prefix.length), (await readFile(path)).toString())
+				);
+				watcher.on('unlink', (path: string) => onEvent('delete', path.slice(prefix.length)));
+
 				watchers.add(watcher);
 				return {
 					stop: async () => {

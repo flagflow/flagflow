@@ -202,9 +202,7 @@ export const getPersistenceInstance = (config: ConfigService, logService: LogSer
 				let failed = 0;
 				for (const key in data)
 					try {
-						list[key.slice(prefix.length)] = schema.parse(
-							JSON.parse(data[key])
-						) as PersistentSchemaDataType<K>;
+						list[key] = schema.parse(JSON.parse(data[key])) as PersistentSchemaDataType<K>;
 						success++;
 					} catch {
 						undefs.push(key.slice(prefix.length));
