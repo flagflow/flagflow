@@ -24,6 +24,22 @@ const cleanWatchers = async () => {
 	}
 	watchers.clear();
 };
+const emitWatchers = (event: 'change' | 'unlink', key: string) => {
+	for (const watcher of watchers) {
+		try {
+			const fullPath = path.resolve(key);
+			const folder = path.dirname(fullPath);
+			const filename = path.basename(fullPath);
+
+			const watcheds = watcher.getWatched();
+			if (watcheds[folder] && (event === 'change' || watcheds[folder].includes(filename))) {
+				watcher.emit(event, path.normalize(key));
+			}
+		} catch {
+			/**/
+		}
+	}
+};
 
 export const getFsEngine = (config: ConfigService, logger: ChildLogger): PersistentEngine => {
 	return {
@@ -63,6 +79,7 @@ export const getFsEngine = (config: ConfigService, logger: ChildLogger): Persist
 			try {
 				await mkdir(path.dirname(key), { recursive: true });
 				await writeFile(key, value);
+				emitWatchers('change', key);
 			} catch (error) {
 				logger.error({ key, error }, 'Error when getting value');
 				throw error;
@@ -73,6 +90,7 @@ export const getFsEngine = (config: ConfigService, logger: ChildLogger): Persist
 			try {
 				await mkdir(path.dirname(key), { recursive: true });
 				await rm(key);
+				emitWatchers('unlink', key);
 			} catch (error) {
 				logger.error({ key, error }, 'Error when deleting value');
 				throw error;
