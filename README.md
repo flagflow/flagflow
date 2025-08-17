@@ -147,9 +147,9 @@ The container runs on port 3000 and requires an `.env` file for configuration.
 
 ```mermaid
 graph LR
-    A["/"] --> B["/(ui)/"]
-    B --> C["/(menu)/"]
-    B --> D["/(plain)/"]
+    A["/"] --> B["/ui/"]
+    B --> C["/menu/"]
+    B --> D["/plain/"]
 
     C --> E["/ui/flags"]
     C --> F["/ui/users"]
@@ -160,15 +160,15 @@ graph LR
     D --> J["/logout"]
 
     A --> K["/auth/keycloak/callback"]
-    A --> L["/api/"]
+    A --> L["/ui-rpc"]
 
-    L --> M["/flag/[...flagname]"]
-    L --> N["/flags/[...flaggroup]"]
-    L --> O["/type/typescript"]
-    L --> P["/type/zod"]
-    L --> Q["/type/hash"]
-    L --> R["/migration/export"]
-    L --> S["/health"]
+    A --> M["/flag/[...flagname]"]
+    A --> N["/flags/[...flaggroup]"]
+    A --> O["/type/typescript"]
+    A --> P["/type/zod"]
+    A --> Q["/type/hash"]
+    A --> R["/migration/export"]
+    A --> S["/health"]
 
     E --> E1["Flag Management UI"]
     F --> F1["User Administration"]
@@ -177,6 +177,7 @@ graph LR
     I --> I1["Login Form"]
     J --> J1["Logout Handler"]
     K --> K1["SSO Callback"]
+    L --> L1["tRPC Endpoints"]
     M --> M1["Single Flag API"]
     N --> N1["Flag Group API"]
     O --> O1["TS Types Export"]
@@ -190,7 +191,7 @@ graph LR
     classDef auth fill:#fff3e0
 
     class E,F,G,H,I ui
-    class M,N,O,P,Q,R,S api
+    class L,M,N,O,P,Q,R,S api
     class J,K auth
 ```
 
