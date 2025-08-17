@@ -69,7 +69,7 @@ cp .env.example .env
 
 #### Database (etcd) Configuration
 
-- `ETCD_SERVER`: etcd connection string (default: `localhost:2379`)
+- `ETCD_SERVER`: etcd connection string (default: empty, means filesystem used)
 - `ETCD_USERNAME`: etcd username (e.g., `root`)
 - `ETCD_PASSWORD`: etcd password
 - `ETCD_NAMESPACE`: etcd namespace (default: `default`)
