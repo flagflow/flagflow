@@ -36,5 +36,6 @@ RUN find build -name "*.map" -delete
 
 ENV NODE_ENV=production
 EXPOSE 3000
+VOLUME ["/data"]
 
 CMD ["node", "build"]
