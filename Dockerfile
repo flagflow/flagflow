@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.url="https://flagflow.net"
 RUN apk add --no-cache curl
 WORKDIR /app
 
-COPY package.json package-lock.json .
+COPY .npmrc package.json package-lock.json .
 RUN npm ci --omit=dev && \
     npm cache clean --force && \
     find node_modules -type d -empty -delete && \

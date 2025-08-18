@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Multi-platform Docker image support (linux/amd64, linux/arm64) using Docker Buildx
 - Version header display in the application interface
+- Using Docker Buildx
 
 ### Changed
 
