@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable no-undef */
 	import {
 		Avatar,
 		Badge,
@@ -85,8 +86,11 @@
 <Navbar class="bg-gray-50" fluid>
 	<NavBrand href="/">
 		<img class="me-3 h-6 sm:h-9" alt="FlagFlow Logo" src="/favicon.png" />
-		<span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+		<span class="flex flex-col self-center text-xl font-semibold whitespace-nowrap dark:text-white">
 			FlagFlow admin
+			<span class="text-xs font-normal text-gray-700 dark:text-gray-400">
+				v{__APP_VERSION__}
+			</span>
 		</span>
 		{#if data.environmentContext.name}
 			<Badge class="text-md ml-4" color="emerald" rounded>{data.environmentContext.name}</Badge>

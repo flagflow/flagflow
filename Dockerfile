@@ -5,7 +5,7 @@ ARG NODE_IMAGE=node:24.5.0-alpine3.22
 FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
 
-COPY package.json package-lock.json .
+COPY .npmrc package.json package-lock.json .
 RUN npm ci
 COPY . .
 RUN node --run sync && node --run build
@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.url="https://flagflow.net"
 RUN apk add --no-cache curl
 WORKDIR /app
 
-COPY package.json package-lock.json .
+COPY .npmrc package.json package-lock.json .
 RUN npm ci --omit=dev && \
     npm cache clean --force && \
     find node_modules -type d -empty -delete && \

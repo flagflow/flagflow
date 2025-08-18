@@ -21,9 +21,6 @@ const config = {
 			$rpc: './src/rpc',
 			$types: './src/types'
 		},
-		files: {
-			params: 'src/types/routeparams'
-		},
 		output: {
 			bundleStrategy: 'single'
 		}
