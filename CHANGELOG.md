@@ -5,6 +5,19 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2025-08-18
+
+### Added
+
+- Multi-platform Docker image support (linux/amd64, linux/arm64) using Docker Buildx
+- Version header display in the application interface
+
+### Changed
+
+- Updated dependencies to latest versions
+- Enhanced CI/CD pipeline with Docker Buildx for cross-platform builds
+- Improved Docker publishing workflow with vulnerability scanning
+
 ## [1.4.4] - 2025-08-13
 
 ### Added
