@@ -72,7 +72,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          provenance: false  # Add this line to disable attestations
+          provenance: false # Add this line to disable attestations (unknown/unknown platform image)
           tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_VERSION }}
 
       # Run Trivy vulnerability scanner
