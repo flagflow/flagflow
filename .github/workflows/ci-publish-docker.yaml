@@ -72,13 +72,13 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}/flagflow:${{ env.CURRENT_VERSION }}
+          tags: ghcr.io/${{ github.repository }}:${{ env.CURRENT_VERSION }}
 
       # Run Trivy vulnerability scanner
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.32.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}/flagflow:${{ env.CURRENT_VERSION }}
+          image-ref: ghcr.io/${{ github.repository }}:${{ env.CURRENT_VERSION }}
           format: 'sarif'
           output: 'trivy-results.sarif'
 
