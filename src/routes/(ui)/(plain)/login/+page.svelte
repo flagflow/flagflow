@@ -28,8 +28,8 @@
 	// Input fields DEV only! Production build does not include default values
 	const input = dev
 		? {
-				username: 'csaba@balazs-magyar.hu',
-				password: '12345678',
+				username: 'admin',
+				password: 'admin',
 				rememberMe: $loginStore.rememberMe
 			}
 		: {
