@@ -19,10 +19,12 @@
 		"lint:fix": "eslint --fix .",
 		"all": "node --run format:fix && node --run lint:fix && node --run format:fix && node --run ts:check && node --run build",
 		"npm:reinstall": "rm -rf ./node_modules && rm -f ./package-lock.json && npm i && npm i",
-		"docker:build": "docker build --force-rm -t flagflow:$npm_package_version .",
+		"docker:build": "docker build --force-rm -t flagflow:$npm_package_version -t flagflow:latest .",
 		"docker:build:clear": "docker builder prune -a",
 		"docker:run": "docker run --rm --env-file .env --name flagflow --network=host flagflow:$npm_package_version",
 		"docker:it": "docker run -it --rm --env-file .env --name flagflow --network=host flagflow:$npm_package_version /bin/sh",
+		"docker:compose:up": "docker compose -f infra/compose-dev.yaml --env-file .env up",
+		"docker:compose:down": "docker compose -f infra/compose-dev.yaml down",
 		"test": "vitest run"
 	},
 	"devDependencies": {
