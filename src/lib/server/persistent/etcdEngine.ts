@@ -137,10 +137,10 @@ export const getEtcdEngine = (config: EtcdConfig, logger: ChildLogger): Persiste
 		status: async () => {
 			try {
 				const result = await client.maintenance.status();
-				logger.debug({ version: result.version }, 'Status');
+				logger.trace({ version: result.version }, 'Status');
 				return result.version;
 			} catch (error) {
-				logger.debug({ error }, 'Status error');
+				logger.error({ error }, 'Status error');
 				throw error;
 			}
 		}

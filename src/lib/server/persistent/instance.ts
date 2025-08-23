@@ -219,10 +219,10 @@ export const getPersistenceInstance = (config: ConfigService, logService: LogSer
 		status: async () => {
 			try {
 				const status = await engine.status();
-				logger.debug({ status }, 'Status');
+				logger.trace({ status }, 'Status');
 				return status;
 			} catch (error) {
-				logger.debug({ error }, 'Status error');
+				logger.error({ error }, 'Status error');
 				throw error;
 			}
 		}

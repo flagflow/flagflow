@@ -158,10 +158,10 @@ export const getFsEngine = (config: ConfigService, logger: ChildLogger): Persist
 			try {
 				await mkdir(config.fsPersistentRoot, { recursive: true });
 				const files = await readdir(config.fsPersistentRoot, { recursive: true });
-				logger.debug({ count: files.length }, 'Status');
+				logger.trace({ count: files.length }, 'Status');
 				return files.length.toString();
 			} catch (error) {
-				logger.debug({ error }, 'Status error');
+				logger.error({ error }, 'Status error');
 				throw error;
 			}
 		}
