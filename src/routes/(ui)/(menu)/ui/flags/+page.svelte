@@ -32,26 +32,30 @@
 	import { type PersistentWithKey } from '$types/persistent';
 
 	import type { PageProps as PageProperties } from './$types';
+	import { GROUP_GENERAL_NAME, GROUP_NAME_SEPARATOR } from './Const';
 	import { showModalFlagGroupUrl, showModalFlagUrl } from './ModalFlagUrl.svelte';
 	import { showModalModifyFlagSchema } from './ModalModifyFlagSchema.svelte';
 	import { showModalModifyFlagValue } from './ModalModifyFlagValue.svelte';
 	import { showModalNewFlag } from './ModalNewFlag.svelte';
 	import { showModalRenameFlag } from './ModalRenameFlag.svelte';
+	import { showModalRenameGroup } from './ModalRenameGroup.svelte';
 
 	let { data }: PageProperties = $props();
 
-	const hasPermissionCreate = data.authenticationContext.permissions['flag-create'];
-	const hasPermissionSetValue = data.authenticationContext.permissions['flag-value'];
-	const hasPermissionEditSchema = data.authenticationContext.permissions['flag-schema'];
+	const permissions = data.authenticationContext.permissions;
+	const hasPermissionCreate = permissions['flag-create'];
+	const hasPermissionSetValue = permissions['flag-value'];
+	const hasPermissionEditSchema = permissions['flag-schema'];
 
-	const GROUP_GENERAL_NAME = '#root';
-	const GROUP_NAME_SEPARATOR = ' › ';
 	const GROUP_INDENT_PX = 40;
 	const GROUP_TITLE_INDENT_PX = 20;
 	const groupNameDecorator = (groupName: string) => groupName.replaceAll('/', GROUP_NAME_SEPARATOR);
 	const groupNameLevel = (groupName: string) => (groupName ? groupName.split('/').length : 0);
 
-	const listSettings = persisted<{ displayMode: 'grid' | 'list' | 'compactList' }>('flag-list', {
+	type ListSettings = {
+		displayMode: 'grid' | 'list' | 'compactList';
+	};
+	const listSettings = persisted<ListSettings>('flag-list', {
 		displayMode: 'grid'
 	});
 	const groupFilter = urlParameterStore({ key: 'group', defaultValue: '' });
@@ -121,6 +125,29 @@
 			if (!result.isOk) return;
 
 			await rpcClient.flag.delete.mutate({ key });
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const renameGroup = async (groupName: string) => {
+		try {
+			const result = await showModalRenameGroup(groupName);
+			if (!result || !result.isOk) return;
+
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const deleteGroup = async (groupName: string) => {
+		try {
+			const result = await showModalConfirmationDelete(`${groupName || GROUP_GENERAL_NAME} group`);
+			if (!result.isOk) return;
+
+			await rpcClient.flag.deleteGroup.mutate({ groupName });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -240,10 +267,14 @@
 									>Add flag</DropdownItem
 								>
 							{/if}
-							{#if hasPermissionEditSchema}
+							{#if hasPermissionCreate}
 								<DropdownDivider />
-								<DropdownItem href="#">Rename group</DropdownItem>
-								<DropdownItem href="#">Delete group</DropdownItem>
+								<DropdownItem href="#" onclick={() => renameGroup(groupName)}
+									>Rename group</DropdownItem
+								>
+								<DropdownItem href="#" onclick={() => deleteGroup(groupName)}
+									>Delete group</DropdownItem
+								>
 								<DropdownDivider />
 							{/if}
 							<DropdownItem href="#" onclick={() => showModalFlagGroupUrl(groupName)}
@@ -320,6 +351,8 @@
 													>Modify schema</DropdownItem
 												>
 												<DropdownDivider />
+											{/if}
+											{#if hasPermissionCreate}
 												<DropdownItem href="#" onclick={() => renameFlag(flag.key)}
 													>Rename flag</DropdownItem
 												>
