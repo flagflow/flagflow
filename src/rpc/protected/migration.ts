@@ -55,5 +55,7 @@ export const migrationRpc = createRpcRouter({
 		.mutation(async ({ ctx, input }) => {
 			const flagService = ctx.container.resolve('flagService');
 			await flagService.executeMigration(input.steps);
+
+			ctx.logger('migration').info(`Migration executed: ${input.steps.length} steps`);
 		})
 });

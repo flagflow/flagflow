@@ -9,11 +9,13 @@ import { UserPermission } from '$types/UserPermissions';
 import { config } from './config';
 import { asValue, type Container, container } from './container';
 import { verifyKeycloakAccessToken } from './keycloak';
+import type { LogService } from './services';
 
 export const createRequestContext = async (
 	request: Request
 ): Promise<{
 	container: Container;
+	logger: LogService;
 	authentication: Authentication;
 }> => {
 	const scope = container.createScope();
@@ -101,6 +103,7 @@ export const createRequestContext = async (
 
 	return {
 		container: scope,
+		logger: (rpcModule: string) => scope.resolve('logService')(`rpc:${rpcModule}`),
 		authentication
 	};
 };

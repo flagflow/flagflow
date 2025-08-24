@@ -84,7 +84,7 @@ The application follows a layered service architecture with Awilix dependency in
 - Session management with automatic cleanup
 - Role-based access control
 
-### Data Types (`src/types/etcd/`)
+### Data Types (`src/types/persistent/`)
 
 - Strongly typed etcd data models
 - Zod schemas for runtime validation
@@ -183,6 +183,8 @@ To run individual tests, use:
 npm run test -- --run <test-file-pattern>
 ```
 
+Example: `npm run test -- --run flagService` to run tests matching "flagService"
+
 ## Docker Commands Context
 
 Package.json Docker commands use `$npm_package_version` variable:
@@ -206,3 +208,10 @@ Package.json Docker commands use `$npm_package_version` variable:
 - ALWAYS prefer editing an existing file to creating a new one
 - NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User
 - When working with etcd data, always validate using Zod schemas in `src/types/persistent/`
+
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

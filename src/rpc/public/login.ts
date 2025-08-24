@@ -27,10 +27,6 @@ export const loginRpc = createRpcRouter({
 			return { sessionId, userName: user.name };
 		}),
 
-	logout: publicRpcProcedure.mutation(async () => {
-		return {};
-	}),
-
 	refreshKeycloakToken: publicRpcProcedure.mutation(async ({ ctx: { authentication } }) => {
 		if (authentication.type !== 'JWT') throw new Error('Not authenticated with JWT');
 		if (!authentication.tokens.refresh_token) throw new Error('No refresh token provided');

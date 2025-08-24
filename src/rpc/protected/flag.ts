@@ -43,6 +43,8 @@ export const flagRpc = createRpcRouter({
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
 			await persistentService.put('flag', input.key, input.flag);
+
+			ctx.logger('flag').info(`Flag created: ${input.key}`);
 		}),
 	rename: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -58,13 +60,15 @@ export const flagRpc = createRpcRouter({
 			const flag = await persistentService.getOrThrow('flag', input.oldKey);
 			flag.description = input.description;
 
-			if (input.oldKey === input.recentKey)
+			if (input.oldKey === input.recentKey) {
 				await persistentService.put('flag', input.recentKey, flag);
-			else {
+				ctx.logger('flag').info(`Flag ${input.oldKey} updated`);
+			} else {
 				await persistentService.throwIfExists('flag', input.recentKey);
 
 				await persistentService.put('flag', input.recentKey, flag);
 				await persistentService.delete('flag', input.oldKey);
+				ctx.logger('flag').info(`Flag renamed: ${input.oldKey} -> ${input.recentKey}`);
 			}
 		}),
 	updateSchema: rpcProcedure
@@ -109,6 +113,8 @@ export const flagRpc = createRpcRouter({
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
 			await persistentService.overwrite('flag', input.key, recentFlag);
+
+			ctx.logger('flag').info(`Flag ${input.key} schema updated`);
 		}),
 	updateValue: rpcProcedure
 		.meta({ permission: 'flag-value' })
@@ -138,6 +144,8 @@ export const flagRpc = createRpcRouter({
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
 			await persistentService.overwrite('flag', input.key, recentFlag);
+
+			ctx.logger('flag').info(`Flag ${input.key} value updated`);
 		}),
 	updateKillSwitch: rpcProcedure
 		.meta({ permission: 'flag-value' })
@@ -161,6 +169,8 @@ export const flagRpc = createRpcRouter({
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 
 			await persistentService.overwrite('flag', input.key, currentFlag);
+
+			ctx.logger('flag').info(`Kill switch ${input.key} updated`);
 		}),
 	delete: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -173,6 +183,8 @@ export const flagRpc = createRpcRouter({
 			const persistentService = ctx.container.resolve('persistentService');
 			await persistentService.throwIfNotExists('flag', input.key);
 			await persistentService.delete('flag', input.key);
+
+			ctx.logger('flag').info(`Flag ${input.key} deleted`);
 		}),
 	renameGroup: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -205,6 +217,10 @@ export const flagRpc = createRpcRouter({
 				await persistentService.put('flag', recentName, flag);
 				await persistentService.delete('flag', oldName);
 			}
+
+			ctx
+				.logger('flag')
+				.info(`Flag group renamed: ${input.oldGroupName} -> ${input.recentGroupName}`);
 		}),
 	deleteGroup: rpcProcedure
 		.meta({ permission: 'flag-create' })
@@ -224,5 +240,7 @@ export const flagRpc = createRpcRouter({
 			}
 
 			for (const flagName of deleteSet.keys()) await persistentService.delete('flag', flagName);
+
+			ctx.logger('flag').info(`Flag group deleted: ${input.groupName}`);
 		})
 });
