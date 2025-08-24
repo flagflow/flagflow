@@ -23,5 +23,7 @@ export const sessionRpc = createRpcRouter({
 		.mutation(async ({ ctx, input }) => {
 			const sessionService = ctx.container.resolve('sessionService');
 			await sessionService.deleteSession(input.sessionId);
+
+			ctx.logger('session').info(`Session deleted: ${input.sessionId}`);
 		})
 });
