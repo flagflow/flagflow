@@ -53,7 +53,7 @@ export const FlagService = ({
 									const valueObject = JSON.parse(value);
 									const flag = PersistentFlag.parse(valueObject);
 									flags[key] = flag;
-									logWatch.info({ key }, 'Updated flag');
+									logWatch.debug({ key }, 'Updated flag');
 								} catch {
 									log.warn({ key }, 'Failed to parse updated flag value');
 								}
@@ -70,7 +70,7 @@ export const FlagService = ({
 
 							if (flags) {
 								delete flags[key];
-								logWatch.info({ key }, 'Deleted flag');
+								logWatch.debug({ key }, 'Deleted flag');
 							}
 							flagTypeDescriptor = undefined;
 						}
