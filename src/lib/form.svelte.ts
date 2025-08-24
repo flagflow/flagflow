@@ -162,6 +162,10 @@ export class StringValidator {
 		if (this.s !== value) this.updateError('Must be equal' + (title ? ` to ${title}` : ''));
 		return this;
 	}
+	public notEqualsWith(value: string, title = ''): StringValidator {
+		if (this.s === value) this.updateError('Must be different' + (title ? ` from ${title}` : ''));
+		return this;
+	}
 	public noSpace(): StringValidator {
 		if (this.s.includes(' ')) this.updateError('No space allowed');
 		return this;

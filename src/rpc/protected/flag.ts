@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { updateFlagSchema, updateFlagValue } from '$lib/flagHandler/flagUpdater';
 import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
+import { basename, dirname } from '$lib/pathEx';
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
 import { PersistentFlag } from '$types/persistent';
 import { PersistentFlagKey, persistentRecordToArray } from '$types/persistent';
@@ -172,5 +173,56 @@ export const flagRpc = createRpcRouter({
 			const persistentService = ctx.container.resolve('persistentService');
 			await persistentService.throwIfNotExists('flag', input.key);
 			await persistentService.delete('flag', input.key);
+		}),
+	renameGroup: rpcProcedure
+		.meta({ permission: 'flag-create' })
+		.input(
+			z.object({
+				oldGroupName: z.string().trim(),
+				recentGroupName: z.string().trim()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const persistentService = ctx.container.resolve('persistentService');
+			const { list: flags } = await persistentService.list('flag');
+
+			if (input.oldGroupName === input.recentGroupName)
+				throw new Error('Group names must be different');
+
+			const renameMap: Map<string, string> = new Map();
+			for (const key of Object.keys(flags)) {
+				const groupName = dirname(key);
+				const flagName = basename(key);
+				if (groupName === input.oldGroupName)
+					renameMap.set(key, (input.recentGroupName ? input.recentGroupName + '/' : '') + flagName);
+			}
+
+			for (const recentName of renameMap.values())
+				await persistentService.throwIfExists('flag', recentName);
+
+			for (const [oldName, recentName] of renameMap.entries()) {
+				const flag = await persistentService.getOrThrow('flag', oldName);
+				await persistentService.put('flag', recentName, flag);
+				await persistentService.delete('flag', oldName);
+			}
+		}),
+	deleteGroup: rpcProcedure
+		.meta({ permission: 'flag-create' })
+		.input(
+			z.object({
+				groupName: z.string().trim()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const persistentService = ctx.container.resolve('persistentService');
+			const { list: flags } = await persistentService.list('flag');
+
+			const deleteSet: Set<string> = new Set();
+			for (const key of Object.keys(flags)) {
+				const groupName = dirname(key);
+				if (groupName === input.groupName) deleteSet.add(key);
+			}
+
+			for (const flagName of deleteSet.keys()) await persistentService.delete('flag', flagName);
 		})
 });
