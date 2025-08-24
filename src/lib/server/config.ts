@@ -17,6 +17,7 @@ export const config = {
 		sourceUrl: envVar.get('MIGRATION_SOURCE_URL').default('').asString()
 	},
 
+	// If you are using etcd for persistent storage
 	etcd: {
 		server: envVar.get('ETCD_SERVER').default('').asString(),
 		username: envVar.get('ETCD_USERNAME').asString(),
@@ -54,3 +55,5 @@ export const config = {
 		rpcSlowdownMs: envVar.get('DEV_RPC_SLOWDOWN_MS').asIntPositive()
 	}
 };
+
+if (!/^[a-z]{1,64}$/.test(config.etcd.namespace)) throw new Error('Invalid etcd namespace');
