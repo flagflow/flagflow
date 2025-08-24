@@ -174,3 +174,35 @@ FlagFlow uses role-based permissions:
 - `flag-value`: Manage flag values and configurations
 - `users`: Add, modify, or remove users and manage sessions
 - `migration`: Restore backups or execute migrations
+
+## Single Test Execution
+
+To run individual tests, use:
+
+```bash
+npm run test -- --run <test-file-pattern>
+```
+
+## Docker Commands Context
+
+Package.json Docker commands use `$npm_package_version` variable:
+
+- `npm run docker:build` builds with current package version tag
+- `npm run docker:run` runs the versioned container
+- `npm run docker:it` provides interactive shell access
+
+## Key File Locations
+
+- **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, business services)
+- **RPC routes**: `src/rpc/protected/` and `src/rpc/public/`
+- **Persistent data types**: `src/types/persistent/` (all with Zod schemas)
+- **Infrastructure scripts**: `./infra/etcd.sh` and `./infra/keycloak.sh`
+- **Route handlers**: `src/routes/` (SvelteKit file-based routing)
+
+## Important Development Instructions
+
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User
+- When working with etcd data, always validate using Zod schemas in `src/types/persistent/`
