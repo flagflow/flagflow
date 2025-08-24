@@ -28,8 +28,8 @@
 	// Input fields DEV only! Production build does not include default values
 	const input = dev
 		? {
-				username: 'csaba@balazs-magyar.hu',
-				password: '12345678',
+				username: data.defaultUser.username ?? '',
+				password: data.defaultUser.password ?? '',
 				rememberMe: $loginStore.rememberMe
 			}
 		: {
@@ -52,12 +52,7 @@
 		{
 			validator: (data) => ({
 				username: data.username.length === 0 ? { message: '', isError: true } : { isError: false },
-				password:
-					data.password.length === 0
-						? { message: '', isError: true }
-						: data.password.length < 8
-							? { message: '', isError: true }
-							: { isError: false }
+				password: data.password.length === 0 ? { message: '', isError: true } : { isError: false }
 			}),
 			changed: (target, property) => {
 				if (property === 'email') target.password = '';

@@ -17,11 +17,11 @@
 		type Validator,
 		type ValidityItem
 	} from '$lib/form.svelte';
-	import type { EtcdFlag } from '$types/etcd';
+	import type { PersistentFlag } from '$types/persistent';
 
 	interface Properties {
 		name: string;
-		flag: EtcdFlag;
+		flag: PersistentFlag;
 		headers?: boolean;
 
 		validity?:
@@ -41,7 +41,7 @@
 		['^(dev|staging)_feature_[a-z_]+_v[0-9]+$', 'Environment + feature + version']
 	];
 
-	const runABSimulation = (flag: EtcdFlag) => {
+	const runABSimulation = (flag: PersistentFlag) => {
 		const ITERATIONS = 1000;
 		const values: SvelteMap<string, number> = new SvelteMap();
 		for (let index = 0; index < ITERATIONS; index++) {

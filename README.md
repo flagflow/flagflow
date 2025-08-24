@@ -69,7 +69,7 @@ cp .env.example .env
 
 #### Database (etcd) Configuration
 
-- `ETCD_SERVER`: etcd connection string (default: `localhost:2379`)
+- `ETCD_SERVER`: etcd connection string (default: empty, means filesystem used)
 - `ETCD_USERNAME`: etcd username (e.g., `root`)
 - `ETCD_PASSWORD`: etcd password
 - `ETCD_NAMESPACE`: etcd namespace (default: `default`)
@@ -142,6 +142,183 @@ npm run docker:run
 ```
 
 The container runs on port 3000 and requires an `.env` file for configuration.
+
+## Route Structure
+
+```mermaid
+graph LR
+    A["/"] --> B["/ui/"]
+    B --> C["/menu/"]
+    B --> D["/plain/"]
+
+    C --> E["/ui/flags"]
+    C --> F["/ui/users"]
+    C --> G["/ui/sessions"]
+    C --> H["/ui/migration"]
+
+    D --> I["/login"]
+    D --> J["/logout"]
+
+    A --> K["/auth/keycloak/callback"]
+    A --> L["/ui-rpc"]
+
+    A --> M["/flag/[...flagname]"]
+    A --> N["/flags/[...flaggroup]"]
+    A --> O["/type/typescript"]
+    A --> P["/type/zod"]
+    A --> Q["/type/hash"]
+    A --> R["/migration/export"]
+    A --> S["/health"]
+
+    E --> E1["Flag Management UI"]
+    F --> F1["User Administration"]
+    G --> G1["Session Management"]
+    H --> H1["Migration Tools"]
+    I --> I1["Login Form"]
+    J --> J1["Logout Handler"]
+    K --> K1["SSO Callback"]
+    L --> L1["tRPC Endpoints"]
+    M --> M1["Single Flag API"]
+    N --> N1["Flag Group API"]
+    O --> O1["TS Types Export"]
+    P --> P1["Zod Schemas Export"]
+    Q --> Q1["Hash Validation"]
+    R --> R1["Export/Import"]
+    S --> S1["Health Check"]
+
+    classDef ui fill:#e1f5fe
+    classDef api fill:#f3e5f5
+    classDef auth fill:#fff3e0
+
+    class E,F,G,H,I ui
+    class L,M,N,O,P,Q,R,S api
+    class J,K auth
+```
+
+## RPC Architecture
+
+```mermaid
+graph TD
+    A[Client Request] --> B[tRPC Router]
+    B --> C{Route Type}
+
+    C -->|Public| D[Public Routes]
+    C -->|Protected| E[Protected Routes]
+
+    D --> D1[login]
+
+    E --> E1[session]
+    E --> E2[user]
+    E --> E3[flag]
+    E --> E4[migration]
+
+    B --> F[Middleware Chain]
+    F --> F1[Logger Middleware]
+    F1 --> F2[Auth Middleware]
+    F2 --> F3[Permission Check]
+
+    F3 --> G[Context Creation]
+    G --> H[Service Container]
+    H --> I[Service Resolution]
+
+    I --> I1[SessionService]
+    I --> I2[UserService]
+    I --> I3[FlagService]
+    I --> I4[PersistentService]
+
+    E1 --> J1[Session Operations]
+    E2 --> J2[User Management]
+    E3 --> J3[Flag CRUD & Watching]
+    E4 --> J4[Export/Import]
+
+    J1 --> K[etcd Storage]
+    J2 --> K
+    J3 --> K
+    J4 --> K
+
+    classDef public fill:#e8f5e8
+    classDef protected fill:#fff2cc
+    classDef middleware fill:#e1f5fe
+    classDef services fill:#f3e5f5
+    classDef storage fill:#ffebee
+
+    class D,D1 public
+    class E,E1,E2,E3,E4 protected
+    class F,F1,F2,F3 middleware
+    class I,I1,I2,I3,I4 services
+    class K storage
+```
+
+## Service & Persistence Architecture
+
+```mermaid
+graph TD
+    A[Service Container] --> B[Service Layers]
+
+    B --> C[System Services]
+    B --> D[Core Services]
+    B --> E[Business Services]
+
+    C --> C1[ConfigService]
+    C --> C2[LogService]
+    C --> C3[HttpClientService]
+    C --> C4[PersistentService]
+
+    D --> D1[SessionService]
+    D --> D2[UserService]
+    D --> D3[MaintenanceService]
+
+    E --> E1[FlagService]
+    E1 --> E1A[TSFileGenerator]
+    E1 --> E1B[GroupHashGenerator]
+    E1 --> E1C[Migration]
+
+    C4 --> F[Persistence Instance]
+    F --> G{Engine Selection}
+
+    G -->|ETCD_SERVER exists| H[etcdEngine]
+    G -->|No ETCD_SERVER| I[fsEngine]
+
+    H --> H1[etcd Client]
+    H1 --> H2[etcd Cluster]
+
+    I --> I1[File System]
+    I1 --> I2[Local JSON Files]
+
+    F --> J[Persistence Operations]
+    J --> J1[get/getOrThrow]
+    J --> J2[put/overwrite]
+    J --> J3[delete/exists]
+    J --> J4[list/watch]
+    J --> J5[touch/status]
+
+    J1 --> K[Schema Validation]
+    J2 --> K
+    J3 --> K
+    K --> L[Zod Schema Parse]
+
+    D1 --> M[Session Management]
+    D2 --> N[User Operations]
+    E1 --> O[Flag Management]
+
+    M --> F
+    N --> F
+    O --> F
+
+    classDef system fill:#e8f5e8
+    classDef core fill:#fff2cc
+    classDef business fill:#e1f5fe
+    classDef persistence fill:#f3e5f5
+    classDef engine fill:#ffebee
+    classDef operations fill:#fce4ec
+
+    class C,C1,C2,C3,C4 system
+    class D,D1,D2,D3 core
+    class E,E1,E1A,E1B,E1C business
+    class F,G,K,L persistence
+    class H,H1,H2,I,I1,I2 engine
+    class J,J1,J2,J3,J4,J5 operations
+```
 
 ## Architecture
 

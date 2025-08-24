@@ -6,6 +6,7 @@ static/test/
 .vercel
 /.svelte-kit
 /build
+data
 
 # OS
 .DS_Store

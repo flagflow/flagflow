@@ -19,8 +19,8 @@
 	import { FormLogic, StringValidator } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import type { EtcdSchemaDataTypeWithKey } from '$types/etcd';
-	import { EtcdFlagKey } from '$types/etcd';
+	import type { PersistentSchemaDataTypeWithKey } from '$types/persistent';
+	import { PersistentFlagKey } from '$types/persistent';
 
 	import StepName from './StepName.svelte';
 
@@ -29,7 +29,7 @@
 	}>();
 
 	interface Properties {
-		flag: EtcdSchemaDataTypeWithKey<'flag'>;
+		flag: PersistentSchemaDataTypeWithKey<'flag'>;
 	}
 	const { flag }: Properties = $props();
 	const oldKey = flag.key;
@@ -53,7 +53,7 @@
 				const name = new StringValidator(source.key, 'trim')
 					.required()
 					.maxLength(128)
-					.zod(EtcdFlagKey).error;
+					.zod(PersistentFlagKey).error;
 				const description = new StringValidator(source.description, 'trim').maxLength(512).error;
 
 				return {

@@ -30,6 +30,7 @@ export const load: PageServerLoad = async ({ request, locals: { container }, coo
 	return {
 		keycloak: {
 			loginUrl: keycloakUrls.loginUrl(host)
-		}
+		},
+		defaultUser: config.session.defaultUser
 	};
 };

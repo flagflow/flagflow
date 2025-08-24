@@ -1,16 +1,16 @@
 import { UserPermissionAll } from '$types/UserPermissions';
 
-import type { ConfigService, EtcdService, LogService } from '../index';
+import type { ConfigService, LogService, PersistentService } from '../index';
 import { hashPassword } from './UserService';
 
 type MaintenanceServiceParameters = {
 	logService: LogService;
 	configService: ConfigService;
-	etcdService: EtcdService;
+	persistentService: PersistentService;
 };
 
 export const MaintenanceService = ({
-	etcdService,
+	persistentService,
 	logService,
 	configService
 }: MaintenanceServiceParameters) => {
@@ -20,9 +20,9 @@ export const MaintenanceService = ({
 		createDefaultUser: async () => {
 			const { username, password } = configService.session.defaultUser;
 			if (username && password) {
-				const user = await etcdService.get('user', username);
+				const user = await persistentService.get('user', username);
 				if (!user)
-					await etcdService.put('user', username, {
+					await persistentService.put('user', username, {
 						name: username,
 						enabled: true,
 						passwordHash: hashPassword(password),
@@ -35,7 +35,7 @@ export const MaintenanceService = ({
 			const { username, password } = configService.session.defaultUser;
 			if (!username || !password) return false;
 
-			const user = await etcdService.get('user', username);
+			const user = await persistentService.get('user', username);
 			if (!user) return false;
 
 			if (user.passwordHash !== hashPassword(password)) return false;
@@ -43,16 +43,16 @@ export const MaintenanceService = ({
 			return true;
 		},
 		deleteExpiredSessions: async () => {
-			const { list, undefs } = await etcdService.list('session', 0, 'Key');
+			const { list, undefs } = await persistentService.list('session');
 
 			let deleted = 0;
 			for (const [sessionId, session] of Object.entries(list))
 				if (!session || ('expiredAt' in session && session.expiredAt < Date.now())) {
-					await etcdService.delete('session', sessionId);
+					await persistentService.delete('session', sessionId);
 					deleted++;
 				}
 			for (const undef of undefs) {
-				await etcdService.delete('session', undef);
+				await persistentService.delete('session', undef);
 				deleted++;
 			}
 

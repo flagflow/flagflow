@@ -20,7 +20,7 @@
 	import { ExternalValidator, FormLogic } from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import { type EtcdSchemaDataTypeWithKey } from '$types/etcd';
+	import { type PersistentSchemaDataTypeWithKey } from '$types/persistent';
 
 	import StepValue from './StepValue.svelte';
 
@@ -29,7 +29,7 @@
 	}>();
 
 	interface Properties {
-		flag: EtcdSchemaDataTypeWithKey<'flag'>;
+		flag: PersistentSchemaDataTypeWithKey<'flag'>;
 	}
 	const { flag }: Properties = $props();
 

@@ -24,8 +24,8 @@
 	} from '$lib/form.svelte';
 	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import type { EtcdFlag, EtcdFlagType } from '$types/etcd';
-	import { EtcdFlagKey } from '$types/etcd';
+	import type { PersistentFlag, PersistentFlagType } from '$types/persistent';
+	import { PersistentFlagKey } from '$types/persistent';
 	import {
 		EMPTY_AB_FLAG,
 		EMPTY_BOOLEAN_FLAG,
@@ -33,7 +33,7 @@
 		EMPTY_INTEGER_FLAG,
 		EMPTY_STRING_FLAG,
 		EMPTY_TAG_FLAG
-	} from '$types/etcd/flagEmptyInstance';
+	} from '$types/persistent/flagEmptyInstance';
 
 	import StepName from './StepName.svelte';
 	import StepNewWelcome from './StepNewWelcome.svelte';
@@ -59,17 +59,17 @@
 	const flagCommon: {
 		name: string;
 		description: string;
-		type: EtcdFlagType;
+		type: PersistentFlagType;
 	} = {
 		name: groupName ? groupName + '/' : '',
 		description: '',
 		type: 'BOOLEAN'
 	};
 
-	let flagSpecific: EtcdFlag | undefined;
+	let flagSpecific: PersistentFlag | undefined;
 	let formSpecific:
 		| FormLogic<
-				EtcdFlag,
+				PersistentFlag,
 				{
 					schema: Validator | ValidityItem;
 					value: Validator | ValidityItem;
@@ -86,7 +86,7 @@
 	>;
 
 	// Create flag
-	const createSpecificFlag = (flagType: EtcdFlagType) => {
+	const createSpecificFlag = (flagType: PersistentFlagType) => {
 		flagSpecific = undefined;
 		switch (flagType) {
 			case 'BOOLEAN':
@@ -174,7 +174,7 @@
 				const name = new StringValidator(source.name, 'trim')
 					.required()
 					.maxLength(128)
-					.zod(EtcdFlagKey).error;
+					.zod(PersistentFlagKey).error;
 				const description = new StringValidator(source.description, 'trim').maxLength(512).error;
 
 				canForwardStep[1] = isValidValidator({ name, description });

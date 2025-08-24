@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import { UserPermissionZodEnum } from '$types/UserPermissions';
 
-import { EtcdTouchable } from './base';
+import { PersistentTouchable } from './base';
 
-export const EtcdSession = z
+export const PersistentSession = z
 	.intersection(
-		EtcdTouchable,
+		PersistentTouchable,
 		z.object({
 			userKey: z.string().trim(),
 			userName: z.string().trim(),
@@ -15,6 +15,6 @@ export const EtcdSession = z
 		})
 	)
 	.readonly();
-export type EtcdSession = z.infer<typeof EtcdSession>;
+export type PersistentSession = z.infer<typeof PersistentSession>;
 
-export { EtcdKey as EtcdSessionKey } from './base';
+export { PersistentKey as PersistentSessionKey } from './base';

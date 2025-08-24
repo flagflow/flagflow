@@ -1,6 +1,6 @@
 import { basename, dirname } from '$lib/pathEx';
 import { capitalize } from '$lib/stringEx';
-import { EtcdFlagTypeIcon } from '$types/etcd';
+import { PersistentFlagTypeIcon } from '$types/persistent';
 
 import type { PageServerLoad } from './$types';
 
@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals: { rpcCaller } }) => {
 			typeToDisplay: capitalize(
 				flag.type === 'BOOLEAN' ? (flag.isKillSwitch ? 'KILL SWITCH' : 'BOOLEAN') : flag.type
 			),
-			icon: EtcdFlagTypeIcon[flag.type]
+			icon: PersistentFlagTypeIcon[flag.type]
 		}));
 
 	const flagGroups = Object.entries(

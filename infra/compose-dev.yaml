@@ -1,0 +1,65 @@
+name: flagflow
+
+services:
+  app:
+    image: flagflow:latest
+    pull_policy: never
+    env_file:
+      - ../.env
+    deploy:
+      replicas: 4
+    init: true
+    volumes:
+      - flagflow_data:/data
+    networks:
+      - prod_network
+    healthcheck:
+      test: 'curl -s -I http://localhost:3000/health | head -n 1 | grep 200'
+      interval: 15s
+      timeout: 10s
+      retries: 2
+    restart: on-failure
+
+  nginx:
+    image: nginx:1.29.1
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    networks:
+      - prod_network
+    healthcheck:
+      test: 'curl -s -I http://localhost/health | head -n 1 | grep 200'
+      interval: 15s
+      timeout: 10s
+      retries: 2
+    restart: on-failure
+    depends_on:
+      - app
+
+networks:
+  prod_network:
+
+volumes:
+  flagflow_data:
+
+configs:
+  nginx_config:
+    content: |
+      server {
+          listen 80 default;
+          http2 on;
+
+          access_log off;
+          error_log /dev/null crit;
+
+          location / {
+              proxy_set_header Host $$host;
+              proxy_set_header X-Real-IP $$remote_addr;
+              proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $$scheme;
+
+              proxy_pass http://app:3000;
+          }
+      }

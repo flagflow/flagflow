@@ -1,13 +1,35 @@
 # Future Plans
 
+This document outlines planned enhancements and features for FlagFlow.
+
 ## User Management Enhancements
 
-- **passwordExpireAt/mustChangePassword**: Implement password expiration policies and forced password changes
+- **Password Policies**: Implement password expiration policies and forced password changes
+  - `passwordExpireAt` field for user accounts
+  - `mustChangePassword` flag for mandatory password updates
+  - Password strength requirements and history tracking
 
-## Flag Types
+## Flag Type Enhancements
 
-- **Object flagtype**: Enhanced object flag type functionality
+- **Enhanced Object Flags**: Improved object flag type functionality
+  - Better schema validation UI
+  - Nested object support with path-based access
+  - Schema migration tools for object flag changes
 
 ## Security & Compliance
 
-- **Audit Log**: Comprehensive audit logging for all system operations
+- **Comprehensive Audit Log**: Complete audit trail for all system operations
+  - User action tracking (login, logout, flag changes)
+  - Administrative actions logging
+  - Flag access and modification history
+  - Export capabilities for compliance reporting
+
+## User Experience
+
+- **Advanced Flag Management**: Enhanced UI capabilities
+  - Bulk flag operations (copy, move, delete)
+  - Flag dependency tracking and visualization
+  - Advanced search and filtering options
+  - Flag usage analytics and metrics
+
+These features are planned for future releases based on community feedback and adoption patterns.

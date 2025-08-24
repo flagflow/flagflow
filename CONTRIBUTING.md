@@ -68,11 +68,16 @@ This command runs:
 | Command                                       | Purpose                                |
 | --------------------------------------------- | -------------------------------------- |
 | `npm run dev`                                 | Development server with formatted logs |
+| `npm run dev-rawlog`                          | Development server with raw logs       |
 | `npm run test`                                | Run test suite                         |
 | `npm run ts:check`                            | TypeScript type checking               |
 | `npm run lint:check` / `npm run lint:fix`     | ESLint checking/fixing                 |
 | `npm run format:check` / `npm run format:fix` | Prettier formatting                    |
 | `npm run build`                               | Production build                       |
+| `npm run preview`                             | Preview production build               |
+| `npm run docker:build`                        | Build Docker image                     |
+| `npm run docker:run`                          | Run Docker container                   |
+| `npm run docker:it`                           | Interactive Docker shell               |
 
 ## Code Standards
 
@@ -204,8 +209,8 @@ Kill switches are critical boolean flags that require special handling:
 # Run all tests
 npm run test
 
-# Run tests in watch mode
-npm run test:watch
+# Run individual tests
+npm run test -- --run <test-file-pattern>
 ```
 
 ### Writing Tests

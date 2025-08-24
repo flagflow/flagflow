@@ -1,7 +1,7 @@
 import { flagValueToString } from '$lib/flagHandler/flagToString';
-import type { EtcdFlag } from '$types/etcd';
+import type { PersistentFlag } from '$types/persistent';
 
-export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): object => {
+export const formatFlagApiResponseJson = (flags: Record<string, PersistentFlag>): object => {
 	const result: Record<string, unknown> = {};
 
 	for (const [key, flag] of Object.entries(flags)) {
@@ -21,7 +21,7 @@ export const formatFlagApiResponseJson = (flags: Record<string, EtcdFlag>): obje
 	return result;
 };
 
-export const formatFlagApiResponseENV = (flags: Record<string, EtcdFlag>): string[] => {
+export const formatFlagApiResponseENV = (flags: Record<string, PersistentFlag>): string[] => {
 	const result: string[] = [];
 	for (const [key, flag] of Object.entries(flags)) {
 		const value = flagValueToString(flag).value;
