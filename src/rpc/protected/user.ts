@@ -54,6 +54,7 @@ export const userRpc = createRpcRouter({
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined,
 				permissions: input.permissions
 			});
+			ctx.logger('user').info(`User ${input.key} created`);
 		}),
 	update: rpcProcedureUsersPermission
 		.input(
@@ -69,6 +70,7 @@ export const userRpc = createRpcRouter({
 				name: input.name,
 				permissions: input.permissions
 			});
+			ctx.logger('user').info(`User ${input.key} updated`);
 		}),
 	setPassword: rpcProcedureUsersPermission
 		.input(
@@ -84,6 +86,7 @@ export const userRpc = createRpcRouter({
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
+			ctx.logger('user').info(`User ${input.key} password updated`);
 		}),
 	setEnabled: rpcProcedureUsersPermission
 		.input(
@@ -97,6 +100,7 @@ export const userRpc = createRpcRouter({
 			await persistentService.overwrite('user', input.key, {
 				enabled: input.enabled
 			});
+			ctx.logger('user').info(`User ${input.key} enabled status updated`);
 		}),
 	delete: rpcProcedureUsersPermission
 		.input(
@@ -108,5 +112,6 @@ export const userRpc = createRpcRouter({
 			const persistentService = ctx.container.resolve('persistentService');
 			await persistentService.throwIfNotExists('user', input.key);
 			await persistentService.delete('user', input.key);
+			ctx.logger('user').info(`User ${input.key} deleted`);
 		})
 });
