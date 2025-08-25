@@ -1,5 +1,6 @@
 import type { MiddlewareFunction } from '@trpc/server/unstable-core-do-not-import';
 
+import { logAudit, type LogAuditObject } from '$lib/server/logAudit';
 import { createCounter, METRICS_ENABLED } from '$lib/server/svelteMiddleware/metrics';
 
 import type { Context } from '../context';
@@ -20,24 +21,38 @@ export const logMiddleware: MiddlewareFunction<Context, Meta, void, void, any> =
 	ctx,
 	next
 }) => {
-	const logService = ctx.container.resolve('logService')('rpc');
 	const configService = ctx.container.resolve('configService');
+	const logService = ctx.container.resolve('logService');
+	const logRpc = logService('rpc');
+	const auditObject: LogAuditObject = {
+		subject: `${type}:${path}`,
+		auth: {
+			method: ctx.authentication.type
+		}
+	};
+	if (ctx.authentication.success && auditObject.auth)
+		auditObject.auth.user = {
+			username: ctx.authentication.success.userName,
+			permissions: ctx.authentication.success.permissions || []
+		};
 
 	const metaRequest = { method: type, path };
-	logService.debug(metaRequest, 'Request');
+	logRpc.debug(metaRequest, 'Request');
 
 	const start = Date.now();
 	if (configService.dev.rpcSlowdownMs)
 		await new Promise((r) => setTimeout(r, configService.dev.rpcSlowdownMs));
 	const result = await next();
 	const elapsedMs = Date.now() - start;
+	auditObject.performance = { duration: elapsedMs };
 
 	const metaResponse = { ...metaRequest, elapsed: elapsedMs };
 	if (result.ok) {
-		logService.debug(metaResponse, 'Response');
+		logRpc.debug(metaResponse, 'Response');
+		auditObject.response = { data: result.data };
 		metricRpc?.inc({ method: type, path });
 	} else {
-		logService.error(
+		logRpc.error(
 			{
 				...metaResponse,
 				error: {
@@ -48,7 +63,11 @@ export const logMiddleware: MiddlewareFunction<Context, Meta, void, void, any> =
 			},
 			result.error.message
 		);
+		auditObject.response = { errorMessage: result.error.message };
 		metricRpc?.inc({ method: type, path, error: result.error.code });
 	}
+
+	logAudit(configService, logService('rpc'), auditObject);
+
 	return result;
 };

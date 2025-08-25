@@ -28,3 +28,5 @@ export type Authentication =
 			type: 'NONE';
 			success?: undefined;
 	  };
+
+export type AuthenticationType = Authentication['type'];
