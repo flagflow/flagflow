@@ -35,10 +35,14 @@ export const logAudit = (
 ) => {
 	if (!config.auditLog.enabled) return;
 
-	if (auditObject.request?.data)
-		auditObject.request.size = JSON.stringify(auditObject.request.data).length;
-	if (auditObject.response?.data)
-		auditObject.response.size = JSON.stringify(auditObject.response.data).length;
+	if (auditObject.request?.data) {
+		const requestDataStr = JSON.stringify(auditObject.request.data);
+		auditObject.request.size = Buffer.byteLength(requestDataStr, 'utf8');
+	}
+	if (auditObject.response?.data) {
+		const responseDataStr = JSON.stringify(auditObject.response.data);
+		auditObject.response.size = Buffer.byteLength(responseDataStr, 'utf8');
+	}
 
 	logger.audit({ audit: auditObject }, auditObject.subject);
 };
