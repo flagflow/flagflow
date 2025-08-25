@@ -51,6 +51,10 @@ export const config = {
 		enabled: envVar.get('METRICS_ENABLED').asBool() || false
 	},
 
+	auditLog: {
+		enabled: envVar.get('AUDITLOG_ENABLED').asBool() || false
+	},
+
 	dev: {
 		rpcSlowdownMs: envVar.get('DEV_RPC_SLOWDOWN_MS').asIntPositive()
 	}

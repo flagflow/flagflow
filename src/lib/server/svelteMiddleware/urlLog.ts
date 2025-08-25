@@ -17,12 +17,13 @@ const isInternalUrl = (url: URL) =>
 	url.pathname.startsWith(URI_RPC) || url.pathname.startsWith('/health');
 
 export const createUrlLogHandle: Handle = async ({ event, resolve }) => {
-	const logService = event.locals.container.resolve('logService')('http');
-
+	const logService = event.locals.container.resolve('logService');
+	const logHttp = logService('http');
 	const url = new URL(event.request.url);
+
 	const metaRequest = { method: event.request.method, path: url.pathname };
 
-	if (!isInternalUrl(url)) logService.debug(metaRequest, 'Request');
+	if (!isInternalUrl(url)) logHttp.debug(metaRequest, 'Request');
 
 	const start = Date.now();
 	const response = await resolve(event);
@@ -31,7 +32,7 @@ export const createUrlLogHandle: Handle = async ({ event, resolve }) => {
 	if (isInternalUrl(url)) return response;
 
 	const metaResponse = { ...metaRequest, elapsed: elapsedMs };
-	if (response.ok) logService.debug(metaResponse, 'Response');
+	if (response.ok) logHttp.debug(metaResponse, 'Response');
 
 	if (!url.pathname.startsWith(URI_METRICS))
 		metricUrl?.inc(
