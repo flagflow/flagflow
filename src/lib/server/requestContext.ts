@@ -103,7 +103,7 @@ export const createRequestContext = async (
 
 	return {
 		container: scope,
-		logger: (rpcModule: string) => scope.resolve('logService')(`rpc:${rpcModule}`),
+		logger: scope.resolve('logService'),
 		authentication
 	};
 };
