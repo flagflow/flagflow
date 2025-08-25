@@ -11,7 +11,7 @@ export const METRICS_ENABLED = config.metrics.enabled;
 register.clear();
 register.setDefaultLabels({ hostname: hostname() });
 
-const METRIC_PREFIX = 'erp_';
+const METRIC_PREFIX = 'flagflow_';
 
 export const createCounter = (parameters: {
 	name: string;
