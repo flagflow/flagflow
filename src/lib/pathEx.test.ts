@@ -106,7 +106,7 @@ describe('pathEx', () => {
 		});
 
 		it('should handle custom delimiter', () => {
-			expect(normalize(String.raw`path\\to\\\file`, '\\\\')).toBe(String.raw`path\\to\\file`);
+			expect(normalize('a--b---c', '-')).toBe('a-b-c');
 		});
 	});
 
