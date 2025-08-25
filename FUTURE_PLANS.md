@@ -16,20 +16,4 @@ This document outlines planned enhancements and features for FlagFlow.
   - Nested object support with path-based access
   - Schema migration tools for object flag changes
 
-## Security & Compliance
-
-- **Comprehensive Audit Log**: Complete audit trail for all system operations
-  - User action tracking (login, logout, flag changes)
-  - Administrative actions logging
-  - Flag access and modification history
-  - Export capabilities for compliance reporting
-
-## User Experience
-
-- **Advanced Flag Management**: Enhanced UI capabilities
-  - Bulk flag operations (copy, move, delete)
-  - Flag dependency tracking and visualization
-  - Advanced search and filtering options
-  - Flag usage analytics and metrics
-
 These features are planned for future releases based on community feedback and adoption patterns.

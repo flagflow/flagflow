@@ -49,8 +49,11 @@ The application follows a layered service architecture with Awilix dependency in
    - `UserService`: User operations, authentication, and permission validation
    - `MaintenanceService`: Background cleanup tasks running every 113 seconds
 
-3. **Business Services**:
-   - `FlagService`: Feature flag management with real-time etcd watching, TypeScript generation
+3. **Business Services** (`src/lib/server/services/FlagService/`):
+   - `FlagService`: Feature flag management with real-time etcd watching
+   - `TSFileGenerator`: TypeScript code generation for client integration
+   - `GroupHashGenerator`: Hash validation for flag groups
+   - `Migration`: Export/import system for flag management
 
 ### Key Architectural Components
 
@@ -65,8 +68,9 @@ The application follows a layered service architecture with Awilix dependency in
 - tRPC setup with superjson transformer for complex type serialization
 - Context creation with authentication, tracing, and service injection
 - Middleware chain: logging → authentication → permission-based authorization
-- Route organization: `public/` (login/auth) and `protected/` (flag/user/session operations)
+- Route organization: `public/` (login/auth) and `protected/` (flag/user/session/migration operations)
 - Enhanced Zod error formatting with detailed validation messages
+- Server-side RPC caller for internal service communication
 
 #### Feature Flag System
 
@@ -124,6 +128,7 @@ Before development, start required services:
 
 - etcd: `./infra/etcd.sh` (port 2379, root password: `flagflow`)
 - Keycloak: `./infra/keycloak.sh` (port 8080, admin: `admin`/`admin`)
+- Alternative: `npm run docker:compose:up` for full infrastructure setup
 
 ### Flag Type Patterns
 
@@ -195,11 +200,13 @@ Package.json Docker commands use `$npm_package_version` variable:
 
 ## Key File Locations
 
-- **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, business services)
+- **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, FlagService)
 - **RPC routes**: `src/rpc/protected/` and `src/rpc/public/`
 - **Persistent data types**: `src/types/persistent/` (all with Zod schemas)
-- **Infrastructure scripts**: `./infra/etcd.sh` and `./infra/keycloak.sh`
+- **Infrastructure scripts**: `./infra/etcd.sh`, `./infra/keycloak.sh`, and Docker Compose files
 - **Route handlers**: `src/routes/` (SvelteKit file-based routing)
+- **Client integration**: `src/lib/rpc/client.ts` for tRPC client setup
+- **Persistent engines**: `src/lib/server/persistent/` (etcd and filesystem engines)
 
 ## Important Development Instructions
 
@@ -208,6 +215,32 @@ Package.json Docker commands use `$npm_package_version` variable:
 - ALWAYS prefer editing an existing file to creating a new one
 - NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User
 - When working with etcd data, always validate using Zod schemas in `src/types/persistent/`
+
+## Persistent Storage Architecture
+
+FlagFlow uses a dual-engine persistence system:
+
+- **etcdEngine**: When `ETCD_SERVER` is configured, uses etcd for distributed storage
+- **fsEngine**: When no `ETCD_SERVER`, falls back to local filesystem JSON storage
+- **PersistentService**: Unified interface abstracting engine differences
+- **Schema validation**: All operations validated with Zod schemas from `src/types/persistent/`
+
+## Testing Configuration
+
+- **Framework**: Vitest with @testing-library/svelte integration
+- **Environment**: Node.js test environment with integration setup
+- **Exclusions**: Svelte component files excluded by default
+- **Setup**: `tests/integration.setup.ts` configures test environment
+- **Path aliases**: Full support for `$lib`, `$components`, `$types`, `$rpc` in tests
+
+## Audit Logging System
+
+FlagFlow includes comprehensive audit logging:
+
+- **Structured logging**: All operations logged with trace IDs using Pino
+- **Audit trail**: User actions, flag changes, and system events tracked
+- **Log correlation**: Trace IDs link related operations across service layers
+- **Pretty formatting**: Development logs formatted for readability
 
 # important-instruction-reminders
 
