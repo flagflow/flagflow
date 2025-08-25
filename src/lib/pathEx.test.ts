@@ -131,7 +131,7 @@ describe('pathEx', () => {
 		});
 
 		it('should handle custom delimiter', () => {
-			expect(resolve(String.raw`path\\to\\..\\file`, '\\\\')).toBe(String.raw`path\\file`);
+			expect(resolve('path|to|..|file', '|')).toBe('path|file');
 		});
 
 		it('should handle empty path', () => {
