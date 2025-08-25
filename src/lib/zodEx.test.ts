@@ -14,7 +14,7 @@ describe('zodEx', () => {
 					received: 'number',
 					path: ['name'],
 					message: 'Expected string, received number'
-				} as any as any
+				} as any
 			];
 
 			const result = zodFlattenError(errors);
