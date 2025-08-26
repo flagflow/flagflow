@@ -1,10 +1,6 @@
 import { asFunction, asValue, type AwilixContainer, createContainer } from 'awilix';
 
 import { generateTraceId } from '$lib/genId';
-
-// Mock __APP_VERSION__ for tests
-// @ts-expect-error because setup environment
-globalThis.__APP_VERSION__ = '1.0.0-test';
 import { createRpcCallerFactory } from '$lib/rpc/init';
 import type { RpcRouter } from '$lib/rpc/router';
 import { router } from '$lib/rpc/router';
