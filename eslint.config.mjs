@@ -98,6 +98,7 @@ export default [
 		rules: {
 			...vitest.configs.all.rules,
 			'vitest/require-hook': 'off',
+			'vitest/prefer-strict-boolean-matchers': 'off', // Allow toBeTruthy() instead of forcing toBe(true)
 			'vitest/max-expects': [
 				'warn',
 				{
