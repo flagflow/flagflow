@@ -23,6 +23,7 @@ export default [
 			'**/.DS_Store',
 			'**/node_modules',
 			'build',
+			'coverage',
 			'.svelte-kit',
 			'package',
 			'**/.env',

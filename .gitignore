@@ -7,6 +7,7 @@ static/test/
 /.svelte-kit
 /build
 data
+coverage
 
 # OS
 .DS_Store

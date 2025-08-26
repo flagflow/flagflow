@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Linting**: `npm run lint:check` (check) or `npm run lint:fix` (fix)
 - **Formatting**: `npm run format:check` (check) or `npm run format:fix` (fix)
 - **Full pipeline**: `npm run all` (formats, lints, type-checks, and builds)
-- **Tests**: `npm run test` (runs vitest)
+- **Tests**: `npm run test` (runs vitest) or `npm run test:coverage` (with coverage report)
 - **Docker interactive**: `npm run docker:it` (interactive shell in container)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
 - **Docker**: `npm run docker:build` and `npm run docker:run`

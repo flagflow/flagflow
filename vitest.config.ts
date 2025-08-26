@@ -10,7 +10,13 @@ export default defineConfig({
 	test: {
 		environment: 'node',
 		setupFiles: './tests/integration.setup.ts',
-		exclude: [...configDefaults.exclude, '**/*.svelte']
+		exclude: [...configDefaults.exclude, '**/*.svelte'],
+		coverage: {
+			enabled: false,
+			provider: 'v8',
+			include: ['src/**/*.ts'],
+			exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts', '**/*.d.ts', 'src/app.html']
+		}
 	},
 	resolve: {
 		alias: {
