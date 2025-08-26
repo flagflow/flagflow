@@ -19,8 +19,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Testing Commands
 
 - **Run tests**: `npm run test` (Vitest with @testing-library/svelte)
-- **Test environment**: Node.js with integration setup at `tests/integration.setup.ts`
+- **Run specific tests**: `npm run test -- --run <test-file-pattern>` (e.g., `npm run test -- --run flagService`)
+- **Test environment**: Node.js with E2E test setup at `tests/e2e/setup.ts`
 - **Test exclusions**: Svelte files are excluded from testing by default
+- **E2E Testing**: Comprehensive RPC testing with in-memory mocks via `MockPersistentService`
 
 ## Architecture Overview
 
@@ -180,15 +182,31 @@ FlagFlow uses role-based permissions:
 - `users`: Add, modify, or remove users and manage sessions
 - `migration`: Restore backups or execute migrations
 
-## Single Test Execution
+## Testing Architecture
 
-To run individual tests, use:
+### E2E Test Engine
+
+The codebase includes a comprehensive E2E test engine for RPC testing:
+
+- **In-memory persistence**: `MockPersistentService` with `InMemoryPersistentEngine` replaces etcd/filesystem for testing
+- **Real-time watchers**: Full support for flag watching and events in test environment
+- **Authentication mocking**: User contexts with configurable permissions for testing authorization
+- **State isolation**: `resetFlagServiceState()` function ensures clean test isolation
+- **Module-level caching**: FlagService uses module-level state for performance with proper test reset
+
+### Test Execution
 
 ```bash
-npm run test -- --run <test-file-pattern>
-```
+# Run all tests
+npm run test
 
-Example: `npm run test -- --run flagService` to run tests matching "flagService"
+# Run specific test files
+npm run test -- --run <test-file-pattern>
+
+# Examples
+npm run test -- --run flagService     # Run FlagService tests
+npm run test -- --run rpc.test.ts     # Run specific E2E RPC tests
+```
 
 ## Docker Commands Context
 
@@ -201,12 +219,14 @@ Package.json Docker commands use `$npm_package_version` variable:
 ## Key File Locations
 
 - **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, FlagService)
-- **RPC routes**: `src/rpc/protected/` and `src/rpc/public/`
+- **RPC routes**: `src/lib/rpc/protected/` and `src/lib/rpc/public/`
 - **Persistent data types**: `src/types/persistent/` (all with Zod schemas)
 - **Infrastructure scripts**: `./infra/etcd.sh`, `./infra/keycloak.sh`, and Docker Compose files
 - **Route handlers**: `src/routes/` (SvelteKit file-based routing)
 - **Client integration**: `src/lib/rpc/client.ts` for tRPC client setup
 - **Persistent engines**: `src/lib/server/persistent/` (etcd and filesystem engines)
+- **Test mocks**: `tests/mocks/` (MockPersistentService, InMemoryPersistentEngine)
+- **E2E test setup**: `tests/e2e/setup.ts` (test context creation and utilities)
 
 ## Important Development Instructions
 
@@ -228,10 +248,12 @@ FlagFlow uses a dual-engine persistence system:
 ## Testing Configuration
 
 - **Framework**: Vitest with @testing-library/svelte integration
-- **Environment**: Node.js test environment with integration setup
+- **Environment**: Node.js test environment with E2E setup
 - **Exclusions**: Svelte component files excluded by default
-- **Setup**: `tests/integration.setup.ts` configures test environment
+- **E2E Setup**: `tests/e2e/setup.ts` provides `createE2ETestContext()` for RPC testing
 - **Path aliases**: Full support for `$lib`, `$components`, `$types`, `$rpc` in tests
+- **Mock system**: Complete in-memory persistence layer for isolated testing
+- **ESLint rules**: Configured to allow `toBeTruthy()` over `toBe(true)` in tests
 
 ## Audit Logging System
 
@@ -248,3 +270,5 @@ Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.

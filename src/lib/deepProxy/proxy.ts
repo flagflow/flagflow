@@ -127,9 +127,7 @@ const trap = function <T extends TTarget>(this: TTrapContext, ...parameters: [T,
 	const { PROXY, DEFAULT, value } = handlerContext;
 	const result = handler(handlerContext);
 
-	if (result === PROXY) {
-		return PROXY(value);
-	}
+	if (result === PROXY) return PROXY(value);
 
 	if (result === DEFAULT) {
 		// eslint-disable-next-line
@@ -175,9 +173,7 @@ export const createDeepProxy: TProxyFactory = function <T extends TTarget>(
 	const _root = _this.root || root || target;
 	const _proxy = getFromCache(_root, target, _path);
 
-	if (_proxy) {
-		return _proxy as T;
-	}
+	if (_proxy) return _proxy as T;
 
 	const traps = createTraps(_handler, _root, _path);
 	const proxy = new Proxy<T>(target, traps);

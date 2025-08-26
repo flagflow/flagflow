@@ -130,9 +130,7 @@ describe('genId', () => {
 			const allowedChars =
 				'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + ';$+!%/=()';
 
-			for (const char of password) {
-				expect(allowedChars.includes(char)).toBe(true);
-			}
+			for (const char of password) expect(allowedChars.includes(char)).toBe(true);
 		});
 
 		it('should handle edge cases', () => {
@@ -175,23 +173,17 @@ describe('genId', () => {
 			const iterations = 1000;
 
 			// Test HTML element IDs
-			for (let index = 0; index < iterations; index++) {
-				ids.add(generateHtmlElementId());
-			}
+			for (let index = 0; index < iterations; index++) ids.add(generateHtmlElementId());
 			expect(ids.size).toBe(iterations);
 
 			// Test trace IDs
 			ids.clear();
-			for (let index = 0; index < iterations; index++) {
-				ids.add(generateTraceId());
-			}
+			for (let index = 0; index < iterations; index++) ids.add(generateTraceId());
 			expect(ids.size).toBe(iterations);
 
 			// Test session IDs
 			ids.clear();
-			for (let index = 0; index < iterations; index++) {
-				ids.add(generateSessionId());
-			}
+			for (let index = 0; index < iterations; index++) ids.add(generateSessionId());
 			expect(ids.size).toBe(iterations);
 		});
 

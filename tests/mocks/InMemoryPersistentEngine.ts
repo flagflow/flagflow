@@ -23,11 +23,8 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 
 	async list(prefix: string): Promise<Record<string, string>> {
 		const result: Record<string, string> = {};
-		for (const [key, value] of this.data.entries()) {
-			if (key.startsWith(prefix)) {
-				result[key] = value;
-			}
-		}
+		for (const [key, value] of this.data.entries()) if (key.startsWith(prefix)) result[key] = value;
+
 		return result;
 	}
 
@@ -43,11 +40,8 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 		const prefix = this.findPrefixForKey(key);
 		if (prefix) {
 			const callbacks = this.watchers.get(prefix);
-			if (callbacks) {
-				for (const callback of callbacks) {
-					callback(wasExisting ? 'data' : 'data', key, value);
-				}
-			}
+			if (callbacks)
+				for (const callback of callbacks) callback(wasExisting ? 'data' : 'data', key, value);
 		}
 	}
 
@@ -59,11 +53,7 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 			const prefix = this.findPrefixForKey(key);
 			if (prefix) {
 				const callbacks = this.watchers.get(prefix);
-				if (callbacks) {
-					for (const callback of callbacks) {
-						callback('delete', key);
-					}
-				}
+				if (callbacks) for (const callback of callbacks) callback('delete', key);
 			}
 		}
 	}
@@ -72,9 +62,7 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 		prefix: string,
 		onEvent: PersistentEngineWatcherCallback
 	): Promise<PersistentEngineWatcherClose> {
-		if (!this.watchers.has(prefix)) {
-			this.watchers.set(prefix, new Set());
-		}
+		if (!this.watchers.has(prefix)) this.watchers.set(prefix, new Set());
 
 		const callbacks = this.watchers.get(prefix)!;
 		callbacks.add(onEvent);
@@ -82,9 +70,7 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 		return {
 			stop: async () => {
 				callbacks.delete(onEvent);
-				if (callbacks.size === 0) {
-					this.watchers.delete(prefix);
-				}
+				if (callbacks.size === 0) this.watchers.delete(prefix);
 			}
 		};
 	}
@@ -109,11 +95,8 @@ export class InMemoryPersistentEngine implements PersistentEngine {
 	}
 
 	private findPrefixForKey(key: string): string | undefined {
-		for (const prefix of this.watchers.keys()) {
-			if (key.startsWith(prefix)) {
-				return prefix;
-			}
-		}
+		for (const prefix of this.watchers.keys()) if (key.startsWith(prefix)) return prefix;
+
 		return undefined;
 	}
 }
