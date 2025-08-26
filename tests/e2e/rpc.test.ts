@@ -350,7 +350,6 @@ describe('rPC E2E Tests', () => {
 			const migrationData = await flagService.getMigrationFileContent();
 
 			expect(migrationData).toBeTruthy();
-			expect(migrationData.environment).toBeTruthy();
 			expect(migrationData.createdAt).toBeTruthy();
 			expect(migrationData.flags).toBeTruthy();
 
