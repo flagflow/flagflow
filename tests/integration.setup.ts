@@ -3,6 +3,8 @@
 
 // Set log level to silent for all tests
 process.env['LOGLEVEL'] = 'silent';
+// Set node environment to production
+process.env['NODE_ENV'] = 'production';
 
 // Mock __APP_VERSION__ for tests
 // @ts-expect-error because setup environment
