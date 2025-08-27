@@ -168,3 +168,11 @@ export const FlagService = ({
 	};
 };
 export type FlagService = ReturnType<typeof FlagService>;
+
+// For testing purposes - reset module-level state
+export const resetFlagServiceState = async () => {
+	if (flagWatcher) await flagWatcher.stop();
+	flags = undefined;
+	flagWatcher = undefined;
+	flagTypeDescriptor = undefined;
+};
