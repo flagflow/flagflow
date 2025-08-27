@@ -7,10 +7,15 @@ import type { ObjectSchema } from './parser';
  */
 export const parseJavaScriptObjectString = (objectString: string): Record<string, unknown> => {
 	try {
-		// Create a function that returns the object literal
-		// This is safer than eval and handles JS object syntax properly
-		const objectParser = new Function(`return (${objectString})`);
-		return objectParser();
+		const jsonString = objectString
+			// Convert unquoted keys to quoted keys
+			.replaceAll(/([,{]\s*)([\w$]+)\s*:/g, '$1"$2":')
+			// Convert single quotes to double quotes for string values
+			.replaceAll(/'([^']*)'/g, '"$1"')
+			// Handle trailing commas
+			.replaceAll(/,(\s*[\]}])/g, '$1');
+
+		return JSON.parse(jsonString);
 	} catch (error) {
 		throw new Error(
 			`Failed to parse object: ${error instanceof Error ? error.message : 'Unknown error'}`
