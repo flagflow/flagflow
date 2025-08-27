@@ -462,9 +462,10 @@ describe('validateObjectSchema', () => {
 			it('should throw when expecting object but got array', () => {
 				const schema = parseObjectSchemaString('{ user: { name: string } }');
 
-				// Arrays are objects in JavaScript, so this will try to validate properties and fail
+				// Arrays are objects in JavaScript with numeric indices as properties
+				// Strict validation now catches these as extra properties first
 				expect(() => validateObjectSchema(schema, { user: ['John'] })).toThrow(
-					'Missing required property: name'
+					"Property '0' is not declared in schema"
 				);
 			});
 		});
@@ -483,19 +484,111 @@ describe('validateObjectSchema', () => {
 				).toThrow("Referenced type 'Address' not found");
 			});
 		});
+
+		describe('extra property errors', () => {
+			it('should throw when object has single extra property', () => {
+				const schema = parseObjectSchemaString('{ name: string, age: integer }');
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						name: 'John',
+						age: 25,
+						city: 'Springfield'
+					})
+				).toThrow("Property 'city' is not declared in schema");
+			});
+
+			it('should throw when object has multiple extra properties', () => {
+				const schema = parseObjectSchemaString('{ name: string }');
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						name: 'John',
+						age: 25,
+						city: 'Springfield',
+						country: 'USA'
+					})
+				).toThrow("Property 'age' is not declared in schema");
+			});
+
+			it('should throw when nested object has extra properties', () => {
+				const schema = parseObjectSchemaString(`{
+					user: {
+						name: string,
+						age: integer
+					}
+				}`);
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						user: {
+							name: 'John',
+							age: 25,
+							email: 'john@example.com'
+						}
+					})
+				).toThrow("Property 'email' is not declared in schema");
+			});
+
+			it('should throw when array items have extra properties', () => {
+				const schema = parseObjectSchemaString(`{
+					users: {
+						name: string,
+						age: integer
+					}[]
+				}`);
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						users: [
+							{ name: 'John', age: 25 },
+							{ name: 'Jane', age: 30, city: 'Boston' }
+						]
+					})
+				).toThrow("Property 'city' is not declared in schema");
+			});
+
+			it('should throw when type reference object has extra properties', () => {
+				const schema = parseObjectSchemaString(`
+					type User = { name: string, age: integer }
+					{ user: User }
+				`);
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						user: {
+							name: 'John',
+							age: 25,
+							email: 'john@example.com'
+						}
+					})
+				).toThrow("Property 'email' is not declared in schema");
+			});
+
+			it('should work correctly when no extra properties present', () => {
+				const schema = parseObjectSchemaString('{ name: string, age: integer }');
+
+				expect(() =>
+					validateObjectSchema(schema, {
+						name: 'John',
+						age: 25
+					})
+				).not.toThrow();
+			});
+		});
 	});
 
 	describe('edge cases', () => {
-		it('should validate object with extra properties', () => {
+		it('should throw error when object has extra properties', () => {
 			const schema = parseObjectSchemaString('{ name: string }');
 
-			// Extra properties should be allowed (no strict validation)
+			// Extra properties should now cause validation errors (strict validation)
 			expect(() =>
 				validateObjectSchema(schema, {
 					name: 'John',
-					extraProperty: 'allowed'
+					extraProperty: 'not allowed'
 				})
-			).not.toThrow();
+			).toThrow("Property 'extraProperty' is not declared in schema");
 		});
 
 		it('should validate complex nested structure with optional properties', () => {

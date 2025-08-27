@@ -24,6 +24,14 @@ const validateObjectProperties = (
 
 	const object_ = object as Record<string, unknown>;
 
+	// Create a set of allowed property names for efficient lookup
+	const allowedProperties = new Set(properties.map((p) => p.propertyName));
+
+	// Check for extra properties not declared in schema
+	for (const objectPropertyName in object_)
+		if (!allowedProperties.has(objectPropertyName))
+			throw new Error(`Property '${objectPropertyName}' is not declared in schema`);
+
 	for (const property of properties) {
 		const { propertyName, isOptional, propertyType, isArray } = property;
 
