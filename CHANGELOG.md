@@ -5,6 +5,33 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-08-27
+
+### Added
+
+- Comprehensive unit test suite with Vitest and @testing-library/svelte integration
+- E2E test engine with in-memory mocks for RPC testing
+- Audit logging system with structured logging and trace ID correlation
+- Enhanced logging infrastructure with Pino and pretty formatting for development
+- Group operations functionality for feature flag management
+- PersistentService abstraction layer supporting both etcd and filesystem storage
+- Dual-engine persistence system (etcd for distributed, filesystem for local)
+- MockPersistentService with InMemoryPersistentEngine for testing isolation
+
+### Changed
+
+- Improved build system and CI/CD pipeline reliability
+- Enhanced test coverage across core services and RPC endpoints
+- Updated documentation with comprehensive testing and architecture details
+- Strengthened service architecture with better separation of concerns
+
+### Technical Improvements
+
+- Service layer now supports pluggable persistence engines
+- Test environment uses isolated in-memory state for better test reliability
+- Real-time flag watching supported in both production and test environments
+- Enhanced type safety with Zod schema validation throughout persistence layer
+
 ## [1.4.6] - 2025-08-18
 
 ### Added
