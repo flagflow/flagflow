@@ -11,9 +11,7 @@ const validateObject = (objectDefinition: TObject, value: unknown, schema: Objec
 	if (objectDefinition.isArray) {
 		if (!Array.isArray(value)) throw new TypeError('Expected array but got non-array value');
 		for (const item of value) validateObjectProperties(objectDefinition.properties, item, schema);
-	} else {
-		validateObjectProperties(objectDefinition.properties, value, schema);
-	}
+	} else validateObjectProperties(objectDefinition.properties, value, schema);
 };
 
 const validateObjectProperties = (
@@ -39,9 +37,7 @@ const validateObjectProperties = (
 		if (isArray) {
 			if (!Array.isArray(value)) throw new TypeError(`Property ${propertyName} should be an array`);
 			for (const item of value) validatePropertyType(propertyType, item, propertyName, schema);
-		} else {
-			validatePropertyType(propertyType, value, propertyName, schema);
-		}
+		} else validatePropertyType(propertyType, value, propertyName, schema);
 	}
 };
 
