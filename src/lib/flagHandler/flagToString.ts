@@ -52,11 +52,7 @@ export const flagDefaultValueToString = (flag: PersistentFlag): string => {
 	}
 };
 
-export const flagValueToObject = (
-	flag: PersistentFlag
-): {
-	isDefaultValue: boolean;
-	value: string | number | boolean | string[] | object;
+	value: string | number | boolean | string[] | Record<string, unknown>;
 } => {
 	switch (flag.type) {
 		case 'OBJECT':
