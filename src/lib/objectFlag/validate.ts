@@ -5,7 +5,7 @@ import type { ObjectSchema } from './parser';
  * Parse a JavaScript object string into an actual object
  * Handles strings like "{ server: 'remote', port: 8080 }"
  */
-export const parseJavaScriptObjectString = (objectString: string): object => {
+export const parseJavaScriptObjectString = (objectString: string): Record<string, unknown> => {
 	try {
 		// Create a function that returns the object literal
 		// This is safer than eval and handles JS object syntax properly
