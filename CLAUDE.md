@@ -79,6 +79,7 @@ The application follows a layered service architecture with Awilix dependency in
 - Real-time flag watching with etcd watchers
 - TypeScript/Zod type generation from flag schemas
 - Support for BOOLEAN (with killswitch), INTEGER, STRING, OBJECT, ENUM, TAG, AB-TEST flag types
+- **Object flags**: Support JavaScript object syntax strings with schema validation and TypeScript generation
 - Migration system for flag changes with export/import
 - Hash-based group validation for type safety
 - Kill switches: special boolean flags requiring confirmation to disable
