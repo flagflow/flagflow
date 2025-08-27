@@ -31,6 +31,7 @@
 		EMPTY_BOOLEAN_FLAG,
 		EMPTY_ENUM_FLAG,
 		EMPTY_INTEGER_FLAG,
+		EMPTY_OBJECT_FLAG,
 		EMPTY_STRING_FLAG,
 		EMPTY_TAG_FLAG
 	} from '$types/persistent/flagEmptyInstance';
@@ -109,6 +110,14 @@
 				{
 					flagSpecific = {
 						...EMPTY_STRING_FLAG,
+						description: flagCommon.description
+					};
+				}
+				break;
+			case 'OBJECT':
+				{
+					flagSpecific = {
+						...EMPTY_OBJECT_FLAG,
 						description: flagCommon.description
 					};
 				}

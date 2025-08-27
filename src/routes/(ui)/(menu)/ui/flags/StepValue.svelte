@@ -5,6 +5,7 @@
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import FormMultiSelect from '$components/form/FormMultiSelect.svelte';
 	import FormSelect from '$components/form/FormSelect.svelte';
+	import FormTextarea from '$components/form/FormTextarea.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { flagDefaultValueToString, flagSchemaToString } from '$lib/flagHandler/flagToString';
@@ -80,6 +81,10 @@
 			{:else if flag.type === 'STRING'}
 				<div class="flex flex-col">
 					<FormInput title="Value" type="text" bind:value={flag.value} />
+				</div>
+			{:else if flag.type === 'OBJECT'}
+				<div class="flex flex-col">
+					<FormTextarea rows={5} title="Value" bind:value={flag.value} />
 				</div>
 			{:else if flag.type === 'ENUM'}
 				<FormSelect
