@@ -670,6 +670,173 @@ describe('validateObjectSchema', () => {
 		});
 	});
 
+	describe('JavaScript object string parsing', () => {
+		it('should parse simple JavaScript object strings', () => {
+			const schema = parseObjectSchemaString('{ server: string, port: integer }');
+
+			expect(() => validateObjectSchema(schema, "{ server: 'remote', port: 8080 }")).not.toThrow();
+		});
+
+		it('should parse JavaScript object strings with different quote styles', () => {
+			const schema = parseObjectSchemaString('{ name: string, active: boolean }');
+
+			expect(() => validateObjectSchema(schema, `{ name: "John", active: true }`)).not.toThrow();
+
+			expect(() => validateObjectSchema(schema, `{ name: 'Jane', active: false }`)).not.toThrow();
+		});
+
+		it('should parse JavaScript object strings with numbers', () => {
+			const schema = parseObjectSchemaString('{ id: integer, score: float, ratio: number }');
+
+			expect(() =>
+				validateObjectSchema(schema, '{ id: 42, score: 3.14, ratio: 2.718 }')
+			).not.toThrow();
+		});
+
+		it('should parse JavaScript object strings with arrays', () => {
+			const schema = parseObjectSchemaString('{ tags: string[], scores: integer[] }');
+
+			expect(() =>
+				validateObjectSchema(schema, "{ tags: ['tag1', 'tag2'], scores: [1, 2, 3] }")
+			).not.toThrow();
+		});
+
+		it('should parse JavaScript object strings with nested objects', () => {
+			const schema = parseObjectSchemaString(`{
+				user: {
+					name: string,
+					profile: {
+						age: integer,
+						active: boolean
+					}
+				}
+			}`);
+
+			expect(() =>
+				validateObjectSchema(
+					schema,
+					`{
+					user: {
+						name: 'John',
+						profile: {
+							age: 25,
+							active: true
+						}
+					}
+				}`
+				)
+			).not.toThrow();
+		});
+
+		it('should handle JavaScript object strings with mixed data types', () => {
+			const schema = parseObjectSchemaString(`{
+				config: {
+					server: string,
+					port: integer,
+					ssl: boolean,
+					timeout: float,
+					endpoints: string[],
+					metadata: {
+						version: string,
+						features: string[]
+					}
+				}
+			}`);
+
+			expect(() =>
+				validateObjectSchema(
+					schema,
+					`{
+					config: {
+						server: 'localhost',
+						port: 8080,
+						ssl: true,
+						timeout: 30.5,
+						endpoints: ['/api/v1', '/api/v2'],
+						metadata: {
+							version: '1.0.0',
+							features: ['auth', 'logging']
+						}
+					}
+				}`
+				)
+			).not.toThrow();
+		});
+
+		it('should handle JavaScript object strings with optional properties', () => {
+			const schema = parseObjectSchemaString('{ name: string, age?: integer, email?: string }');
+
+			expect(() => validateObjectSchema(schema, "{ name: 'John' }")).not.toThrow();
+
+			expect(() => validateObjectSchema(schema, "{ name: 'John', age: 25 }")).not.toThrow();
+
+			expect(() =>
+				validateObjectSchema(schema, "{ name: 'John', age: 25, email: 'john@example.com' }")
+			).not.toThrow();
+		});
+
+		it('should throw error for invalid JavaScript object strings', () => {
+			const schema = parseObjectSchemaString('{ name: string, age: integer }');
+
+			expect(() => validateObjectSchema(schema, "{ name: 'John', age: }")).toThrow(
+				'Failed to parse object'
+			);
+
+			expect(() => validateObjectSchema(schema, "{ name: 'John' age: 25 }")).toThrow(
+				'Failed to parse object'
+			);
+
+			expect(() => validateObjectSchema(schema, 'invalid object string')).toThrow(
+				'Failed to parse object'
+			);
+		});
+
+		it('should throw error for JavaScript object strings that do not match schema', () => {
+			const schema = parseObjectSchemaString('{ server: string, port: integer }');
+
+			expect(() => validateObjectSchema(schema, "{ server: 123, port: 'invalid' }")).toThrow(
+				'Property server should be a string'
+			);
+
+			expect(() => validateObjectSchema(schema, "{ server: 'remote' }")).toThrow(
+				'Missing required property: port'
+			);
+
+			expect(() =>
+				validateObjectSchema(schema, "{ server: 'remote', port: 8080, extra: 'not allowed' }")
+			).toThrow("Property 'extra' is not declared in schema");
+		});
+
+		it('should parse empty JavaScript object strings', () => {
+			const schema = parseObjectSchemaString('{ }');
+
+			expect(() => validateObjectSchema(schema, '{}')).not.toThrow();
+
+			expect(() => validateObjectSchema(schema, '{ }')).not.toThrow();
+		});
+
+		it('should parse JavaScript object strings with array of objects', () => {
+			const schema = parseObjectSchemaString('{ name: string, age: integer }[]');
+
+			expect(() =>
+				validateObjectSchema(
+					schema,
+					`[
+					{ name: 'John', age: 25 },
+					{ name: 'Jane', age: 30 }
+				]`
+				)
+			).not.toThrow();
+		});
+
+		it('should maintain backward compatibility with object input', () => {
+			const schema = parseObjectSchemaString('{ server: string, port: integer }');
+
+			// Original object input should still work
+			expect(() => validateObjectSchema(schema, { server: 'remote', port: 8080 })).not.toThrow();
+		});
+	});
+
 	describe('performance and stress tests', () => {
 		it('should handle large arrays efficiently', () => {
 			const schema = parseObjectSchemaString('{ items: integer[] }');

@@ -1,10 +1,31 @@
 import type { TObject, TProperty, TPropertyType } from './grammar';
 import type { ObjectSchema } from './parser';
 
-export const validateObjectSchema = (schema: ObjectSchema, object: object): void => {
+/**
+ * Parse a JavaScript object string into an actual object
+ * Handles strings like "{ server: 'remote', port: 8080 }"
+ */
+export const parseJavaScriptObjectString = (objectString: string): object => {
+	try {
+		// Create a function that returns the object literal
+		// This is safer than eval and handles JS object syntax properly
+		const objectParser = new Function(`return (${objectString})`);
+		return objectParser();
+	} catch (error) {
+		throw new Error(
+			`Failed to parse object: ${error instanceof Error ? error.message : 'Unknown error'}`
+		);
+	}
+};
+
+export const validateObjectSchema = (schema: ObjectSchema, object: object | string): void => {
 	const mainType = schema.types.find((t) => !t.name);
 	if (!mainType) throw new Error('Schema must have at least one unnamed type');
-	validateObject(mainType.typeDescriptor, object, schema);
+
+	// Handle string input by parsing it as JavaScript object syntax
+	const parsedObject = typeof object === 'string' ? parseJavaScriptObjectString(object) : object;
+
+	validateObject(mainType.typeDescriptor, parsedObject, schema);
 };
 
 const validateObject = (objectDefinition: TObject, value: unknown, schema: ObjectSchema): void => {
