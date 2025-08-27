@@ -41,7 +41,7 @@ export const flagSchemaValidator = (flag: PersistentFlag): string => {
 			try {
 				validateObjectSchema(schema, flag.defaultValue);
 			} catch (error) {
-				return error instanceof Error ? `Default value ${error.message}` : '`Default value error';
+				return error instanceof Error ? `Default value ${error.message}` : 'Default value error';
 			}
 			return '';
 		}
