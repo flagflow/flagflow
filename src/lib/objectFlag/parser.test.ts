@@ -351,4 +351,100 @@ describe('parseObjectSchemaString', () => {
 			expect(schema.types.find((t) => t.name === '$Interface')).toBeDefined();
 		});
 	});
+
+	describe('performance tests', () => {
+		it('should parse schemas efficiently', () => {
+			const complexSchema = `
+				type Address = {
+					street: string,
+					city: string,
+					zipCode?: string,
+					country: string
+				}
+				
+				interface User {
+					id: integer,
+					name: string,
+					email?: string,
+					addresses: Address[],
+					metadata: {
+						created: string,
+						updated?: string,
+						tags: string[],
+						settings: {
+							notifications: boolean,
+							privacy: string,
+							preferences: {
+								theme: string,
+								language: string,
+								timezone: string
+							}
+						}
+					}
+				}
+				
+				{
+					users: User[],
+					total: integer,
+					filters: {
+						active?: boolean,
+						city: string,
+						dateRange: {
+							start: string,
+							end?: string
+						}
+					},
+					pagination: {
+						page: integer,
+						limit: integer,
+						hasMore: boolean
+					}
+				}
+			`;
+
+			const start = performance.now();
+
+			// Parse the same complex schema multiple times
+			for (let index = 0; index < 1000; index++) parseObjectSchemaString(complexSchema);
+
+			const end = performance.now();
+			const duration = end - start;
+
+			// Should complete 100 complex parses in reasonable time
+			expect(duration).toBeLessThan(500); // Less than 500ms for 1000 parses
+		});
+
+		it('should handle repeated simple parsing efficiently', () => {
+			const simpleSchema = '{ name: string, age: integer, active: boolean }';
+
+			const start = performance.now();
+
+			// Parse simple schema many times
+			for (let index = 0; index < 1000; index++) parseObjectSchemaString(simpleSchema);
+
+			const end = performance.now();
+			const duration = end - start;
+
+			// Should complete 1000 simple parses very quickly
+			expect(duration).toBeLessThan(200); // Less than 200ms for 1000 simple parses
+		});
+
+		it('should parse large schemas with many properties efficiently', () => {
+			// Generate a schema with many properties
+			const manyProperties = Array.from({ length: 50 }, (_, index) => `prop${index}: string`).join(
+				', '
+			);
+			const largeSchema = `{ ${manyProperties} }`;
+
+			const start = performance.now();
+
+			for (let index = 0; index < 10; index++) parseObjectSchemaString(largeSchema);
+
+			const end = performance.now();
+			const duration = end - start;
+
+			// Should handle large schemas efficiently
+			expect(duration).toBeLessThan(100); // Less than 100ms for 10 large schemas
+		});
+	});
 });

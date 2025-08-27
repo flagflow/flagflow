@@ -209,5 +209,10 @@ export type TProperty = ReturnType<TypeParser['property']>;
 export type TPrimitiveType = ReturnType<TypeParser['primitiveType']>;
 export type TPropertyType = ReturnType<TypeParser['propertyType']>;
 
-export const lexerInstance = new Lexer(TokensArray);
+export const lexerInstance = new Lexer(TokensArray, {
+	// Performance optimizations
+	ensureOptimizations: true,
+	traceInitPerf: false,
+	skipValidations: false
+});
 export const parserInstance = new TypeParser();
