@@ -52,6 +52,10 @@ export const flagDefaultValueToString = (flag: PersistentFlag): string => {
 	}
 };
 
+export const flagValueToObject = (
+	flag: PersistentFlag
+): {
+	isDefaultValue: boolean;
 	value: string | number | boolean | string[] | Record<string, unknown>;
 } => {
 	switch (flag.type) {
@@ -91,7 +95,7 @@ export const flagValueToString = (
 			return {
 				isDefaultValue: !flag.valueExists,
 				value: (flag.valueExists ? flag.value : flag.defaultValue)
-					.replaceAll('\n', '')
+					.replaceAll(/\n(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '')
 					.replaceAll('\t', '')
 			};
 		case 'ENUM':
