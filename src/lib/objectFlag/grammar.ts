@@ -1,30 +1,21 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { createToken, EmbeddedActionsParser, Lexer } from 'chevrotain';
 
-// Tokens
+// Tokens - Ordered by specificity (longer/more specific patterns first for better performance)
 const Tokens = {
+	// Skip whitespace
 	WhiteSpace: createToken({ name: 'WhiteSpace', pattern: /\s+/, group: Lexer.SKIPPED }),
 
-	ArraySign: createToken({ name: '[]', pattern: /\[]/ }),
-
-	LCurly: createToken({ name: '{', pattern: /{/ }),
-	RCurly: createToken({ name: '}', pattern: /}/ }),
-	LSquare: createToken({ name: '[', pattern: /\[/ }),
-	RSquare: createToken({ name: ']', pattern: /]/ }),
-	Comma: createToken({ name: ',', pattern: /,/ }),
-	Colon: createToken({ name: ':', pattern: /:/ }),
-	QuestionMark: createToken({ name: '?', pattern: /\?/ }),
-	Equal: createToken({ name: '=', pattern: /=/ }),
-
+	// Keywords (must come before identifier)
+	INTERFACE: createToken({ name: 'interface', pattern: /interface/ }),
 	BOOLEAN: createToken({ name: 'boolean', pattern: /boolean/ }),
 	INTEGER: createToken({ name: 'integer', pattern: /integer/ }),
-	FLOAT: createToken({ name: 'float', pattern: /float/ }),
 	NUMBER: createToken({ name: 'number', pattern: /number/ }),
 	STRING: createToken({ name: 'string', pattern: /string/ }),
-
+	FLOAT: createToken({ name: 'float', pattern: /float/ }),
 	TYPE: createToken({ name: 'type', pattern: /type/ }),
-	INTERFACE: createToken({ name: 'interface', pattern: /interface/ }),
 
+	// Complex literals (before simple tokens)
 	stringValue: createToken({
 		name: 'stringValue',
 		pattern: /"(?:[^"\\]|\\(?:["/\\bfnrtv]|u[\dA-Fa-f]{4}))*"/
@@ -34,6 +25,21 @@ const Tokens = {
 		pattern: /-?(0|[1-9]\d*)(\.\d+)?([Ee][+-]?\d+)?/
 	}),
 	boolValue: createToken({ name: 'boolValue', pattern: /true|false/i }),
+
+	// Multi-character operators (before single characters)
+	ArraySign: createToken({ name: '[]', pattern: /\[]/ }),
+
+	// Single character tokens
+	LCurly: createToken({ name: '{', pattern: /{/ }),
+	RCurly: createToken({ name: '}', pattern: /}/ }),
+	LSquare: createToken({ name: '[', pattern: /\[/ }),
+	RSquare: createToken({ name: ']', pattern: /]/ }),
+	QuestionMark: createToken({ name: '?', pattern: /\?/ }),
+	Comma: createToken({ name: ',', pattern: /,/ }),
+	Colon: createToken({ name: ':', pattern: /:/ }),
+	Equal: createToken({ name: '=', pattern: /=/ }),
+
+	// Identifier must come last to avoid conflicts with keywords
 	identifier: createToken({ name: 'identifier', pattern: /[$_a-z][\w$]*/i })
 };
 const TokensArray = Object.values(Tokens);
@@ -48,7 +54,13 @@ export type TObject = {
 // Parser
 class TypeParser extends EmbeddedActionsParser {
 	constructor() {
-		super(TokensArray);
+		super(TokensArray, {
+			// Performance optimizations
+			recoveryEnabled: false, // Disable error recovery for faster parsing
+			nodeLocationTracking: 'none', // Disable location tracking for better performance
+			traceInitPerf: false, // Disable performance tracing
+			skipValidations: false // Keep validations for safety
+		});
 		this.performSelfAnalysis();
 	}
 
@@ -59,10 +71,19 @@ class TypeParser extends EmbeddedActionsParser {
 		});
 
 		this.ACTION(() => {
-			if (types.length > 1 && types.filter((t) => !t.name).length !== 1)
-				throw new Error('When multiple types are defined, one must be unnamed');
-			if (types.length > 1 && new Set(types.map((t) => t.name)).size !== types.length)
-				throw new Error('When multiple types are defined, all must have unique names');
+			const typesLength = types.length;
+			if (typesLength > 1) {
+				let unnamedCount = 0;
+				const nameSet = new Set();
+				for (const type of types)
+					if (type.name) nameSet.add(type.name);
+					else unnamedCount++;
+
+				if (unnamedCount !== 1)
+					throw new Error('When multiple types are defined, one must be unnamed');
+				if (nameSet.size !== typesLength - unnamedCount)
+					throw new Error('When multiple types are defined, all must have unique names');
+			}
 		});
 
 		return {
@@ -116,11 +137,16 @@ class TypeParser extends EmbeddedActionsParser {
 		});
 
 		this.ACTION(() => {
-			if (
-				properties.length > 1 &&
-				new Set(properties.map((p) => p.propertyName)).size !== properties.length
-			)
-				throw new Error('When multiple properties are defined, all must have unique names');
+			const propertiesLength = properties.length;
+			if (propertiesLength > 1) {
+				const propertyNameSet = new Set();
+				for (const property of properties) {
+					const name = property.propertyName;
+					if (propertyNameSet.has(name))
+						throw new Error('When multiple properties are defined, all must have unique names');
+					propertyNameSet.add(name);
+				}
+			}
 		});
 
 		return {
@@ -156,7 +182,7 @@ class TypeParser extends EmbeddedActionsParser {
 	});
 
 	public primitiveType = this.RULE('primitiveType', () => {
-		let primitiveType: string = '';
+		let primitiveType: string;
 
 		this.OR([
 			{ ALT: () => (primitiveType = this.CONSUME(Tokens.BOOLEAN).image) },
@@ -168,7 +194,7 @@ class TypeParser extends EmbeddedActionsParser {
 
 		return {
 			type: 'PRIMITIVE_TYPE' as const,
-			primitiveType
+			primitiveType: primitiveType!
 		} as const;
 	});
 
@@ -176,30 +202,40 @@ class TypeParser extends EmbeddedActionsParser {
 		let result:
 			| { type: 'PROPERTY_TYPE_PRIMITIVE'; primitiveType: ReturnType<TypeParser['primitiveType']> }
 			| { type: 'PROPERTY_TYPE_IDENTIFIER'; identifier: string }
-			| { type: 'PROPERTY_TYPE_OBJECT'; object: TObject }
-			| undefined;
+			| { type: 'PROPERTY_TYPE_OBJECT'; object: TObject };
 
 		this.OR([
 			{
-				ALT: () =>
-					(result = {
+				ALT: () => {
+					const primitiveType = this.SUBRULE(this.primitiveType);
+					result = {
 						type: 'PROPERTY_TYPE_PRIMITIVE',
-						primitiveType: this.SUBRULE(this.primitiveType)
-					})
+						primitiveType
+					};
+				}
 			},
 			{
-				ALT: () =>
-					(result = {
+				ALT: () => {
+					const identifier = this.CONSUME(Tokens.identifier).image;
+					result = {
 						type: 'PROPERTY_TYPE_IDENTIFIER',
-						identifier: this.CONSUME(Tokens.identifier).image
-					})
+						identifier
+					};
+				}
 			},
-			{ ALT: () => (result = { type: 'PROPERTY_TYPE_OBJECT', object: this.SUBRULE(this.object) }) }
+			{
+				ALT: () => {
+					const object = this.SUBRULE(this.object);
+					result = {
+						type: 'PROPERTY_TYPE_OBJECT',
+						object
+					};
+				}
+			}
 		]);
 
-		if (!result) throw new Error('Unexpected property type');
-
-		return result;
+		// This should never happen with the grammar structure, but keep for safety
+		return result!;
 	});
 }
 
