@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest';
-import type { ZodIssue } from 'zod';
+import type { z } from 'zod';
 
 import { zodFlattenError } from './zodEx';
 
 describe('zodEx', () => {
 	describe('zodFlattenError', () => {
 		it('should format single validation error', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -22,7 +22,7 @@ describe('zodEx', () => {
 		});
 
 		it('should format multiple validation errors', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -48,7 +48,7 @@ describe('zodEx', () => {
 		});
 
 		it('should handle nested field paths', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -63,7 +63,7 @@ describe('zodEx', () => {
 		});
 
 		it('should handle array indices in paths', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -89,7 +89,7 @@ describe('zodEx', () => {
 		});
 
 		it('should handle empty path', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'object',
@@ -104,13 +104,13 @@ describe('zodEx', () => {
 		});
 
 		it('should handle empty errors array', () => {
-			const errors: ZodIssue[] = [];
+			const errors: z.core.$ZodIssue[] = [];
 			const result = zodFlattenError(errors);
 			expect(result).toBe('');
 		});
 
 		it('should lowercase message and preserve field names', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -125,7 +125,7 @@ describe('zodEx', () => {
 		});
 
 		it('should handle special characters in field names', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'invalid_type',
 					expected: 'string',
@@ -140,7 +140,7 @@ describe('zodEx', () => {
 		});
 
 		it('should handle various error types', () => {
-			const errors: ZodIssue[] = [
+			const errors: z.core.$ZodIssue[] = [
 				{
 					code: 'too_big',
 					maximum: 100,
