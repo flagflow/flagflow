@@ -22,7 +22,7 @@
 				{
 					title: 'User',
 					property: 'userName',
-					subProperty: 'key'
+					subProperty: 'userKey'
 				},
 				{
 					title: 'Created at',
