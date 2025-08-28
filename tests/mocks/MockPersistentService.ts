@@ -68,7 +68,7 @@ export const MockPersistentService = ({
 		name: string
 	): Promise<PersistentSchemaDataTypeWithKey<K>> => {
 		const data = await getFunction(store, name);
-		if (!data) throw new Error(`Key not exists or invalid: ${store}:${name}`);
+		if (!data) throw new Error(`Key does not exist or is invalid: ${store}:${name}`);
 		return data;
 	};
 
@@ -93,7 +93,7 @@ export const MockPersistentService = ({
 			name: string
 		): Promise<void> => {
 			const exists = await existsFunction(store, name);
-			if (!exists) throw new Error(`Key not exists: ${store}:${name}`);
+			if (!exists) throw new Error(`Key does not exist: ${store}:${name}`);
 		},
 		put: async <K extends PersistentSchemaKey>(
 			store: K,

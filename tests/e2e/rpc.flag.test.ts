@@ -88,7 +88,7 @@ describe('rpc E2E Tests', () => {
 
 			// Verify deletion - should throw
 			await expect(context.rpcCaller.flag.get({ key: flagKey })).rejects.toThrow(
-				'Key not exists or invalid'
+				'Key does not exist or is invalid'
 			);
 		});
 
@@ -203,7 +203,7 @@ describe('rpc E2E Tests', () => {
 
 			// Verify original key no longer exists
 			await expect(context.rpcCaller.flag.get({ key: originalKey })).rejects.toThrow(
-				'Key not exists or invalid'
+				'Key does not exist or is invalid'
 			);
 
 			// Verify renamed key exists with same data
@@ -537,7 +537,7 @@ describe('rpc E2E Tests', () => {
 			const nonExistentKey = 'test/does_not_exist';
 
 			await expect(context.rpcCaller.flag.get({ key: nonExistentKey })).rejects.toThrow(
-				'Key not exists or invalid'
+				'Key does not exist or is invalid'
 			);
 
 			await expect(
@@ -545,7 +545,7 @@ describe('rpc E2E Tests', () => {
 					key: nonExistentKey,
 					flag: createTestFlag({ value: true, valueExists: true })
 				})
-			).rejects.toThrow('Key not exists');
+			).rejects.toThrow('Key does not exist');
 		});
 	});
 

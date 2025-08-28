@@ -134,9 +134,11 @@
 			The steps will be executed in the order they are listed. You can select or deselect steps to
 			control which ones will be executed.
 			{#if mode === 'migration'}
-				<span class="font-semibold">Note:</span> This is a migration task, so the selected steps do
-				not contain set value steps, because the values will be set in the target environment. You
-				can add set value steps: <A onclick={appendAllSetValueSteps}>click here</A>.
+				<span class="font-semibold">Note:</span> This is a migration task, so the selected
+				operations do not include value-setting steps, because values will be configured in the
+				target environment. You can add set value steps: <A onclick={appendAllSetValueSteps}
+					>click here</A
+				>.
 			{/if}
 		</div>
 

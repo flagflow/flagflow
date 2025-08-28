@@ -110,7 +110,7 @@
 		<div class="mt-4 flex flex-col items-center gap-8">
 			<Icon id="changingValue" size={64} />
 			<div class="text-center text-lg">
-				Dynamic flag value cannot be set, this will be calculated at runtime.
+				Dynamic flag values cannot be set; they will be calculated at runtime.
 			</div>
 		</div>
 	{/if}

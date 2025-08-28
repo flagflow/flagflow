@@ -72,7 +72,7 @@
 			</div>
 			<p class="mb-3 font-normal text-gray-700">
 				Download the complete flag schema of this environment, which can be imported into this
-				(restore) or another (migration) instance of FlagFlow.
+				instance (for restore) or another instance (for migration) of FlagFlow.
 			</p>
 			<Button class="w-full" color="primary" href="/migration/export">
 				Export
@@ -139,9 +139,9 @@
 					</h5>
 				</div>
 				<p class="mb-3 font-normal text-gray-700">
-					Migrate the flag schema and optionally flag values from a remote FlagFlow instance by
-					predefined URL. The remote instance must provide data marked <span class="font-semibold"
-						>as another environment</span
+					Migrate the flag schema and optionally flag values from a remote FlagFlow instance using a
+					predefined URL. The remote instance must export data <span class="font-semibold"
+						>for another environment</span
 					>.
 				</p>
 				<Button class="w-full" color="alternative" onclick={() => fetchMigrationFromUrl()}>
