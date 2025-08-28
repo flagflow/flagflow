@@ -4,12 +4,12 @@ import { createJsonResponse } from '$lib/Response';
 
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (!locals.authentication.success) return error(403, 'Unauthorized');
 
-	const sessions = await locals.rpcCaller.session.getList();
+	await locals.rpcCaller.session.delete({ sessionId: params.id });
 
 	return createJsonResponse({
-		sessions
+		success: true
 	});
 };
