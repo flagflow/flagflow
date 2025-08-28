@@ -34,8 +34,8 @@ const PersistentStringFlag = z.object({
 });
 const PersistentObjectFlag = z.object({
 	type: z.literal('OBJECT'),
-	defaultValue: z.string().trim(),
 	schema: z.string().trim(),
+	defaultValue: z.string().trim(),
 
 	valueExists: z.boolean(),
 	value: z.string().trim()
@@ -87,7 +87,7 @@ export const PersistentFlagTypeDescription: Record<
 	BOOLEAN: { text: 'On/off functionality or kill switch', enabled: true },
 	INTEGER: { text: 'Integer value, can be bounded', enabled: true },
 	STRING: { text: 'Text value with optional length or format restrictions', enabled: true },
-	OBJECT: { text: 'Structured data, like a JSON object', enabled: false },
+	OBJECT: { text: 'Structured data, like a JSON object', enabled: true },
 	ENUM: { text: 'Select one element from a string valueset', enabled: true },
 	TAG: { text: 'Select none, one or more elements from a string valueset', enabled: true },
 	'AB-TEST': { text: 'Randomly select one of A and B', enabled: true }

@@ -1,3 +1,5 @@
+import { type ObjectSchema, parseObjectSchemaString } from '$lib/objectFlag/parser';
+import { validateObjectSchema } from '$lib/objectFlag/validate';
 import type { PersistentFlag } from '$types/persistent';
 
 const regExpCache = new Map<string, RegExp>();
@@ -29,6 +31,20 @@ export const flagSchemaValidator = (flag: PersistentFlag): string => {
 					return `Invalid regexp: ${flag.regExp}`;
 				}
 			return '';
+		case 'OBJECT': {
+			let schema: ObjectSchema;
+			try {
+				schema = parseObjectSchemaString(flag.schema);
+			} catch (error) {
+				return error instanceof Error ? `Schema ${error.message}` : 'Schema error';
+			}
+			try {
+				validateObjectSchema(schema, flag.defaultValue);
+			} catch (error) {
+				return error instanceof Error ? `Default value ${error.message}` : 'Default value error';
+			}
+			return '';
+		}
 		case 'ENUM':
 			if (flag.enumValues.length === 0) return 'Enum must have at least one value';
 			if (flag.defaultValue.length === 0 && !flag.allowEmpty) return 'Default value is required';
@@ -77,6 +93,14 @@ export const flagValueValidator = (flag: PersistentFlag): string => {
 					return `Invalid regexp: ${flag.regExp}`;
 				}
 			return '';
+		case 'OBJECT':
+			try {
+				const schema = parseObjectSchemaString(flag.schema);
+				validateObjectSchema(schema, flag.value);
+				return '';
+			} catch (error) {
+				return error instanceof Error ? `Value ${error.message}` : 'Value error';
+			}
 		case 'ENUM':
 			if (flag.value.length === 0 && !flag.allowEmpty) return 'Value is required';
 			if (flag.value.length > 0 && !flag.enumValues.includes(flag.value))

@@ -20,6 +20,8 @@ export const isEqualFlagSchema = (current: PersistentFlag, override: PersistentF
 			current.regExp === override.regExp &&
 			current.defaultValue === override.defaultValue
 		);
+	if (current.type === 'OBJECT' && override.type === 'OBJECT')
+		return current.schema === override.schema && current.defaultValue === override.defaultValue;
 	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return (
 			current.enumValues.join(',') === override.enumValues.join(',') &&
@@ -47,6 +49,8 @@ export const isEqualFlagValue = (current: PersistentFlag, override: PersistentFl
 	if (current.type === 'INTEGER' && override.type === 'INTEGER')
 		return current.valueExists === override.valueExists && current.value === override.value;
 	if (current.type === 'STRING' && override.type === 'STRING')
+		return current.valueExists === override.valueExists && current.value === override.value;
+	if (current.type === 'OBJECT' && override.type === 'OBJECT')
 		return current.valueExists === override.valueExists && current.value === override.value;
 	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return current.valueExists === override.valueExists && current.value === override.value;

@@ -1,3 +1,4 @@
+import { parseJavaScriptObjectString } from '$lib/objectFlag/validate';
 import type { PersistentFlag } from '$types/persistent';
 
 export const flagSchemaToString = (flag: PersistentFlag): string => {
@@ -11,6 +12,8 @@ export const flagSchemaToString = (flag: PersistentFlag): string => {
 				.filter(Boolean)
 				.join(' + ')
 				.trim();
+		case 'OBJECT':
+			return '{ object }';
 		case 'ENUM':
 			return `${flag.allowEmpty ? '0 or ' : ''}1 from ${flag.enumValues.length}`.trim();
 		case 'TAG': {
@@ -35,6 +38,8 @@ export const flagDefaultValueToString = (flag: PersistentFlag): string => {
 			return `${flag.defaultValue}`;
 		case 'STRING':
 			return `"${flag.defaultValue}"`;
+		case 'OBJECT':
+			return '{ object }';
 		case 'ENUM':
 			return `(${flag.defaultValue})`;
 		case 'TAG': {
@@ -44,6 +49,23 @@ export const flagDefaultValueToString = (flag: PersistentFlag): string => {
 		}
 		default:
 			return 'Unknown flag type';
+	}
+};
+
+export const flagValueToObject = (
+	flag: PersistentFlag
+): {
+	isDefaultValue: boolean;
+	value: string | number | boolean | string[] | Record<string, unknown>;
+} => {
+	switch (flag.type) {
+		case 'OBJECT':
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: parseJavaScriptObjectString(flag.valueExists ? flag.value : flag.defaultValue)
+			};
+		default:
+			return flagValueToString(flag);
 	}
 };
 
@@ -68,6 +90,13 @@ export const flagValueToString = (
 			return {
 				isDefaultValue: !flag.valueExists,
 				value: flag.valueExists ? flag.value : flag.defaultValue
+			};
+		case 'OBJECT':
+			return {
+				isDefaultValue: !flag.valueExists,
+				value: (flag.valueExists ? flag.value : flag.defaultValue)
+					.replaceAll(/\n(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '')
+					.replaceAll('\t', '')
 			};
 		case 'ENUM':
 			return {

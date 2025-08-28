@@ -1,4 +1,4 @@
-import { flagValueToString } from '$lib/flagHandler/flagToString';
+import { flagValueToObject, flagValueToString } from '$lib/flagHandler/flagToString';
 import type { PersistentFlag } from '$types/persistent';
 
 export const formatFlagApiResponseJson = (flags: Record<string, PersistentFlag>): object => {
@@ -16,7 +16,7 @@ export const formatFlagApiResponseJson = (flags: Record<string, PersistentFlag>)
 				if (!position[part]) position[part] = {};
 				position = position[part] as Record<string, unknown>;
 			}
-		position[name] = flagValueToString(flag).value;
+		position[name] = flagValueToObject(flag).value;
 	}
 	return result;
 };

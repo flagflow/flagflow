@@ -29,6 +29,12 @@ export const updateFlagSchema = (
 			regExp: override.regExp,
 			defaultValue: override.defaultValue
 		};
+	if (current.type === 'OBJECT' && override.type === 'OBJECT')
+		return {
+			...current,
+			schema: override.schema,
+			defaultValue: override.defaultValue
+		};
 	if (current.type === 'ENUM' && override.type === 'ENUM')
 		return {
 			...current,
@@ -75,6 +81,12 @@ export const updateFlagValue = (
 			value: override.value
 		};
 	if (current.type === 'STRING' && override.type === 'STRING')
+		return {
+			...current,
+			valueExists: override.valueExists,
+			value: override.value
+		};
+	if (current.type === 'OBJECT' && override.type === 'OBJECT')
 		return {
 			...current,
 			valueExists: override.valueExists,

@@ -5,6 +5,32 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2025-08-28
+
+### Added
+
+- **Object Flag Type Support**: Full implementation of OBJECT flag type with JavaScript object syntax
+- Object schema parsing with TypeScript and Zod generation
+- JavaScript object string validation with support for nested objects, arrays, and complex types
+- Object flag UI components for schema definition and value editing
+- TypeScript type generation for object flags with nested object support
+- Zod schema validation for object flags with comprehensive type checking
+
+### Enhanced
+
+- Flag API formatter now returns proper object types for OBJECT flags instead of strings
+- Flag validation system extended to support object schema validation
+- Flag comparison and update logic enhanced for object flags
+- TypeScript flag generation improved with object schema support
+
+### Technical Improvements
+
+- Object flag parser with grammar support for complex nested structures
+- JavaScript object string parsing with proper quote handling and JSON conversion
+- Enhanced flag handlers with object-specific formatting and validation
+- Comprehensive test coverage for object flag validation and parsing
+- Object flag empty instances with example schemas and default values
+
 ## [1.5.0] - 2025-08-27
 
 ### Added

@@ -79,6 +79,7 @@ The application follows a layered service architecture with Awilix dependency in
 - Real-time flag watching with etcd watchers
 - TypeScript/Zod type generation from flag schemas
 - Support for BOOLEAN (with killswitch), INTEGER, STRING, OBJECT, ENUM, TAG, AB-TEST flag types
+- **Object flags**: Support JavaScript object syntax strings with schema validation and TypeScript generation
 - Migration system for flag changes with export/import
 - Hash-based group validation for type safety
 - Kill switches: special boolean flags requiring confirmation to disable
@@ -215,6 +216,8 @@ Package.json Docker commands use `$npm_package_version` variable:
 - `npm run docker:build` builds with current package version tag
 - `npm run docker:run` runs the versioned container
 - `npm run docker:it` provides interactive shell access
+- `npm run docker:compose:up` starts full infrastructure stack
+- `npm run docker:compose:down` stops infrastructure stack
 
 ## Key File Locations
 

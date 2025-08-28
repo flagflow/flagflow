@@ -34,6 +34,26 @@ export const EMPTY_STRING_FLAG: PersistentFlag = {
 	value: ''
 } as const;
 
+export const EMPTY_OBJECT_FLAG: PersistentFlag = {
+	description: '',
+	type: 'OBJECT',
+	schema: String.raw`
+{
+	server: string,
+	port: number
+}
+	`.trim(),
+	defaultValue: String.raw`
+{
+	server: 'remote',
+	port: 8080
+}
+	`.trim(),
+
+	valueExists: false,
+	value: ''
+} as const;
+
 export const EMPTY_ENUM_FLAG: PersistentFlag = {
 	description: '',
 	type: 'ENUM',

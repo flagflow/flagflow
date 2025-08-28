@@ -8,6 +8,7 @@
 	import FormSelect from '$components/form/FormSelect.svelte';
 	import FormSlider from '$components/form/FormSlider.svelte';
 	import FormTag from '$components/form/FormTag.svelte';
+	import FormTextarea from '$components/form/FormTextarea.svelte';
 	import FormToggle from '$components/form/FormToggle.svelte';
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import { flagValueToString } from '$lib/flagHandler/flagToString';
@@ -98,6 +99,9 @@
 				bind:value={flag.regExp}
 			/>
 		</div>
+	{:else if flag.type === 'OBJECT'}
+		<FormTextarea id="schema" rows={5} title="Schema" bind:value={flag.schema} />
+		<FormTextarea id="default" rows={5} title="Default value" bind:value={flag.defaultValue} />
 	{:else if flag.type === 'ENUM'}
 		<FormTag
 			id="default"
