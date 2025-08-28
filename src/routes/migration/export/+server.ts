@@ -3,12 +3,12 @@ import { formatDate } from 'date-fns';
 
 import { createDownloadResponse } from '$lib/Response';
 
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ locals }) => {
 	// Service
-	const configService = event.locals.container.resolve('configService');
-	const flagService = event.locals.container.resolve('flagService');
+	const configService = locals.container.resolve('configService');
+	const flagService = locals.container.resolve('flagService');
 
 	// Collect export data
 	const migrationData = await flagService.getMigrationFileContent();
