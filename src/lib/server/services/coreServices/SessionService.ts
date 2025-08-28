@@ -61,6 +61,7 @@ export const SessionService = ({
 		},
 		deleteSession: async (sessionId: string) => {
 			try {
+				await persistentService.throwIfNotExists('session', sessionId);
 				await persistentService.delete('session', sessionId);
 				log.debug({ sessionId }, 'Delete');
 			} catch {
