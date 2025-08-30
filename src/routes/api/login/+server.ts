@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			permissions: user.permissions
 		});
 		return createJsonResponse({
-			sessionId: session
+			session
 		});
 	} catch (error_) {
 		return error(403, `${error_ instanceof Error ? error_.message : 'Login error'}`);
