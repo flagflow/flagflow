@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import { keycloakUrls } from '$lib/server/keycloak';
+import { safeUrl } from '$lib/urlEx';
 import { UserPermissionFromArray } from '$types/UserPermissions';
 
 import type { LayoutServerLoad } from './$types';
@@ -17,8 +18,8 @@ export const load: LayoutServerLoad = async ({
 		usersEnabled: configService.session.enabled
 	};
 
-	const url = new URL(request.url);
-	const host = `${url.protocol}//${url.host}`;
+	const url = safeUrl(request.url);
+	const host = `${url?.protocol}//${url?.host}`;
 
 	const authenticationContext = {
 		type: authentication.type,

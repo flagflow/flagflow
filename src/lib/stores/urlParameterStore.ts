@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
+import { safeUrl } from '$lib/urlEx';
 
 interface UrlParameterStoreOptions {
 	key: string;
@@ -30,7 +31,8 @@ export const urlParameterStore = (options: UrlParameterStoreOptions) => {
 		if (browser) {
 			clearTimeout(timeout);
 			timeout = setTimeout(() => {
-				const url = new URL(window.location.href);
+				const url = safeUrl(window.location.href);
+				if (!url) return;
 				if (value) url.searchParams.set(key, value);
 				else url.searchParams.delete(key);
 				goto(url.toString(), { replaceState: true, noScroll: true, keepFocus: true });

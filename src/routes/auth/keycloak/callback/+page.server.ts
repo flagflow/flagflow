@@ -1,15 +1,16 @@
 import { accessKeycloakTokens, verifyKeycloakAccessToken } from '$lib/server/keycloak';
+import { safeUrl } from '$lib/urlEx';
 
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request }) => {
-	const url = new URL(request.url);
-	const host = `${url.protocol}//${url.host}`;
+	const url = safeUrl(request.url);
+	const host = `${url?.protocol}//${url?.host}`;
 
-	const error = url.searchParams.get('error');
+	const error = url?.searchParams.get('error');
 	if (error) throw new Error(`Keycloak error: ${error}`);
 
-	const code = url.searchParams.get('code');
+	const code = url?.searchParams.get('code');
 	if (!code) throw new Error('Keycloak error: no code provided');
 
 	const tokens = await accessKeycloakTokens(host, code);

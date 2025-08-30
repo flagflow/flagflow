@@ -3,13 +3,14 @@ import { redirect } from '@sveltejs/kit';
 import { SESSION_COOKIE_NAME } from '$lib/cookies';
 import { config } from '$lib/server/config';
 import { keycloakUrls } from '$lib/server/keycloak';
+import { safeUrl } from '$lib/urlEx';
 import { UserPermissionAll } from '$types/UserPermissions';
 
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request, locals: { container }, cookies }) => {
-	const url = new URL(request.url);
-	const host = `${url.protocol}//${url.host}`;
+	const url = safeUrl(request.url);
+	const host = `${url?.protocol}//${url?.host}`;
 
 	if (!config.session.enabled)
 		if (keycloakUrls.enabled) {

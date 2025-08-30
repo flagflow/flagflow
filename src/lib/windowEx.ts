@@ -1,9 +1,13 @@
 import { goto } from '$app/navigation';
 
+import { safeUrl } from './urlEx';
+
 export const updateQueryParameters = (key: string, value: string | undefined) => {
 	if (typeof window === 'undefined') return;
 
-	const url = new URL(window.location.href);
+	const url = safeUrl(window.location.href);
+	if (!url) return;
+
 	if (value === undefined) url.searchParams.delete(key);
 	else url.searchParams.set(key, value);
 

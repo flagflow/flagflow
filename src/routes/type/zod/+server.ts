@@ -2,13 +2,14 @@ import { error } from '@sveltejs/kit';
 
 import { createDownloadResponse, createTextResponse } from '$lib/Response';
 import { existsParameterParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
+import { safeUrl } from '$lib/urlEx';
 
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ request, locals }) => {
 	// Parameters
-	const url = new URL(request.url);
-	const urlParsed = parseUrlParameters(url.searchParams, {
+	const url = safeUrl(request.url);
+	const urlParsed = parseUrlParameters(url?.searchParams, {
 		download: existsParameterParser
 	});
 	if (Object.keys(urlParsed.otherParams).length > 0)

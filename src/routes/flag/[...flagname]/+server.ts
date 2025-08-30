@@ -4,13 +4,14 @@ import { flagValueToString } from '$lib/flagHandler/flagToString';
 import { createJsonResponse, createTextResponse } from '$lib/Response';
 import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
+import { safeUrl } from '$lib/urlEx';
 
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ request, locals, params }) => {
-	const url = new URL(request.url);
+	const url = safeUrl(request.url);
 
-	const urlParsed = parseUrlParameters(url.searchParams, {
+	const urlParsed = parseUrlParameters(url?.searchParams, {
 		format: createStringParser('json')
 	});
 	if (Object.keys(urlParsed.otherParams).length > 0)
