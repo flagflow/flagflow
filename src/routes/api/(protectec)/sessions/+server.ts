@@ -1,12 +1,8 @@
-import { error } from '@sveltejs/kit';
-
 import { createJsonResponse } from '$lib/Response';
 
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals }) => {
-	if (!locals.authentication.success) return error(403, 'Unauthorized');
-
 	const sessions = await locals.rpcCaller.session.getList();
 
 	const resultSessions: Record<string, unknown> = {};
