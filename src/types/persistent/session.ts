@@ -17,7 +17,7 @@ export const PersistentSession = z
 	.readonly();
 export type PersistentSession = z.infer<typeof PersistentSession>;
 
-export const PersistentSessionKeyRegExp = /^\w+$/i;
+export const PersistentSessionKeyRegExp = /^[\w-]+$/i;
 export const PersistentSessionKey = z
 	.string()
 	.regex(PersistentSessionKeyRegExp, 'String must only contain a-z, 0-9, hyphens and underscores');
