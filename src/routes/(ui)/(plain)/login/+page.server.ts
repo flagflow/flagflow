@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ request, locals: { container }, coo
 			if (loginUrl) return redirect(302, loginUrl);
 		} else {
 			const sessionService = container.resolve('sessionService');
-			const sessionId = await sessionService.createSession({
+			const { sessionId } = await sessionService.createSession({
 				userKey: 'admin',
 				userName: 'Demo User',
 				createdAt: new Date(),

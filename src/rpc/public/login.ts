@@ -17,14 +17,14 @@ export const loginRpc = createRpcRouter({
 			const user = await userService.authUser(username, password);
 
 			const sessionService = ctx.container.resolve('sessionService');
-			const sessionId = await sessionService.createSession({
+			const { sessionId, ttlSeconds, expiredAt } = await sessionService.createSession({
 				userKey: user?.username || username,
 				userName: user?.name || username,
 				createdAt: new Date(),
 				permissions: user?.permissions || []
 			});
 
-			return { sessionId, userName: user.name };
+			return { sessionId, userName: user.name, ttlSeconds, expiredAt };
 		}),
 
 	logout: publicRpcProcedure.mutation(async ({ ctx }) => {

@@ -48,16 +48,23 @@ export const SessionService = ({
 		getSession,
 		createSession: async (partialSession: Omit<UserSession, 'expiredAt' | 'ttlSeconds'>) => {
 			const sessionId = generateSessionId();
+			const expiredAt = Date.now() + configService.session.timeoutSecs * 1000;
+			const ttlSeconds = configService.session.timeoutSecs;
+
 			const session: UserSession = {
 				...partialSession,
-				expiredAt: Date.now() + configService.session.timeoutSecs * 1000,
-				ttlSeconds: configService.session.timeoutSecs
+				expiredAt,
+				ttlSeconds
 			};
 
 			await persistentService.put('session', sessionId, session);
 
 			log.debug({ sessionId }, 'Set');
-			return sessionId;
+			return {
+				sessionId,
+				ttlSeconds,
+				expiredAt
+			};
 		},
 		deleteSession: async (sessionId: string) => {
 			try {

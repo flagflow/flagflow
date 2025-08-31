@@ -17,13 +17,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return error(400, `Invalid request body: ${zodFlattenError(loginData.error.issues)}`);
 
 	try {
-		const { sessionId } = await locals.rpcCaller.login.login({
+		const { sessionId, ttlSeconds, expiredAt } = await locals.rpcCaller.login.login({
 			username: loginData.data.username,
 			password: loginData.data.password
 		});
 
 		return createJsonResponse({
-			session: sessionId
+			session: sessionId,
+			ttlSeconds,
+			expiredAt: new Date(expiredAt)
 		});
 	} catch (error_) {
 		return error(403, `${error_ instanceof Error ? error_.message : 'Login error'}`);
