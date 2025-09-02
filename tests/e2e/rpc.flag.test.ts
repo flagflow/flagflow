@@ -2,7 +2,7 @@
 /* eslint-disable vitest/no-hooks, vitest/prefer-expect-assertions */
 // @ts-nocheck
 import { asValue } from 'awilix';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { resetFlagServiceState } from '$lib/server/services/FlagService/FlagService';
 
@@ -298,7 +298,8 @@ describe('rpc E2E Tests', () => {
 				const tsContent = await flagService.getTSFileContent();
 
 				expect(tsContent).toBeTruthy();
-				expect(typeof tsContent).toBe('string');
+
+				expectTypeOf(tsContent).toBeString();
 
 				// Verify TypeScript content contains our flags
 				expect(tsContent).toContain('boolean_flag');
@@ -343,7 +344,9 @@ describe('rpc E2E Tests', () => {
 			const groupHash = await flagService.getFlagGroupHash(fullGroupName);
 
 			expect(groupHash).toBeTruthy();
-			expect(typeof groupHash).toBe('string');
+
+			expectTypeOf(groupHash).toBeString();
+
 			expect(groupHash.length).toBeGreaterThan(0);
 
 			// Hash should remain the same for changes that don't affect TypeScript types
