@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { page } from '$app/stores';
 import { safeUrl } from '$lib/urlEx';
 
@@ -35,7 +36,7 @@ export const urlParameterStore = (options: UrlParameterStoreOptions) => {
 				if (!url) return;
 				if (value) url.searchParams.set(key, value);
 				else url.searchParams.delete(key);
-				goto(url.toString(), { replaceState: true, noScroll: true, keepFocus: true });
+				goto(resolve(url.toString(), {}), { replaceState: true, noScroll: true, keepFocus: true });
 			}, debounce);
 		}
 	};

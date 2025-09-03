@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Badge, Button, Card } from 'flowbite-svelte';
 
+	import { resolve } from '$app/paths';
 	import Icon from '$components/Icon.svelte';
 	import FileInput from '$components/input/FileInput.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
@@ -61,7 +62,7 @@
 	<div class="grid gap-8 md:grid-cols-2">
 		<Card class="p-6" size="lg">
 			<div class="mb-4 flex flex-col items-center text-center">
-				<a href="/migration/export">
+				<a href={resolve('/migration/export', {})}>
 					<Icon
 						id="download"
 						class="text-primary-600 hover:text-primary-700 mb-4 cursor-pointer"

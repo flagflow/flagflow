@@ -3,6 +3,7 @@ import { observable } from '@trpc/server/observable';
 import superjson from 'superjson';
 
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { isTrpcCommunication } from '$lib/navigationEx';
 
 import type { RpcRouter } from './router';
@@ -26,7 +27,7 @@ export const errorAndCommunicationObserverLink: TRPCLink<RpcRouter> =
 				error: async (error) => {
 					if (!op.path.includes(URI_LOGVISITEDPAGES)) isTrpcCommunication.set(false);
 					if (error instanceof TRPCClientError && error.message.includes('Authentication error'))
-						await goto('/', { invalidateAll: true });
+						await goto(resolve('/', {}), { invalidateAll: true });
 					else observer.error(error);
 				}
 			});

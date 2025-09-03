@@ -241,6 +241,7 @@
 	import type { SvelteSet } from 'svelte/reactivity';
 	import { derived, get, type Writable } from 'svelte/store';
 
+	import { resolve } from '$app/paths';
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { type IconId } from '$components/Icon.svelte';
@@ -505,7 +506,10 @@
 									: 'href' in descriptor && descriptor.href
 										? descriptor.href(row)
 										: undefined}
-							<a data-sveltekit-preload-data="tap" href={href ?? 'javascript:void(0);'}>
+							<a
+								data-sveltekit-preload-data="tap"
+								href={resolve(href ?? 'javascript:void(0);', {})}
+							>
 								{#if 'component' in column}
 									<column.component source={{ row, property: column.property }} />
 								{:else if 'commands' in column}

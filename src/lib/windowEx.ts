@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 import { safeUrl } from './urlEx';
 
@@ -11,7 +12,7 @@ export const updateQueryParameters = (key: string, value: string | undefined) =>
 	if (value === undefined) url.searchParams.delete(key);
 	else url.searchParams.set(key, value);
 
-	goto(url, { replaceState: true });
+	goto(resolve(url.toString(), {}), { replaceState: true });
 };
 
 export const numberFormatter = Intl.NumberFormat(
