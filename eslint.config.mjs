@@ -26,6 +26,7 @@ export default [
 			'coverage',
 			'.svelte-kit',
 			'package',
+			'tests',
 			'**/.env',
 			'**/.env.*',
 			'!**/.env.example',
