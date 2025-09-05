@@ -26,7 +26,7 @@
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
-	import { modalHandler } from '$lib/modals';
+	import { modalHandler } from '$lib/svelteModal/modal';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

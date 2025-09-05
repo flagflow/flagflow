@@ -15,7 +15,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import Icon from '$components/Icon.svelte';
-	import { modalHandler } from '$lib/modals';
+	import { modalHandler } from '$lib/svelteModal/modal';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

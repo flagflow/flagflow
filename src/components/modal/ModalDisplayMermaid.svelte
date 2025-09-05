@@ -29,7 +29,7 @@
 	import { Modal, Range } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	import { modalHandler } from '$lib/modals';
+	import { modalHandler } from '$lib/svelteModal/modal';
 
 	import { showModalError } from './ModalError.svelte';
 

@@ -44,8 +44,8 @@
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
 	import { ArrayValidator, focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
 	import { generatePassword } from '$lib/genId';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 	import { PersistentUserKey } from '$types/persistent';
 	import { type UserPermission } from '$types/UserPermissions';
 

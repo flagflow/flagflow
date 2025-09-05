@@ -18,8 +18,8 @@
 	import FormLabel from '$components/form/FormLabel.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import { FormLogic, StringValidator } from '$lib/form.svelte';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 	import { PersistentFlagKey, PersistentHierarchicalKeyInputRegExp } from '$types/persistent';
 
 	import { GROUP_GENERAL_NAME } from './Const';

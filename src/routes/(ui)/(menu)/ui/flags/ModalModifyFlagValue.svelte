@@ -18,8 +18,8 @@
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import { flagSchemaValidator, flagValueValidator } from '$lib/flagHandler/flagValidator';
 	import { ExternalValidator, FormLogic } from '$lib/form.svelte';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 	import { type PersistentSchemaDataTypeWithKey } from '$types/persistent';
 
 	import StepValue from './StepValue.svelte';

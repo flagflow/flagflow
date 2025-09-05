@@ -13,9 +13,9 @@
 	import { showModalInformation } from '$components/modal/ModalInformation.svelte';
 	import PasswordStrengthIndicator from '$components/PasswordStrengthIndicator.svelte';
 	import { focusInputById, FormLogic, StringValidator } from '$lib/form.svelte';
-	import { modalHandler } from '$lib/modals';
 	import { generateRandomPassword } from '$lib/passwordUtilities';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 
 	const dispatch = createEventDispatcher<{
 		resolve: { isOk: boolean };

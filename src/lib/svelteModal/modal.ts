@@ -96,3 +96,5 @@ export function createModalStore() {
 		pop
 	};
 }
+
+export const modalHandler = createModalStore();
