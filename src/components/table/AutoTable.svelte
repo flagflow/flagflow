@@ -21,6 +21,7 @@
 		black: 'text-gray-700'
 	};
 	export type IndicatorColors =
+		| 'none'
 		| 'primary'
 		| 'secondary'
 		| 'green'
@@ -654,7 +655,7 @@
 													typeof column.indicatorColor === 'function'
 														? column.indicatorColor(row)
 														: column.indicatorColor}
-												{#if indicatorColor}
+												{#if indicatorColor && indicatorColor !== 'none'}
 													<Indicator class="ml-1 inline-flex" color={indicatorColor} size="xs" />
 												{/if}
 											{/if}
