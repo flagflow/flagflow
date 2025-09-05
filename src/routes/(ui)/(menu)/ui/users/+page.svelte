@@ -29,16 +29,25 @@
 			columns: [
 				{
 					title: 'Username',
-					property: 'key'
-				},
-				{
-					title: 'Name',
-					property: 'name'
+					property: 'key',
+					subProperty: 'name'
 				},
 				{
 					title: 'Permissions',
 					property: 'permissions',
 					isTagLarge: false
+				},
+				{
+					title: 'Password Expiration',
+					property: 'passwordExpireAtDate',
+					dateFormat: 'yyyy-MM-dd HH:mm:ss',
+
+					indicatorColor: (row) =>
+						row.passwordExpireAtDate
+							? row.passwordExpireAtDate < new Date()
+								? 'red'
+								: 'green'
+							: 'none'
 				},
 				{
 					align: 'right',
