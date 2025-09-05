@@ -12,8 +12,8 @@
 		logout: 'mdi:logout',
 		email: 'mdi:email',
 		keycloak: 'simple-icons:keycloak',
-		password: 'mdi:eye-off',
-		passwordVisible: 'mdi:eye',
+		invisible: 'mdi:eye-off',
+		visible: 'mdi:eye',
 
 		arrowLeft: 'mdi:chevron-left',
 		arrowRight: 'mdi:chevron-right',
@@ -59,6 +59,7 @@
 		online: 'mdi:server-network',
 		ban: 'mdi:ban',
 		enable: 'mdi:check',
+		password: 'mdi:password',
 
 		boolean: 'mdi:toggle-switch',
 		killswitch: 'mdi:shield-key',

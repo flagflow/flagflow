@@ -81,7 +81,7 @@
 		{#if type === 'password'}
 			<InputAddon>
 				<Icon
-					id={showPassword ? 'passwordVisible' : 'password'}
+					id={showPassword ? 'visible' : 'invisible'}
 					class="cursor-pointer"
 					onclick={() => (showPassword = !showPassword)}
 				/>
