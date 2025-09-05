@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Docker interactive**: `npm run docker:it` (interactive shell in container)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
 - **Docker**: `npm run docker:build` and `npm run docker:run`
+- **Docker Compose**: `npm run docker:compose:up` (start infrastructure) or `npm run docker:compose:down` (stop infrastructure)
 - **Full rebuild of npm packages**: `npm run npm:reinstall`
 
 ### Testing Commands
@@ -132,6 +133,7 @@ Before development, start required services:
 - etcd: `./infra/etcd.sh` (port 2379, root password: `flagflow`)
 - Keycloak: `./infra/keycloak.sh` (port 8080, admin: `admin`/`admin`)
 - Alternative: `npm run docker:compose:up` for full infrastructure setup
+- To stop infrastructure: `npm run docker:compose:down`
 
 ### Flag Type Patterns
 
@@ -216,7 +218,7 @@ Package.json Docker commands use `$npm_package_version` variable:
 - `npm run docker:build` builds with current package version tag
 - `npm run docker:run` runs the versioned container
 - `npm run docker:it` provides interactive shell access
-- `npm run docker:compose:up` starts full infrastructure stack
+- `npm run docker:compose:up` starts full infrastructure stack (etcd + Keycloak)
 - `npm run docker:compose:down` stops infrastructure stack
 
 ## Key File Locations
