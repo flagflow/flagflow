@@ -100,7 +100,7 @@ export const userRpc = createRpcRouter({
 			await persistentService.overwrite('user', input.key, {
 				enabled: input.enabled
 			});
-			ctx.logger('user').info(`User ${input.key} enabled status updated`);
+			ctx.logger('user').info(`User ${input.key} enabled status updated to ${input.enabled}`);
 		}),
 	delete: rpcProcedureUsersPermission
 		.input(

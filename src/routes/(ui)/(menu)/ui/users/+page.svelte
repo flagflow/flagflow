@@ -4,7 +4,10 @@
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import DefaultUserWarning from '$components/DefaultUserWarning.svelte';
 	import EmptyListBanner from '$components/EmptyListBanner.svelte';
-	import { showModalConfirmationDelete } from '$components/modal/ModalConfirmation.svelte';
+	import {
+		showModalConfirmationDelete,
+		showModalConfirmationOperation
+	} from '$components/modal/ModalConfirmation.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
@@ -42,6 +45,21 @@
 					align: 'right',
 					commands: [
 						{
+							icon: 'ban',
+							color: 'red',
+							tooltip: 'Disable user',
+							visible: (row) => row.enabled,
+							onCommand: async (row) => await setEnableUser(row.key, false)
+						},
+						{
+							icon: 'enable',
+							color: 'green',
+							tooltip: 'Enable user',
+							visible: (row) => !row.enabled,
+							onCommand: async (row) => await setEnableUser(row.key, true)
+						},
+
+						{
 							icon: 'edit',
 							color: 'black',
 							tooltip: 'Modify user',
@@ -58,7 +76,8 @@
 			],
 			primary: 'key',
 			sortables: ['key', 'name'],
-			ondblclick: (row) => modifyUser(row.key)
+			ondblclick: (row) => modifyUser(row.key),
+			rowClass: (row) => (row.enabled ? '' : 'line-through text-gray-300')
 		}) as AutoTableDescriptor;
 
 	const addUser = async () => {
@@ -85,6 +104,21 @@
 			if (!result.isOk) return;
 
 			await rpcClient.user.delete.mutate({ key: userName });
+			await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const setEnableUser = async (userName: string, enabled: boolean) => {
+		try {
+			const result = await showModalConfirmationOperation(
+				`${enabled ? 'Enable' : 'Disable'}`,
+				userName
+			);
+			if (!result.isOk) return;
+
+			await rpcClient.user.setEnabled.mutate({ key: userName, enabled });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);

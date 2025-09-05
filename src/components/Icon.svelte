@@ -57,6 +57,8 @@
 		restore: 'mdi:restore-clock',
 		migration: 'mdi:database-import',
 		online: 'mdi:server-network',
+		ban: 'mdi:ban',
+		enable: 'mdi:check',
 
 		boolean: 'mdi:toggle-switch',
 		killswitch: 'mdi:shield-key',

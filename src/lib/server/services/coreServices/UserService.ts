@@ -19,11 +19,18 @@ export const UserService = ({ persistentService, logService }: UserServiceParame
 			const passwordHash = hashPassword(password);
 
 			let user = await persistentService.get('user', username);
-			if (user?.passwordHash != passwordHash) user = undefined;
-			if (!user) {
-				log.error({ username }, 'Login error');
-				throw new Error('Login error');
+
+			if (!user) log.error({ username }, 'User not found');
+			if (!user?.enabled) {
+				log.error({ username }, 'User disabled');
+				user = undefined;
 			}
+			if (user?.passwordHash != passwordHash) {
+				log.error({ username }, 'Invalid password');
+				user = undefined;
+			}
+
+			if (!user) throw new Error('Login error');
 
 			return {
 				username,
