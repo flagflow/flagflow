@@ -6,6 +6,7 @@ import { ZNonEmptyString } from '$rpc/zodTypes';
 
 export const userSettingRpc = createRpcRouter({
 	changePassword: rpcProcedure
+		.meta({ allowPasswordExpired: true })
 		.input(
 			z.object({
 				oldPassword: ZNonEmptyString(),
@@ -26,8 +27,9 @@ export const userSettingRpc = createRpcRouter({
 
 			await persistentService.overwrite('user', userName, {
 				passwordHash: hashPassword(input.recentPassword),
-				passwordExpireAt: Date.now()
+				passwordExpireAt: undefined
 			});
+
 			ctx.logger('userSetting').info(`User ${userName} password updated`);
 		})
 });

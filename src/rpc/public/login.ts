@@ -21,7 +21,8 @@ export const loginRpc = createRpcRouter({
 				userKey: user?.username || username,
 				userName: user?.name || username,
 				createdAt: new Date(),
-				permissions: user?.permissions || []
+				permissions: user?.permissions || [],
+				passwordExpireAt: user?.passwordExpireAt
 			});
 
 			return { sessionId, userName: user.name, ttlSeconds, expiredAt };

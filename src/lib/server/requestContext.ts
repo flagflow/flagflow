@@ -102,7 +102,10 @@ export const createRequestContext = async (
 				success: session
 					? {
 							userName: session.userName,
-							permissions: session.permissions
+							permissions: session.permissions,
+							passwordExpired: !!(
+								session.passwordExpireAt && session.passwordExpireAt <= Date.now()
+							)
 						}
 					: undefined
 			};

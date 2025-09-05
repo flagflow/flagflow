@@ -86,6 +86,7 @@ export const userRpc = createRpcRouter({
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
+
 			ctx.logger('user').info(`User ${input.key} password updated`);
 		}),
 	setEnabled: rpcProcedureUsersPermission

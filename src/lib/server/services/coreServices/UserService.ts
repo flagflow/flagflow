@@ -35,7 +35,8 @@ export const UserService = ({ persistentService, logService }: UserServiceParame
 			return {
 				username,
 				name: user.name,
-				permissions: user.permissions
+				permissions: user.permissions,
+				passwordExpireAt: user.passwordExpireAt
 			};
 		}
 		// changePassword: async (email: string, currentPassword: string, nextPassword: string) => {
