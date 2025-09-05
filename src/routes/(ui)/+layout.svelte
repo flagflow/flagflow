@@ -5,7 +5,9 @@
 
 	import { navigating } from '$app/stores';
 	import ScreenProgressbar from '$components/ScreenProgressbar.svelte';
+	import { modalHandler } from '$lib/modals';
 	import { isDebouncedTrpcCommunication, isInvalidating } from '$lib/navigationEx';
+	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
 
 	interface Properties {
 		children: Snippet;
@@ -17,3 +19,5 @@
 <ScreenProgressbar visible={!!$navigating || $isInvalidating || $isDebouncedTrpcCommunication} />
 
 {@render children()}
+
+<ModalPortal store={modalHandler} />

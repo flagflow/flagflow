@@ -12,7 +12,20 @@ export const authMiddleware: MiddlewareFunction<Context, Meta, void, void, any> 
 }) => {
 	if (!ctx.authentication.success)
 		throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication error' });
-	if (meta?.permission)
+
+	// Check for expired password - only allow RPCs marked as allowPasswordExpired when password is expired
+	if (
+		ctx.authentication.type === 'SESSION' &&
+		ctx.authentication.success.passwordExpired &&
+		!meta?.allowPasswordExpired
+	) {
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+			message: 'Password expired - please change your password'
+		});
+	}
+
+	if (meta?.permission !== undefined)
 		switch (ctx.authentication.type) {
 			case 'JWT':
 				if (!ctx.authentication.success.permissions.includes(meta.permission))

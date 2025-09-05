@@ -11,7 +11,8 @@ export const PersistentSession = z
 			userKey: z.string().trim(),
 			userName: z.string().trim(),
 			createdAt: z.coerce.date(),
-			permissions: z.array(UserPermissionZodEnum)
+			permissions: z.array(UserPermissionZodEnum),
+			passwordExpireAt: z.number().int().positive().optional()
 		})
 	)
 	.readonly();

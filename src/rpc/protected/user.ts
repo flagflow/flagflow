@@ -86,6 +86,7 @@ export const userRpc = createRpcRouter({
 				passwordHash: hashPassword(input.password),
 				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
 			});
+
 			ctx.logger('user').info(`User ${input.key} password updated`);
 		}),
 	setEnabled: rpcProcedureUsersPermission
@@ -100,7 +101,7 @@ export const userRpc = createRpcRouter({
 			await persistentService.overwrite('user', input.key, {
 				enabled: input.enabled
 			});
-			ctx.logger('user').info(`User ${input.key} enabled status updated`);
+			ctx.logger('user').info(`User ${input.key} enabled status updated to ${input.enabled}`);
 		}),
 	delete: rpcProcedureUsersPermission
 		.input(
