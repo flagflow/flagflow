@@ -62,12 +62,14 @@
 							icon: 'password',
 							color: 'blue',
 							tooltip: 'Set password',
+							visible: (row) => row.enabled,
 							onCommand: async (row) => await setPassword(row.key)
 						},
 						{
 							icon: 'edit',
 							color: 'black',
 							tooltip: 'Modify user',
+							visible: (row) => row.enabled,
 							onCommand: async (row) => await modifyUser(row.key)
 						},
 						{
