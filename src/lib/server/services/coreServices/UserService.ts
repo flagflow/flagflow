@@ -39,65 +39,6 @@ export const UserService = ({ persistentService, logService }: UserServiceParame
 				passwordExpireAt: user.passwordExpireAt
 			};
 		}
-		// changePassword: async (email: string, currentPassword: string, nextPassword: string) => {
-		// 	const currentPasswordHash = hashPassword(currentPassword);
-		// 	const nextPasswordHash = hashPassword(nextPassword);
-		// 	const updateResult = await database
-		// 		.update(schema.user)
-		// 		.set({
-		// 			passwordHash: nextPasswordHash,
-		// 			passwordExpirationAt: await getPasswordExpiration()
-		// 		})
-		// 		.where(
-		// 			and(eq(schema.user.email, email), eq(schema.user.passwordHash, currentPasswordHash))
-		// 		);
-
-		// 	if (updateResult.rowCount !== 1) {
-		// 		log.error({ email }, 'Password change failed');
-		// 		throw new Error('Password change failed');
-		// 	}
-		// },
-		// updateSettings: async (email: string, settings: UserSettings) => {
-		// 	const updateResult = await database
-		// 		.update(schema.user)
-		// 		.set({ settings: JSON.stringify(settings) })
-		// 		.where(and(eq(schema.user.email, email)));
-
-		// 	if (updateResult.rowCount !== 1) {
-		// 		log.error({ email }, 'UserSettings change failed');
-		// 		throw new Error('UserSettings change failed');
-		// 	}
-		// },
-		// addUser: async (name: string, email: string, password: string) => {
-		// 	if (await database.query.user.findFirst({ where: and(eq(schema.user.email, email)) })) {
-		// 		log.error({ email }, 'Email already exists');
-		// 		throw new Error('Email already exists');
-		// 	}
-		// 	const [{ id }] = await database
-		// 		.insert(schema.user)
-		// 		.values({
-		// 			name,
-		// 			email,
-		// 			passwordHash: hashPassword(password),
-		// 			passwordExpirationAt: await getPasswordExpiration(),
-		// 			settings: '{}'
-		// 		})
-		// 		.returning({ id: schema.user.id });
-		// 	return id;
-		// },
-		// removeUserById: async (id: number) =>
-		// 	database.delete(schema.user).where(eq(schema.user.id, id)),
-		// removeUserByEmail: async (email: string) =>
-		// 	database.delete(schema.user).where(eq(schema.user.email, email)),
-		// getAllUsers: async () =>
-		// 	database.query.user.findMany({
-		// 		columns: {
-		// 			id: true,
-		// 			name: true,
-		// 			email: true
-		// 		},
-		// 		orderBy: schema.user.name
-		// 	})
 	};
 };
 export type UserService = ReturnType<typeof UserService>;
