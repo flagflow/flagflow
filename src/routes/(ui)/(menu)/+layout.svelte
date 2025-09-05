@@ -25,6 +25,7 @@
 	import type { UserPermission } from '$types/UserPermissions';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
+	import { showModalPasswordChange } from './ModalPasswordChange.svelte';
 
 	const spanClass = 'flex-1 ms-3 whitespace-nowrap';
 	const spanClassDisabled = spanClass + ' ' + 'opacity-50 cursor-not-allowed';
@@ -104,6 +105,7 @@
 			{userName}
 			<Badge title={userPermissionsStringFull}>{userPermissionsString}</Badge>
 		</DropdownHeader>
+		<DropdownItem href="#" onclick={() => showModalPasswordChange()}>Change Password</DropdownItem>
 		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
 </Navbar>
