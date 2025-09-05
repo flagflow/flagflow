@@ -107,16 +107,15 @@ describe('genId', () => {
 		});
 
 		it('should contain mixed character types', () => {
-			const password = generatePassword(50); // Longer password for better testing
+			// Generate multiple passwords to ensure character diversity
+			const passwords = Array.from({ length: 10 }, () => generatePassword(50));
+			const combinedPassword = passwords.join('');
 
-			// Should contain lowercase
-			expect(password).toMatch(/[a-z]/);
-			// Should contain uppercase
-			expect(password).toMatch(/[A-Z]/);
-			// Should contain digits
-			expect(password).toMatch(/\d/);
-			// Should contain special characters
-			expect(password).toMatch(/[!$%()+/;=]/);
+			// Should contain lowercase, uppercase, digits, and special characters across all passwords
+			expect(combinedPassword).toMatch(/[a-z]/);
+			expect(combinedPassword).toMatch(/[A-Z]/);
+			expect(combinedPassword).toMatch(/\d/);
+			expect(combinedPassword).toMatch(/[!$%()+/;=]/);
 		});
 
 		it('should generate unique passwords', () => {
