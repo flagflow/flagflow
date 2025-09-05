@@ -19,8 +19,7 @@
 	import { rpcClient } from '$lib/rpc/client';
 
 	import type { PageProps as PageProperties } from './$types';
-	import { showModalNewUser } from './ModalNewUser.svelte';
-	import { showModalUserModify } from './ModalUserModify.svelte';
+	import { showModalUserOperation } from './ModalUserOperation.svelte';
 
 	let { data }: PageProperties = $props();
 
@@ -60,6 +59,12 @@
 						},
 
 						{
+							icon: 'password',
+							color: 'blue',
+							tooltip: 'Set password',
+							onCommand: async (row) => await setPassword(row.key)
+						},
+						{
 							icon: 'edit',
 							color: 'black',
 							tooltip: 'Modify user',
@@ -82,7 +87,7 @@
 
 	const addUser = async () => {
 		try {
-			const result = await showModalNewUser();
+			const result = await showModalUserOperation('create');
 			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
@@ -91,7 +96,16 @@
 
 	const modifyUser = async (userName: string) => {
 		try {
-			const result = await showModalUserModify(userName);
+			const result = await showModalUserOperation('modify', userName);
+			if (result.isOk) await invalidatePage();
+		} catch (error) {
+			await showModalError(error);
+		}
+	};
+
+	const setPassword = async (userName: string) => {
+		try {
+			const result = await showModalUserOperation('setPassword', userName);
 			if (result.isOk) await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
