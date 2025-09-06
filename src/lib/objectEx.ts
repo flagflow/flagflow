@@ -4,7 +4,9 @@ import type { NullableNumberKeys, NumberKeys } from './typeEx';
 export const sortObjectByKey = <T extends Record<string, unknown>>(
 	object: T
 ): { [K in keyof T]: T[K] } =>
-	Object.fromEntries(Object.entries(object).sort(([keyA], [keyB]) => keyA.localeCompare(keyB))) as {
+	Object.fromEntries(
+		Object.entries(object).toSorted(([keyA], [keyB]) => keyA.localeCompare(keyB))
+	) as {
 		[K in keyof T]: T[K];
 	};
 
@@ -13,7 +15,7 @@ export const sortMapByKey = <K extends string, V>(
 	reverse: boolean = false
 ): Map<K, V> =>
 	new Map(
-		[...map.entries()].sort(([keyA], [keyB]) => keyA.localeCompare(keyB) * (reverse ? -1 : 1))
+		[...map.entries()].toSorted(([keyA], [keyB]) => keyA.localeCompare(keyB) * (reverse ? -1 : 1))
 	);
 
 export const filterObjectFields = <T extends object>(object: object, allowedKeys: (keyof T)[]): T =>
@@ -34,7 +36,7 @@ export const makeObjectHumanReadable = (
 	parameters: Record<string, string>
 ): Record<string, string> => {
 	const result: Record<string, string> = {};
-	for (const key of Object.keys(parameters).sort((a, b) =>
+	for (const key of Object.keys(parameters).toSorted((a, b) =>
 		camelCaseToHuman(a).localeCompare(camelCaseToHuman(b))
 	))
 		result[camelCaseToHuman(key)] = trim(JSON.stringify(parameters[key]), '"');

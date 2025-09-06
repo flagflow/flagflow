@@ -322,7 +322,7 @@
 			filtered = filtered.filter((index) => filter.filterFunction(index, get(filter.value)));
 
 		const sorted = filtered
-			.sort((a, b) => {
+			.toSorted((a, b) => {
 				const aValue = a[key as SortableTypeKeys<typeof a>];
 				const bValue = b[key as SortableTypeKeys<typeof b>];
 				if (aValue < bValue) return -direction;

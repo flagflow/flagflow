@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ locals: { container } }) => {
 	// Filter only boolean flags that are killswitches
 	const killSwitchFlags = flags
 		.filter((flag) => flag.type === 'BOOLEAN' && flag.isKillSwitch)
-		.sort((a, b) => a.key.localeCompare(b.key))
+		.toSorted((a, b) => a.key.localeCompare(b.key))
 		.map((flag) => ({
 			...flag,
 			flagGroup: dirname(flag.key),

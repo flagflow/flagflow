@@ -127,12 +127,12 @@ export const flagTypescriptType = (flag: PersistentFlag): string => {
 			return objectSchemaToTypescript(flag.schema);
 		case 'ENUM':
 			return `${[...flag.enumValues]
-				.sort()
+				.toSorted()
 				.map((v) => JSON.stringify(v))
 				.join(' | ')}`;
 		case 'TAG':
 			return `(${[...flag.tagValues]
-				.sort()
+				.toSorted()
 				.map((v) => JSON.stringify(v))
 				.join(' | ')})[]`;
 		case 'AB-TEST':
@@ -160,7 +160,7 @@ export const flagTypescriptDefaultValue = (flag: PersistentFlag): string => {
 			return JSON.stringify(flag.defaultValue);
 		case 'TAG':
 			return `[${[...flag.defaultValue]
-				.sort()
+				.toSorted()
 				.map((v) => JSON.stringify(v))
 				.join(', ')}]`;
 		case 'AB-TEST':
@@ -182,12 +182,12 @@ export const flagTypescriptZodMethod = (flag: PersistentFlag): string => {
 			return objectSchemaToZod(flag.schema);
 		case 'ENUM':
 			return `z.enum([${[...flag.enumValues]
-				.sort()
+				.toSorted()
 				.map((v) => JSON.stringify(v))
 				.join(', ')}])`;
 		case 'TAG':
 			return `z.array(z.enum([${[...flag.tagValues]
-				.sort()
+				.toSorted()
 				.map((v) => JSON.stringify(v))
 				.join(', ')}]))`;
 		case 'AB-TEST':
