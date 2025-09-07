@@ -48,7 +48,10 @@ export interface TestUser {
 export const createE2ETestContext = async (testUser?: TestUser): Promise<E2ETestContext> => {
 	// Create container with in-memory persistence
 	const testContainer = createContainer<TestContainer>({ strict: true }).register({
-		configService: asFunction(ConfigService).singleton(),
+		configService: asFunction(() => ({
+			...ConfigService(),
+			environment: '' // Override environment to empty string for consistent test results
+		})).singleton(),
 
 		globalLogService: asFunction(GlobalLogService).scoped(),
 		logService: asFunction(LogService).scoped(),
