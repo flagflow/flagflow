@@ -132,7 +132,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Update password with mustChangePassword flag
 			await expect(
-				context.rpcCaller.user.setPassword({
+				context.rpcCaller.user.update({
 					key: testUserData.key,
 					password: 'new-secure-password',
 					mustChangePassword: true
@@ -145,7 +145,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Update password again without mustChangePassword flag
 			await expect(
-				context.rpcCaller.user.setPassword({
+				context.rpcCaller.user.update({
 					key: testUserData.key,
 					password: 'another-password',
 					mustChangePassword: false
@@ -171,7 +171,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Disable user
 			await expect(
-				context.rpcCaller.user.setEnabled({
+				context.rpcCaller.user.update({
 					key: testUserData.key,
 					enabled: false
 				})
@@ -183,7 +183,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Re-enable user
 			await expect(
-				context.rpcCaller.user.setEnabled({
+				context.rpcCaller.user.update({
 					key: testUserData.key,
 					enabled: true
 				})
@@ -355,7 +355,7 @@ describe('rpc User E2E Tests', () => {
 			).resolves.toBeUndefined();
 
 			await expect(
-				context.rpcCaller.user.setEnabled({
+				context.rpcCaller.user.update({
 					key: testUserData.key,
 					enabled: false
 				})
@@ -411,7 +411,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Set password for non-existent user
 			await expect(
-				context.rpcCaller.user.setPassword({
+				context.rpcCaller.user.update({
 					key: nonExistentKey,
 					password: 'new-password',
 					mustChangePassword: false
@@ -420,7 +420,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Enable/disable non-existent user
 			await expect(
-				context.rpcCaller.user.setEnabled({
+				context.rpcCaller.user.update({
 					key: nonExistentKey,
 					enabled: false
 				})
@@ -559,7 +559,7 @@ describe('rpc User E2E Tests', () => {
 			expect(userFromGet.passwordExpireAt).toBeDefined(); // User was created with mustChangePassword: true
 
 			// Update password
-			await context.rpcCaller.user.setPassword({
+			await context.rpcCaller.user.update({
 				key: testUserData.key,
 				password: 'new-password',
 				mustChangePassword: false

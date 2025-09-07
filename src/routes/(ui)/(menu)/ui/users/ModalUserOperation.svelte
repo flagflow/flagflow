@@ -114,7 +114,7 @@
 		} else {
 			// setPassword
 			return async () => {
-				await rpcClient.user.setPassword.mutate({
+				await rpcClient.user.update.mutate({
 					key: formData.userName as string,
 					password: formData.password as string,
 					mustChangePassword: formData.mustChangePassword as boolean

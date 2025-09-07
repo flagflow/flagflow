@@ -143,7 +143,7 @@
 			);
 			if (!result.isOk) return;
 
-			await rpcClient.user.setEnabled.mutate({ key: userName, enabled });
+			await rpcClient.user.update.mutate({ key: userName, enabled });
 			await invalidatePage();
 		} catch (error) {
 			await showModalError(error);
