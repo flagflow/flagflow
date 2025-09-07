@@ -408,9 +408,9 @@ describe('rpc UserSetting E2E Tests', () => {
 				persistentService: { resolve: () => sharedPersistentService }
 			});
 
-			// Verify initial state via admin context (mustChangePassword logic is passwordExpireAt > Date.now())
+			// Verify initial state via admin context
 			const initialUser = await adminContext.rpcCaller.user.get({ key: userName });
-			expect(initialUser.mustChangePassword).toBe(false); // It's set to Date.now(), so it's false
+			expect(initialUser.passwordExpireAt).toBeDefined(); // It's set to Date.now()
 
 			// Change password via userSetting
 			await context.rpcCaller.userSetting.changePassword({
@@ -420,7 +420,7 @@ describe('rpc UserSetting E2E Tests', () => {
 
 			// Verify change via admin context
 			const updatedUser = await adminContext.rpcCaller.user.get({ key: userName });
-			expect(updatedUser.mustChangePassword).toBe(false); // Should be cleared
+			expect(updatedUser.passwordExpireAt).toBeUndefined(); // Should be cleared
 
 			// Verify password change worked by attempting another change
 			await expect(

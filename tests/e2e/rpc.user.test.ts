@@ -82,8 +82,7 @@ describe('rpc User E2E Tests', () => {
 			expect(specificUser).toMatchObject({
 				name: testUserData.name,
 				enabled: true,
-				permissions: testUserData.permissions,
-				mustChangePassword: false // Should be false because passwordExpireAt is set to past time
+				permissions: testUserData.permissions
 			});
 
 			// Update user details
@@ -129,7 +128,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Get initial user state
 			const initialUser = await context.rpcCaller.user.get({ key: testUserData.key });
-			expect(initialUser.mustChangePassword).toBe(false);
+			expect(initialUser.passwordExpireAt).toBeUndefined();
 
 			// Update password with mustChangePassword flag
 			await expect(
@@ -140,9 +139,9 @@ describe('rpc User E2E Tests', () => {
 				})
 			).resolves.toBeUndefined();
 
-			// Verify password change flag is set (passwordExpireAt is set to current time, so mustChangePassword should be false)
+			// Verify password change flag is set (passwordExpireAt is set to current time)
 			const updatedUser = await context.rpcCaller.user.get({ key: testUserData.key });
-			expect(updatedUser.mustChangePassword).toBe(false);
+			expect(updatedUser.passwordExpireAt).toBeDefined();
 
 			// Update password again without mustChangePassword flag
 			await expect(
@@ -155,7 +154,7 @@ describe('rpc User E2E Tests', () => {
 
 			// Verify password change flag is cleared
 			const finalUser = await context.rpcCaller.user.get({ key: testUserData.key });
-			expect(finalUser.mustChangePassword).toBe(false);
+			expect(finalUser.passwordExpireAt).toBeUndefined();
 		});
 
 		it('should handle user enable/disable operations', async () => {
@@ -557,7 +556,7 @@ describe('rpc User E2E Tests', () => {
 
 			expect(userFromList.name).toBe(testUserData.name);
 			expect(userFromGet.name).toBe(testUserData.name);
-			expect(userFromGet.mustChangePassword).toBe(false);
+			expect(userFromGet.passwordExpireAt).toBeDefined(); // User was created with mustChangePassword: true
 
 			// Update password
 			await context.rpcCaller.user.setPassword({
@@ -570,7 +569,7 @@ describe('rpc User E2E Tests', () => {
 			const updatedUserFromGet = await context.rpcCaller.user.get({ key: testUserData.key });
 			const updatedUserFromList = (await context.rpcCaller.user.getList())[0];
 
-			expect(updatedUserFromGet.mustChangePassword).toBe(false);
+			expect(updatedUserFromGet.passwordExpireAt).toBeUndefined(); // Password updated with mustChangePassword: false
 			expect(updatedUserFromList.key).toBe(`user/${testUserData.key}`);
 
 			// Update user details

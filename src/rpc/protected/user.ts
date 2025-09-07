@@ -31,7 +31,7 @@ export const userRpc = createRpcRouter({
 				name: user.name,
 				enabled: user.enabled,
 				permissions: user.permissions as UserPermission[],
-				mustChangePassword: !!user.passwordExpireAt && user.passwordExpireAt > Date.now()
+				passwordExpireAt: user.passwordExpireAt
 			};
 		}),
 	create: rpcProcedureUsersPermission

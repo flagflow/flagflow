@@ -17,6 +17,7 @@
 			if (!userName) throw new Error('userName is required for modify and setPassword operations');
 			user = {
 				userName,
+				mustChangePassword: true,
 				...(await rpcClient.user.get.query({ key: userName }))
 			};
 		}
