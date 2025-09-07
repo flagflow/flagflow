@@ -6,20 +6,20 @@ import { zodFlattenError } from '$lib/zodEx';
 
 import type { RequestHandler } from './$types';
 
-const loginSchema = z.object({
+const schemaPOST = z.object({
 	username: z.string().trim(),
 	password: z.string()
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const loginData = loginSchema.safeParse(await request.json());
-	if (!loginData.success)
-		return error(400, `Invalid request body: ${zodFlattenError(loginData.error.issues)}`);
+	const postData = schemaPOST.safeParse(await request.json());
+	if (!postData.success)
+		return error(400, `Invalid request body: ${zodFlattenError(postData.error.issues)}`);
 
 	try {
 		const { sessionId, ttlSeconds, expiredAt } = await locals.rpcCaller.login.login({
-			username: loginData.data.username,
-			password: loginData.data.password
+			username: postData.data.username,
+			password: postData.data.password
 		});
 
 		return createJsonResponse({

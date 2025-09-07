@@ -62,9 +62,9 @@ export const userRpc = createRpcRouter({
 			z.object({
 				key: PersistentUserKey.trim(),
 				name: z.string().trim().optional(),
-				permissions: z.array(UserPermissionZodEnum).optional(),
 				password: ZNonEmptyString().optional(),
 				mustChangePassword: z.boolean().optional(),
+				permissions: z.array(UserPermissionZodEnum).optional(),
 				enabled: z.boolean().optional()
 			})
 		)
