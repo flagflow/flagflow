@@ -87,7 +87,7 @@
 	</div>
 
 	{#if resolved.description}
-		<p style="margin-left: {indentation + 0.5}rem;" class="mt-1 ml-2 text-xs text-gray-600">
+		<p style="margin-left: {indentation + 0.5}rem;" class="mt-1 text-xs text-gray-600">
 			{resolved.description}
 		</p>
 	{/if}
