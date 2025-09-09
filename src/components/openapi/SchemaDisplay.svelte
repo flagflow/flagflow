@@ -120,7 +120,7 @@
 
 	{#if resolved.type === 'object' && resolved.additionalProperties && depth < MAX_DEPTH}
 		<div class="mt-1">
-			<span style="margin-left: {indentation + 1}rem;" class="ml-4 text-xs text-gray-500"
+			<span style="margin-left: {indentation + 1}rem;" class="text-xs text-gray-500"
 				>Additional properties:</span
 			>
 			{#if typeof resolved.additionalProperties === 'object'}
