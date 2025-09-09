@@ -93,7 +93,7 @@
 	{/if}
 
 	{#if resolved.enum && resolved.enum.length > 0}
-		<div style="margin-left: {indentation + 1}rem;" class="mt-1 ml-4">
+		<div style="margin-left: {indentation + 1}rem;" class="mt-1">
 			<span class="text-xs text-gray-500">Values:</span>
 			{#each resolved.enum as enumValue}
 				<Badge class="ml-1" color="gray" size="small">{enumValue}</Badge>
