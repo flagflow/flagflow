@@ -163,6 +163,11 @@
 					{/snippet}
 				</SidebarItem>
 			{/if}
+			<SidebarItem href="/ui/api-explorer" label="API explorer" {spanClass}>
+				{#snippet icon()}
+					<Icon id="api" />
+				{/snippet}
+			</SidebarItem>
 		</SidebarGroup>
 		<SidebarGroup border>
 			<SidebarItem href="#" label="Logout" onclick={logout} {spanClass}>
