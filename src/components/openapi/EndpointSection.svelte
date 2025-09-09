@@ -137,18 +137,19 @@
 	const hasRequiredAuth = (endpoint.operation.security?.length ?? 0) > 0;
 </script>
 
-<Card class={`endpoint-section ${aClass}`}>
-	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-3">
-			<Badge class="method-badge font-mono" color={getMethodColor(endpoint.method)}>
+<Card class={`endpoint-section ${aClass}`} size="lg">
+	<div class="flex items-center justify-between p-4">
+		<div class="flex min-w-0 flex-1 items-center gap-3">
+			<Badge class="method-badge flex-shrink-0 font-mono" color={getMethodColor(endpoint.method)}>
 				{endpoint.method}
 			</Badge>
-			<span class="font-mono text-sm">{endpoint.path}</span>
+			<span class="truncate font-mono text-sm">{endpoint.path}</span>
 			{#if hasRequiredAuth}
-				<Icon id="password" class="text-yellow-600" size={16} />
+				<Icon id="password" class="flex-shrink-0 text-yellow-600" size={16} />
 			{/if}
 		</div>
 		<Button
+			class="flex-shrink-0"
 			color="alternative"
 			onclick={() => {
 				expanded = !expanded;
@@ -160,53 +161,55 @@
 		</Button>
 	</div>
 
-	<div class="mt-2">
+	<div class="px-4 pb-4">
 		<Heading class="text-base font-semibold" tag="h4">
 			{endpoint.operation.summary}
 		</Heading>
 		{#if endpoint.operation.description}
-			<p class="mt-1 text-sm text-gray-600">
+			<p class="mt-2 text-sm leading-relaxed text-gray-600">
 				{endpoint.operation.description}
 			</p>
 		{/if}
 	</div>
 
 	{#if expanded}
-		<div class="mt-4 border-t pt-4">
-			<!-- Authentication Warning -->
-			{#if hasRequiredAuth && !authToken}
-				<div class="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-					<div class="flex items-center gap-2">
-						<Icon id="warning" class="text-yellow-600" />
-						<span class="text-sm font-medium text-yellow-800">Authentication Required</span>
+		<div class="border-t bg-gray-50">
+			<div class="space-y-6 p-6">
+				<!-- Authentication Warning -->
+				{#if hasRequiredAuth && !authToken}
+					<div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+						<div class="flex items-center gap-2">
+							<Icon id="warning" class="text-yellow-600" />
+							<span class="text-sm font-medium text-yellow-800">Authentication Required</span>
+						</div>
+						<p class="mt-2 text-sm text-yellow-700">
+							This endpoint requires authentication. Please provide a JWT token above.
+						</p>
 					</div>
-					<p class="mt-1 text-sm text-yellow-700">
-						This endpoint requires authentication. Please provide a JWT token above.
-					</p>
+				{/if}
+
+				<!-- Request Form -->
+				<RequestForm {endpoint} {schemas} bind:values={formValues} />
+
+				<!-- Try It Button -->
+				<div class="flex items-center gap-3">
+					<AsyncButton action={executeRequest} color="primary" size="lg">
+						<Icon id={getMethodIcon(endpoint.method)} align="left" />
+						Execute Request
+					</AsyncButton>
+					{#if response}
+						<Button color="alternative" onclick={resetResponse} size="lg">
+							<Icon id="close" align="left" />
+							Clear Response
+						</Button>
+					{/if}
 				</div>
-			{/if}
 
-			<!-- Request Form -->
-			<RequestForm class="mb-4" {endpoint} {schemas} bind:values={formValues} />
-
-			<!-- Try It Button -->
-			<div class="mb-4 flex items-center gap-2">
-				<AsyncButton action={executeRequest} color="primary">
-					<Icon id={getMethodIcon(endpoint.method)} align="left" />
-					Execute Request
-				</AsyncButton>
+				<!-- Response Viewer -->
 				{#if response}
-					<Button color="alternative" onclick={resetResponse}>
-						<Icon id="close" align="left" />
-						Clear Response
-					</Button>
+					<ResponseViewer {response} />
 				{/if}
 			</div>
-
-			<!-- Response Viewer -->
-			{#if response}
-				<ResponseViewer class="mt-4" {response} />
-			{/if}
 		</div>
 	{/if}
 </Card>

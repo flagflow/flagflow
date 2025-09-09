@@ -10,6 +10,7 @@ Updates the OpenAPI specification in `src/routes/api/openapi.json` by analyzing 
 4. Updates the existing `src/routes/api/openapi.json` file with current API structure
 5. Maintains existing version info and server configuration
 6. Creates clean, standards-compliant OpenAPI documentation
+7. Modify API-explorer if needed
 
 ## API Routes Covered
 

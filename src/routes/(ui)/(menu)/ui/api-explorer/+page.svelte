@@ -1,11 +1,12 @@
 <script lang="ts">
-	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import OpenApiExplorer from '$components/openapi/OpenApiExplorer.svelte';
 	import PageContainer from '$components/PageContainer.svelte';
 	import PageTitle from '$components/PageTitle.svelte';
-</script>
 
-<HtmlTitle title="API Explorer" />
+	import type { PageProps as PageProperties } from './$types';
+
+	let { data }: PageProperties = $props();
+</script>
 
 <PageTitle
 	description="Interactive API documentation and testing interface for FlagFlow REST API"
@@ -13,5 +14,5 @@
 />
 
 <PageContainer>
-	<OpenApiExplorer />
+	<OpenApiExplorer sessionId={data.sessionId} />
 </PageContainer>

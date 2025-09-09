@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Badge, Card, Input, Label, Spinner } from 'flowbite-svelte';
+	import { Badge, Card, Label, Spinner } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 
+	import FormInput from '$components/form/FormInput.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
 	import type {
@@ -18,14 +19,21 @@
 	interface Properties {
 		class?: string;
 		apiUrl?: string;
+		sessionId?: string | undefined;
 	}
 
-	const { class: aClass = '', apiUrl = '/api' }: Properties = $props();
+	const { class: aClass = '', apiUrl = '/api', sessionId }: Properties = $props();
 
 	let spec: OpenApiSpec | undefined = $state();
 	let loading = $state(true);
 	let authToken = $state('');
 	let groupedEndpoints: Record<string, EndpointInfo[]> = $state({});
+
+	const copySessionIdToInput = () => {
+		if (sessionId) {
+			authToken = sessionId;
+		}
+	};
 
 	const loadSpec = async () => {
 		try {
@@ -94,69 +102,80 @@
 		</div>
 	{:else if spec}
 		<!-- API Header -->
-		<Card class="mb-6">
-			<div class="mb-4 flex items-center gap-4">
-				<Icon id="externalLink" size={32} />
-				<div>
-					<h1 class="text-2xl font-bold">{spec.info.title}</h1>
-					<p class="text-gray-600">{spec.info.description}</p>
-					<Badge class="mt-2">{spec.info.version}</Badge>
+		<Card class="mb-12" size="lg">
+			<div class="p-4">
+				<div class="mb-4 flex items-center gap-4">
+					<Icon id="api" size={32} />
+					<div>
+						<h1 class="text-2xl font-bold">{spec.info.title}</h1>
+						<p class="text-gray-600">{spec.info.description}</p>
+						<Badge class="mt-2">{spec.info.version}</Badge>
+					</div>
 				</div>
-			</div>
 
-			<!-- Server Info -->
-			{#if spec.servers.length > 0}
-				<div class="mb-4">
-					<Label class="text-sm font-medium text-gray-700">Base URLs:</Label>
-					{#each spec.servers as server}
-						<div class="mt-1 flex items-center gap-2">
-							<Badge color="blue">{server.url}</Badge>
-							<span class="text-sm text-gray-500">{server.description}</span>
-						</div>
-					{/each}
-				</div>
-			{/if}
+				<!-- Server Info -->
+				{#if spec.servers.length > 0}
+					<div class="mb-4">
+						<Label class="text-sm font-medium text-gray-700">Base URLs:</Label>
+						{#each spec.servers as server}
+							<div class="mt-1 flex items-center gap-2">
+								<Badge color="blue">{server.url}</Badge>
+								<span class="text-sm text-gray-500">{server.description}</span>
+							</div>
+						{/each}
+					</div>
+				{/if}
 
-			<!-- Authentication -->
-			{#if spec.components.securitySchemes}
-				<div class="border-t pt-4">
-					<Label class="mb-2" for="auth-token">Authentication Token:</Label>
-					<div class="relative">
-						<Icon
-							id="password"
-							class="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
-							size={16}
-						/>
-						<Input
+				<!-- Authentication -->
+				{#if spec.components.securitySchemes}
+					<div class="border-t pt-4">
+						<FormInput
 							id="auth-token"
-							class="pl-10"
-							placeholder="Enter your JWT token"
+							class="w-full"
+							mandatory
+							placeholder="SessionId"
+							title="Authentication Token:"
 							type="password"
 							bind:value={authToken}
 						/>
+						<p class="mt-1 text-sm text-gray-500">
+							Get your token from /api/login
+							{#if sessionId}
+								or use
+								<button
+									class="inline-flex cursor-pointer items-center gap-1 rounded px-1 font-mono font-bold text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-800"
+									onclick={copySessionIdToInput}
+									title="Click to copy to input field"
+									type="button"
+								>
+									{sessionId}
+									<Icon id="copy" size={12} />
+								</button>
+							{/if}
+						</p>
 					</div>
-					<p class="mt-1 text-sm text-gray-500">Get your token from the /api/login endpoint</p>
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</Card>
 
 		<!-- Endpoints by Tag -->
 		{#each Object.entries(groupedEndpoints) as [tag, endpoints]}
-			<div class="mb-8">
-				<h2 class="mb-4 flex items-center gap-2 text-xl font-semibold">
+			<div class="mb-12">
+				<h2 class="mb-6 flex items-center gap-2 text-xl font-semibold">
 					<Icon id="formatListBulleted" />
 					{tag}
 				</h2>
 
-				{#each endpoints as endpoint}
-					<EndpointSection
-						class="mb-4"
-						{authToken}
-						baseUrl={spec.servers[0]?.url || '/api'}
-						{endpoint}
-						schemas={spec.components.schemas}
-					/>
-				{/each}
+				<div class="space-y-4">
+					{#each endpoints as endpoint}
+						<EndpointSection
+							{authToken}
+							baseUrl={spec.servers[0]?.url || '/api'}
+							{endpoint}
+							schemas={spec.components.schemas}
+						/>
+					{/each}
+				</div>
 			</div>
 		{/each}
 	{:else}

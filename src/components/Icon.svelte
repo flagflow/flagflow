@@ -7,6 +7,7 @@
 		export: 'mdi:export',
 		user: 'mdi:user',
 		session: 'mdi:user-group',
+		api: 'mdi:api',
 
 		login: 'mdi:login',
 		logout: 'mdi:logout',

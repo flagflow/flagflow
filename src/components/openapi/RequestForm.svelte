@@ -144,6 +144,7 @@
 						</Label>
 						<Input
 							id={`path-${parameter.name}`}
+							class="w-full"
 							placeholder={parameter.description || `Enter ${parameter.name}`}
 							required={parameter.required}
 							type={getParameterType(parameter) === 'number' ? 'number' : 'text'}
@@ -174,6 +175,7 @@
 						</Label>
 						<Input
 							id={`query-${parameter.name}`}
+							class="w-full"
 							placeholder={parameter.description || `Enter ${parameter.name}`}
 							required={parameter.required}
 							type={getParameterType(parameter) === 'number' ? 'number' : 'text'}
@@ -204,6 +206,7 @@
 						</Label>
 						<Input
 							id={`header-${parameter.name}`}
+							class="w-full"
 							placeholder={parameter.description || `Enter ${parameter.name}`}
 							required={parameter.required}
 							type="text"
@@ -231,7 +234,7 @@
 			</Label>
 			<Textarea
 				id="request-body"
-				class="font-mono text-sm"
+				class="w-full font-mono text-sm"
 				placeholder="Enter JSON request body"
 				required={endpoint.requestBody.required}
 				rows={8}

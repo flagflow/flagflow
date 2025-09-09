@@ -13,6 +13,7 @@
 		class?: string;
 		id?: string;
 		title: string;
+		placeholder?: string;
 		preIcon?: IconId;
 		postIcon?: IconId;
 		preText?: string;
@@ -47,6 +48,7 @@
 		class: aClass = '',
 		id = '',
 		title,
+		placeholder,
 		preIcon,
 		postIcon,
 		preText,
@@ -104,6 +106,7 @@
 			maxlength={maxLength}
 			min={minNumber}
 			onkeypress={onKeypress}
+			{placeholder}
 			type={type === 'password' && showPassword ? 'text' : type}
 			bind:value
 		/>
