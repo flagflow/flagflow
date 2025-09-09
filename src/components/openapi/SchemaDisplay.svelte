@@ -132,7 +132,7 @@
 	{/if}
 
 	{#if depth >= MAX_DEPTH}
-		<div style="margin-left: {indentation + 1}rem;" class="ml-4 text-xs text-gray-400">
+		<div style="margin-left: {indentation + 1}rem;" class="text-xs text-gray-400">
 			<Icon id="dots" class="mr-1 inline" size={12} />
 			(nested content hidden)
 		</div>
