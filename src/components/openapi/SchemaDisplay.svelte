@@ -103,7 +103,7 @@
 
 	{#if resolved.type === 'array' && resolved.items && depth < MAX_DEPTH}
 		<div class="mt-1">
-			<span style="margin-left: {indentation + 1}rem;" class="ml-4 text-xs text-gray-500"
+			<span style="margin-left: {indentation + 1}rem;" class="text-xs text-gray-500"
 				>Items:</span
 			>
 			<SchemaDisplay depth={depth + 1} schema={resolved.items} {schemas} />
