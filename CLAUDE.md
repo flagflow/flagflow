@@ -75,6 +75,14 @@ The application follows a layered service architecture with Awilix dependency in
 - Enhanced Zod error formatting with detailed validation messages
 - Server-side RPC caller for internal service communication
 
+#### REST API Layer (`src/routes/api/`)
+
+- Complete RESTful API with OpenAPI 3.0 specification
+- Authentication via JWT Bearer tokens from login endpoint
+- Endpoints for users, sessions, flags, and migrations management
+- Consistent error handling and response formatting via `$lib/Response.ts`
+- Protected routes requiring specific permissions (users, flag-\*, migration)
+
 #### Feature Flag System
 
 - Real-time flag watching with etcd watchers
@@ -84,6 +92,7 @@ The application follows a layered service architecture with Awilix dependency in
 - Migration system for flag changes with export/import
 - Hash-based group validation for type safety
 - Kill switches: special boolean flags requiring confirmation to disable
+- REST API support for migrations via GET (export), PUT (execute from file), PATCH (execute from remote URL)
 
 #### Authentication Flow
 
@@ -106,6 +115,7 @@ The application follows a layered service architecture with Awilix dependency in
 - **File-based routing** with nested layouts and server load functions
 - **Route groups**: `(ui)/` for authenticated pages, `(menu)/` with navigation, `(plain)/` for simple pages
 - **API endpoints**: `/flag/{flagname}`, `/flags/{flaggroup}`, `/type/typescript`, `/migration/export`
+- **REST API**: Complete REST API at `/api/` with OpenAPI specification
 - **Authentication callbacks**: `/auth/` for Keycloak integration
 
 #### Component Architecture (`src/components/`)
@@ -225,6 +235,7 @@ Package.json Docker commands use `$npm_package_version` variable:
 
 - **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, FlagService)
 - **RPC routes**: `src/lib/rpc/protected/` and `src/lib/rpc/public/`
+- **REST API routes**: `src/routes/api/` (RESTful endpoints with OpenAPI spec at `/api/openapi.json`)
 - **Persistent data types**: `src/types/persistent/` (all with Zod schemas)
 - **Infrastructure scripts**: `./infra/etcd.sh`, `./infra/keycloak.sh`, and Docker Compose files
 - **Route handlers**: `src/routes/` (SvelteKit file-based routing)
@@ -232,6 +243,7 @@ Package.json Docker commands use `$npm_package_version` variable:
 - **Persistent engines**: `src/lib/server/persistent/` (etcd and filesystem engines)
 - **Test mocks**: `tests/mocks/` (MockPersistentService, InMemoryPersistentEngine)
 - **E2E test setup**: `tests/e2e/setup.ts` (test context creation and utilities)
+- **Utility functions**: `src/lib/Response.ts` (response helpers including migration filename generation)
 
 ## Important Development Instructions
 
