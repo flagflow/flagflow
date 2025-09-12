@@ -189,6 +189,323 @@
 					}
 				},
 				"required": ["sessions"]
+			},
+			"FlagsResponse": {
+				"type": "object",
+				"properties": {
+					"flags": {
+						"type": "object",
+						"additionalProperties": {
+							"$ref": "#/components/schemas/FlagSchema"
+						}
+					}
+				},
+				"required": ["flags"]
+			},
+			"CreateFlagRequest": {
+				"type": "object",
+				"allOf": [
+					{
+						"type": "object",
+						"properties": {
+							"key": {
+								"type": "string",
+								"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+							}
+						},
+						"required": ["key"]
+					},
+					{
+						"$ref": "#/components/schemas/FlagSchema"
+					}
+				]
+			},
+			"UpdateFlagRequest": {
+				"type": "object",
+				"allOf": [
+					{
+						"type": "object",
+						"properties": {
+							"key": {
+								"type": "string",
+								"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+							}
+						},
+						"required": ["key"]
+					},
+					{
+						"$ref": "#/components/schemas/FlagSchema"
+					}
+				]
+			},
+			"RenameFlagRequest": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": ["name", "description"]
+			},
+			"FlagSchema": {
+				"type": "object",
+				"discriminator": {
+					"propertyName": "type"
+				},
+				"oneOf": [
+					{
+						"$ref": "#/components/schemas/BooleanFlag"
+					},
+					{
+						"$ref": "#/components/schemas/IntegerFlag"
+					},
+					{
+						"$ref": "#/components/schemas/StringFlag"
+					},
+					{
+						"$ref": "#/components/schemas/ObjectFlag"
+					},
+					{
+						"$ref": "#/components/schemas/EnumFlag"
+					},
+					{
+						"$ref": "#/components/schemas/TagFlag"
+					},
+					{
+						"$ref": "#/components/schemas/ABTestFlag"
+					}
+				]
+			},
+			"BooleanFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["BOOLEAN"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "boolean"
+					},
+					"isKillSwitch": {
+						"type": "boolean"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "boolean"
+					}
+				},
+				"required": ["type", "description", "defaultValue", "isKillSwitch", "valueExists", "value"]
+			},
+			"IntegerFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["INTEGER"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "integer"
+					},
+					"minValue": {
+						"type": "integer"
+					},
+					"maxValue": {
+						"type": "integer"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"minValue",
+					"maxValue",
+					"valueExists",
+					"value"
+				]
+			},
+			"StringFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["STRING"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"maxLength": {
+						"type": "integer"
+					},
+					"regExp": {
+						"type": "string"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"maxLength",
+					"regExp",
+					"valueExists",
+					"value"
+				]
+			},
+			"ObjectFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["OBJECT"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"schema": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": ["type", "description", "schema", "defaultValue", "valueExists", "value"]
+			},
+			"EnumFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["ENUM"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"enumValues": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"allowEmpty": {
+						"type": "boolean"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"enumValues",
+					"allowEmpty",
+					"valueExists",
+					"value"
+				]
+			},
+			"TagFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["TAG"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"tagValues": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"minCount": {
+						"type": "integer"
+					},
+					"maxCount": {
+						"type": "integer"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"tagValues",
+					"minCount",
+					"maxCount",
+					"valueExists",
+					"value"
+				]
+			},
+			"ABTestFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["AB-TEST"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"chanceBPercent": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 100
+					}
+				},
+				"required": ["type", "description", "chanceBPercent"]
 			}
 		},
 		"parameters": {},
@@ -576,6 +893,268 @@
 					},
 					"400": {
 						"description": "Bad Request - Cannot delete own user account",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags": {
+			"get": {
+				"summary": "Get Flags",
+				"description": "Get all feature flags in the system. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"responses": {
+					"200": {
+						"description": "Flags retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FlagsResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create Flag",
+				"description": "Create a new feature flag. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags/{key}": {
+			"patch": {
+				"summary": "Update Flag",
+				"description": "Update an existing feature flag. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Flag key to update",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete Flag",
+				"description": "Delete a feature flag from the system. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Flag key to delete",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"responses": {
+					"200": {
+						"description": "Flag deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags/{key}/rename": {
+			"patch": {
+				"summary": "Rename Flag",
+				"description": "Rename a feature flag and update its description. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Current flag key to rename",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RenameFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag renamed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
 						"content": {
 							"application/json": {
 								"schema": {
