@@ -1,1292 +1,1352 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "version": "1.6.0",
-    "title": "FlagFlow API",
-    "description": "Auto-generated OpenAPI specification for FlagFlow REST API"
-  },
-  "servers": [
-    {
-      "url": "/api",
-      "description": "API base path"
-    }
-  ],
-  "components": {
-    "schemas": {
-      "SuccessResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "success"
-        ]
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "message"
-        ]
-      },
-      "LoginRequest": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ]
-      },
-      "LoginResponse": {
-        "type": "object",
-        "properties": {
-          "session": {
-            "type": "string"
-          },
-          "ttlSeconds": {
-            "type": "number"
-          },
-          "expiredAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "session",
-          "ttlSeconds",
-          "expiredAt"
-        ]
-      },
-      "LogoutResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
-      "CreateUserRequest": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 1
-          },
-          "permissions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "flag-create",
-                "flag-schema",
-                "flag-value",
-                "users",
-                "migration"
-              ]
-            }
-          },
-          "mustChangePassword": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "key",
-          "name",
-          "password",
-          "permissions",
-          "mustChangePassword"
-        ]
-      },
-      "UpdateUserRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 1
-          },
-          "mustChangePassword": {
-            "type": "boolean"
-          },
-          "permissions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "flag-create",
-                "flag-schema",
-                "flag-value",
-                "users",
-                "migration"
-              ]
-            }
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "UsersResponse": {
-        "type": "object",
-        "properties": {
-          "users": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "permissions": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "enabled": {
-                  "type": "boolean"
-                },
-                "passwordExpireAt": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
-          }
-        },
-        "required": [
-          "users"
-        ]
-      },
-      "SessionsResponse": {
-        "type": "object",
-        "properties": {
-          "sessions": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "createdAt": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "expiredAt": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "user": {
-                  "type": "object",
-                  "properties": {
-                    "key": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "permissions": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "required": [
-                    "key",
-                    "name",
-                    "permissions"
-                  ]
-                }
-              },
-              "required": [
-                "createdAt",
-                "expiredAt",
-                "user"
-              ]
-            }
-          }
-        },
-        "required": [
-          "sessions"
-        ]
-      },
-      "FlagsResponse": {
-        "type": "object",
-        "properties": {
-          "flags": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/FlagSchema"
-            }
-          }
-        },
-        "required": [
-          "flags"
-        ]
-      },
-      "CreateFlagRequest": {
-        "type": "object",
-        "allOf": [
-          {
-            "type": "object",
-            "properties": {
-              "key": {
-                "type": "string",
-                "pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
-              }
-            },
-            "required": [
-              "key"
-            ]
-          },
-          {
-            "$ref": "#/components/schemas/FlagSchema"
-          }
-        ]
-      },
-      "UpdateFlagRequest": {
-        "type": "object",
-        "allOf": [
-          {
-            "type": "object",
-            "properties": {
-              "key": {
-                "type": "string",
-                "pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
-              }
-            },
-            "required": [
-              "key"
-            ]
-          },
-          {
-            "$ref": "#/components/schemas/FlagSchema"
-          }
-        ]
-      },
-      "RenameFlagRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "description"
-        ]
-      },
-      "FlagSchema": {
-        "type": "object",
-        "discriminator": {
-          "propertyName": "type"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/BooleanFlag"
-          },
-          {
-            "$ref": "#/components/schemas/IntegerFlag"
-          },
-          {
-            "$ref": "#/components/schemas/StringFlag"
-          },
-          {
-            "$ref": "#/components/schemas/ObjectFlag"
-          },
-          {
-            "$ref": "#/components/schemas/EnumFlag"
-          },
-          {
-            "$ref": "#/components/schemas/TagFlag"
-          },
-          {
-            "$ref": "#/components/schemas/ABTestFlag"
-          }
-        ]
-      },
-      "BooleanFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "BOOLEAN"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "boolean"
-          },
-          "isKillSwitch": {
-            "type": "boolean"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "defaultValue",
-          "isKillSwitch",
-          "valueExists",
-          "value"
-        ]
-      },
-      "IntegerFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "INTEGER"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "integer"
-          },
-          "minValue": {
-            "type": "integer"
-          },
-          "maxValue": {
-            "type": "integer"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "defaultValue",
-          "minValue",
-          "maxValue",
-          "valueExists",
-          "value"
-        ]
-      },
-      "StringFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "STRING"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "string"
-          },
-          "maxLength": {
-            "type": "integer"
-          },
-          "regExp": {
-            "type": "string"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "defaultValue",
-          "maxLength",
-          "regExp",
-          "valueExists",
-          "value"
-        ]
-      },
-      "ObjectFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "OBJECT"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "schema": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "string"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "schema",
-          "defaultValue",
-          "valueExists",
-          "value"
-        ]
-      },
-      "EnumFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "ENUM"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "string"
-          },
-          "enumValues": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "allowEmpty": {
-            "type": "boolean"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "defaultValue",
-          "enumValues",
-          "allowEmpty",
-          "valueExists",
-          "value"
-        ]
-      },
-      "TagFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "TAG"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "defaultValue": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "tagValues": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "minCount": {
-            "type": "integer"
-          },
-          "maxCount": {
-            "type": "integer"
-          },
-          "valueExists": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "defaultValue",
-          "tagValues",
-          "minCount",
-          "maxCount",
-          "valueExists",
-          "value"
-        ]
-      },
-      "ABTestFlag": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "AB-TEST"
-            ]
-          },
-          "description": {
-            "type": "string"
-          },
-          "chanceBPercent": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100
-          }
-        },
-        "required": [
-          "type",
-          "description",
-          "chanceBPercent"
-        ]
-      }
-    },
-    "parameters": {},
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Session token from login endpoint"
-      }
-    }
-  },
-  "paths": {
-    "/": {
-      "get": {
-        "summary": "Get OpenAPI Specification",
-        "description": "Returns the OpenAPI specification for this API.",
-        "tags": [
-          "General"
-        ],
-        "responses": {
-          "200": {
-            "description": "OpenAPI specification returned successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to load OpenAPI specification",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/login": {
-      "post": {
-        "summary": "User Login",
-        "description": "Authenticate a user and return a session token.",
-        "tags": [
-          "Authentication"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/logout": {
-      "post": {
-        "summary": "User Logout",
-        "description": "Log out the current user session.",
-        "tags": [
-          "Authentication"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Logout successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LogoutResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Logout failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/flags": {
-      "get": {
-        "summary": "Get Flags",
-        "description": "Get all feature flags in the system. Requires authentication.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Flags"
-        ],
-        "responses": {
-          "200": {
-            "description": "Flags retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FlagsResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Flag",
-        "description": "Create a new feature flag. Requires authentication.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Flags"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFlagRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Flag created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/flags/{key}": {
-      "patch": {
-        "summary": "Update Flag",
-        "description": "Update an existing feature flag schema and/or value. Requires authentication.",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Flag key to update",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Flags"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateFlagRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Flag updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Flag",
-        "description": "Delete a feature flag from the system. Requires authentication.",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Flag key to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Flags"
-        ],
-        "responses": {
-          "200": {
-            "description": "Flag deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/flags/{key}/rename": {
-      "patch": {
-        "summary": "Rename Flag",
-        "description": "Rename a feature flag and update its description. Requires authentication.",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Current flag key to rename",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Flags"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RenameFlagRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Flag renamed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users": {
-      "get": {
-        "summary": "Get Users",
-        "description": "Get all users in the system. Requires authentication.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "200": {
-            "description": "Users retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create User",
-        "description": "Create a new user in the system. Requires authentication.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Users"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{key}": {
-      "patch": {
-        "summary": "Update User",
-        "description": "Update an existing user. Requires authentication.",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "User key to update",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Users"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete User",
-        "description": "Delete a user from the system. Requires authentication.",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "User key to delete",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "200": {
-            "description": "User deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Cannot delete own user account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sessions": {
-      "get": {
-        "summary": "Get Sessions",
-        "description": "Get all active user sessions. Requires authentication.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Sessions"
-        ],
-        "responses": {
-          "200": {
-            "description": "Sessions retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SessionsResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sessions/{id}": {
-      "delete": {
-        "summary": "Delete Session",
-        "description": "Delete a specific user session. Requires authentication.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Session ID to delete",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": [
-          "Sessions"
-        ],
-        "responses": {
-          "200": {
-            "description": "Session deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Authentication required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+	"openapi": "3.0.0",
+	"info": {
+		"version": "1.6.0",
+		"title": "FlagFlow API",
+		"description": "Auto-generated OpenAPI specification for FlagFlow REST API"
+	},
+	"servers": [
+		{
+			"url": "/api",
+			"description": "API base path"
+		}
+	],
+	"components": {
+		"schemas": {
+			"SuccessResponse": {
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": ["success"]
+			},
+			"ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": ["message"]
+			},
+			"LoginRequest": {
+				"type": "object",
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": ["username", "password"]
+			},
+			"LoginResponse": {
+				"type": "object",
+				"properties": {
+					"session": {
+						"type": "string"
+					},
+					"ttlSeconds": {
+						"type": "number"
+					},
+					"expiredAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": ["session", "ttlSeconds", "expiredAt"]
+			},
+			"LogoutResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"type": "string"
+					}
+				},
+				"required": ["status"]
+			},
+			"CreateUserRequest": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string",
+						"minLength": 1
+					},
+					"permissions": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["flag-create", "flag-schema", "flag-value", "users", "migration"]
+						}
+					},
+					"mustChangePassword": {
+						"type": "boolean"
+					}
+				},
+				"required": ["key", "name", "password", "permissions", "mustChangePassword"]
+			},
+			"UpdateUserRequest": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string",
+						"minLength": 1
+					},
+					"mustChangePassword": {
+						"type": "boolean"
+					},
+					"permissions": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["flag-create", "flag-schema", "flag-value", "users", "migration"]
+						}
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				}
+			},
+			"UsersResponse": {
+				"type": "object",
+				"properties": {
+					"users": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"permissions": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"enabled": {
+									"type": "boolean"
+								},
+								"passwordExpireAt": {
+									"type": "string",
+									"format": "date-time"
+								}
+							}
+						}
+					}
+				},
+				"required": ["users"]
+			},
+			"SessionsResponse": {
+				"type": "object",
+				"properties": {
+					"sessions": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "object",
+							"properties": {
+								"createdAt": {
+									"type": "string",
+									"format": "date-time"
+								},
+								"expiredAt": {
+									"type": "string",
+									"format": "date-time"
+								},
+								"user": {
+									"type": "object",
+									"properties": {
+										"key": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										},
+										"permissions": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+									},
+									"required": ["key", "name", "permissions"]
+								}
+							},
+							"required": ["createdAt", "expiredAt", "user"]
+						}
+					}
+				},
+				"required": ["sessions"]
+			},
+			"FlagsResponse": {
+				"type": "object",
+				"properties": {
+					"flags": {
+						"type": "object",
+						"additionalProperties": {
+							"$ref": "#/components/schemas/FlagSchema"
+						}
+					}
+				},
+				"required": ["flags"]
+			},
+			"CreateFlagRequest": {
+				"type": "object",
+				"allOf": [
+					{
+						"type": "object",
+						"properties": {
+							"key": {
+								"type": "string",
+								"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+							}
+						},
+						"required": ["key"]
+					},
+					{
+						"$ref": "#/components/schemas/FlagSchema"
+					}
+				]
+			},
+			"UpdateFlagRequest": {
+				"type": "object",
+				"allOf": [
+					{
+						"type": "object",
+						"properties": {
+							"key": {
+								"type": "string",
+								"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+							}
+						},
+						"required": ["key"]
+					},
+					{
+						"$ref": "#/components/schemas/FlagSchema"
+					}
+				]
+			},
+			"RenameFlagRequest": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": ["name", "description"]
+			},
+			"FlagSchema": {
+				"type": "object",
+				"discriminator": {
+					"propertyName": "type"
+				},
+				"oneOf": [
+					{
+						"$ref": "#/components/schemas/BooleanFlag"
+					},
+					{
+						"$ref": "#/components/schemas/IntegerFlag"
+					},
+					{
+						"$ref": "#/components/schemas/StringFlag"
+					},
+					{
+						"$ref": "#/components/schemas/ObjectFlag"
+					},
+					{
+						"$ref": "#/components/schemas/EnumFlag"
+					},
+					{
+						"$ref": "#/components/schemas/TagFlag"
+					},
+					{
+						"$ref": "#/components/schemas/ABTestFlag"
+					}
+				]
+			},
+			"BooleanFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["BOOLEAN"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "boolean"
+					},
+					"isKillSwitch": {
+						"type": "boolean"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "boolean"
+					}
+				},
+				"required": ["type", "description", "defaultValue", "isKillSwitch", "valueExists", "value"]
+			},
+			"IntegerFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["INTEGER"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "integer"
+					},
+					"minValue": {
+						"type": "integer"
+					},
+					"maxValue": {
+						"type": "integer"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "integer"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"minValue",
+					"maxValue",
+					"valueExists",
+					"value"
+				]
+			},
+			"StringFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["STRING"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"maxLength": {
+						"type": "integer"
+					},
+					"regExp": {
+						"type": "string"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"maxLength",
+					"regExp",
+					"valueExists",
+					"value"
+				]
+			},
+			"ObjectFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["OBJECT"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"schema": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": ["type", "description", "schema", "defaultValue", "valueExists", "value"]
+			},
+			"EnumFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["ENUM"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "string"
+					},
+					"enumValues": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"allowEmpty": {
+						"type": "boolean"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"enumValues",
+					"allowEmpty",
+					"valueExists",
+					"value"
+				]
+			},
+			"TagFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["TAG"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"defaultValue": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"tagValues": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"minCount": {
+						"type": "integer"
+					},
+					"maxCount": {
+						"type": "integer"
+					},
+					"valueExists": {
+						"type": "boolean"
+					},
+					"value": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				},
+				"required": [
+					"type",
+					"description",
+					"defaultValue",
+					"tagValues",
+					"minCount",
+					"maxCount",
+					"valueExists",
+					"value"
+				]
+			},
+			"ABTestFlag": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["AB-TEST"]
+					},
+					"description": {
+						"type": "string"
+					},
+					"chanceBPercent": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 100
+					}
+				},
+				"required": ["type", "description", "chanceBPercent"]
+			},
+			"MigrationFile": {
+				"type": "object",
+				"properties": {
+					"environment": {
+						"type": "string"
+					},
+					"version": {
+						"type": "string",
+						"pattern": "^\\d+\\.\\d+\\.\\d+$"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"flags": {
+						"type": "object",
+						"additionalProperties": {
+							"$ref": "#/components/schemas/FlagSchema"
+						}
+					}
+				},
+				"required": ["environment", "version", "createdAt", "flags"]
+			},
+			"MigrationExecutionResponse": {
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"stepsExecuted": {
+						"type": "integer"
+					}
+				},
+				"required": ["success", "stepsExecuted"]
+			}
+		},
+		"parameters": {},
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"description": "Session token from login endpoint"
+			}
+		}
+	},
+	"paths": {
+		"/": {
+			"get": {
+				"summary": "Get OpenAPI Specification",
+				"description": "Returns the OpenAPI specification for this API.",
+				"tags": ["General"],
+				"responses": {
+					"200": {
+						"description": "OpenAPI specification returned successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Failed to load OpenAPI specification",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/login": {
+			"post": {
+				"summary": "User Login",
+				"description": "Authenticate a user and return a session token.",
+				"tags": ["Authentication"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Login successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Authentication failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/logout": {
+			"post": {
+				"summary": "User Logout",
+				"description": "Log out the current user session.",
+				"tags": ["Authentication"],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Logout successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LogoutResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Logout failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags": {
+			"get": {
+				"summary": "Get Flags",
+				"description": "Get all feature flags in the system. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"responses": {
+					"200": {
+						"description": "Flags retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FlagsResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create Flag",
+				"description": "Create a new feature flag. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags/{key}": {
+			"patch": {
+				"summary": "Update Flag",
+				"description": "Update an existing feature flag schema and/or value. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Flag key to update",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete Flag",
+				"description": "Delete a feature flag from the system. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Flag key to delete",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"responses": {
+					"200": {
+						"description": "Flag deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/flags/{key}/rename": {
+			"patch": {
+				"summary": "Rename Flag",
+				"description": "Rename a feature flag and update its description. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "Current flag key to rename",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"pattern": "^[a-z][\\da-z]*(?:_[\\da-z]+)*(?:\\/[a-z][\\da-z]*(?:_[\\da-z]+)*)*$"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Flags"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RenameFlagRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Flag renamed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users": {
+			"get": {
+				"summary": "Get Users",
+				"description": "Get all users in the system. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Users"],
+				"responses": {
+					"200": {
+						"description": "Users retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UsersResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create User",
+				"description": "Create a new user in the system. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Users"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/{key}": {
+			"patch": {
+				"summary": "Update User",
+				"description": "Update an existing user. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "User key to update",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Users"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateUserRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete User",
+				"description": "Delete a user from the system. Requires authentication.",
+				"parameters": [
+					{
+						"name": "key",
+						"in": "path",
+						"description": "User key to delete",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Users"],
+				"responses": {
+					"200": {
+						"description": "User deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Cannot delete own user account",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sessions": {
+			"get": {
+				"summary": "Get Sessions",
+				"description": "Get all active user sessions. Requires authentication.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Sessions"],
+				"responses": {
+					"200": {
+						"description": "Sessions retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SessionsResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sessions/{id}": {
+			"delete": {
+				"summary": "Delete Session",
+				"description": "Delete a specific user session. Requires authentication.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Session ID to delete",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Sessions"],
+				"responses": {
+					"200": {
+						"description": "Session deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/migrations": {
+			"get": {
+				"summary": "Export Migration File",
+				"description": "Export current environment flags as a migration file. Requires migration permission.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Migrations"],
+				"responses": {
+					"200": {
+						"description": "Migration file downloaded successfully",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						},
+						"headers": {
+							"Content-Disposition": {
+								"description": "Attachment with filename",
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Migration permission required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Execute Migration from File",
+				"description": "Execute migration from uploaded migration file. Requires migration permission.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Migrations"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MigrationFile"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Migration executed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MigrationExecutionResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid migration file or same environment",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Migration permission required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"summary": "Execute Migration from Remote URL",
+				"description": "Execute migration from configured remote URL. Requires migration permission.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Migrations"],
+				"responses": {
+					"200": {
+						"description": "Migration executed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MigrationExecutionResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Missing remote URL, invalid migration file, or same environment",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Migration permission required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
