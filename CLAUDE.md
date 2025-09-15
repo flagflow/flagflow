@@ -21,9 +21,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Run tests**: `npm run test` (Vitest with @testing-library/svelte)
 - **Run specific tests**: `npm run test -- --run <test-file-pattern>` (e.g., `npm run test -- --run flagService`)
-- **Test environment**: Node.js with E2E test setup at `tests/e2e/setup.ts`
+- **Run test coverage**: `npm run test:coverage` (with coverage report)
+- **Test environment**: Node.js with E2E test setup at `tests/e2e/api.setup.ts` and `tests/e2e/setup.ts`
 - **Test exclusions**: Svelte files are excluded from testing by default
-- **E2E Testing**: Comprehensive RPC testing with in-memory mocks via `MockPersistentService`
+- **E2E Testing**: Comprehensive RPC and REST API testing with in-memory mocks via `MockPersistentService`
+- **API Testing**: REST API endpoints tested via `tests/e2e/api.*.test.ts` files
 
 ## Architecture Overview
 
@@ -199,13 +201,15 @@ FlagFlow uses role-based permissions:
 
 ### E2E Test Engine
 
-The codebase includes a comprehensive E2E test engine for RPC testing:
+The codebase includes a comprehensive E2E test engine for both RPC and REST API testing:
 
 - **In-memory persistence**: `MockPersistentService` with `InMemoryPersistentEngine` replaces etcd/filesystem for testing
 - **Real-time watchers**: Full support for flag watching and events in test environment
 - **Authentication mocking**: User contexts with configurable permissions for testing authorization
 - **State isolation**: `resetFlagServiceState()` function ensures clean test isolation
 - **Module-level caching**: FlagService uses module-level state for performance with proper test reset
+- **REST API testing**: `createAPITestContext()` provides HTTP client for testing API endpoints directly
+- **Route mapping**: Test harness dynamically imports and executes SvelteKit route handlers
 
 ### Test Execution
 
@@ -217,8 +221,11 @@ npm run test
 npm run test -- --run <test-file-pattern>
 
 # Examples
-npm run test -- --run flagService     # Run FlagService tests
-npm run test -- --run rpc.test.ts     # Run specific E2E RPC tests
+npm run test -- --run flagService         # Run FlagService tests
+npm run test -- --run rpc.test.ts         # Run specific E2E RPC tests
+npm run test -- --run api.auth.test.ts    # Run REST API auth tests
+npm run test -- --run api.users.test.ts   # Run REST API users tests
+npm run test -- --run api.migrations.test.ts # Run REST API migration tests
 ```
 
 ## Docker Commands Context
@@ -242,7 +249,8 @@ Package.json Docker commands use `$npm_package_version` variable:
 - **Client integration**: `src/lib/rpc/client.ts` for tRPC client setup
 - **Persistent engines**: `src/lib/server/persistent/` (etcd and filesystem engines)
 - **Test mocks**: `tests/mocks/` (MockPersistentService, InMemoryPersistentEngine)
-- **E2E test setup**: `tests/e2e/setup.ts` (test context creation and utilities)
+- **E2E test setup**: `tests/e2e/setup.ts` (RPC test context) and `tests/e2e/api.setup.ts` (API test context)
+- **E2E test suites**: `tests/e2e/api.*.test.ts` (REST API endpoint tests)
 - **Utility functions**: `src/lib/Response.ts` (response helpers including migration filename generation)
 
 ## Important Development Instructions
@@ -267,10 +275,11 @@ FlagFlow uses a dual-engine persistence system:
 - **Framework**: Vitest with @testing-library/svelte integration
 - **Environment**: Node.js test environment with E2E setup
 - **Exclusions**: Svelte component files excluded by default
-- **E2E Setup**: `tests/e2e/setup.ts` provides `createE2ETestContext()` for RPC testing
+- **E2E Setup**: `tests/e2e/setup.ts` provides `createE2ETestContext()` for RPC testing, `tests/e2e/api.setup.ts` provides `createAPITestContext()` for REST API testing
 - **Path aliases**: Full support for `$lib`, `$components`, `$types`, `$rpc` in tests
 - **Mock system**: Complete in-memory persistence layer for isolated testing
 - **ESLint rules**: Configured to allow `toBeTruthy()` over `toBe(true)` in tests
+- **API test patterns**: Use `parseJSONResponse()`, `createTestUser()` helpers for consistent API testing
 
 ## Audit Logging System
 
