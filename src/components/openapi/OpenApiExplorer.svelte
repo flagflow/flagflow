@@ -102,7 +102,7 @@
 		</div>
 	{:else if spec}
 		<!-- API Header -->
-		<Card class="mb-12" size="lg">
+		<Card class="mb-12 w-full" size="xl">
 			<div class="p-4">
 				<div class="mb-4 flex items-center gap-4">
 					<Icon id="api" size={32} />

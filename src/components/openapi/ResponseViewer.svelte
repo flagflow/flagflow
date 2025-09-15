@@ -46,7 +46,7 @@
 		response.headers['content-type']?.includes('application/json') || response.json !== undefined;
 </script>
 
-<Card class={`response-viewer ${aClass}`} size="lg">
+<Card class={`response-viewer ${aClass}`} size="xl">
 	<div class="space-y-6 p-6">
 		<div class="flex items-center justify-between">
 			<Heading class="flex items-center gap-2 text-base font-semibold" tag="h4">

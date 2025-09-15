@@ -137,7 +137,7 @@
 	const hasRequiredAuth = (endpoint.operation.security?.length ?? 0) > 0;
 </script>
 
-<Card class={`endpoint-section ${aClass}`} size="lg">
+<Card class={`endpoint-section w-full ${aClass}`} size="xl">
 	<div class="flex items-center justify-between p-4">
 		<div class="flex min-w-0 flex-1 items-center gap-3">
 			<Badge class="method-badge flex-shrink-0 font-mono" color={getMethodColor(endpoint.method)}>
