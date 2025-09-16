@@ -5,6 +5,7 @@
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import FormInput from '$components/form/FormInput.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import Icon from '$components/Icon.svelte';
@@ -47,7 +48,7 @@
 		async () => {
 			const { sessionId } = await rpcClient.login.login.mutate(formData);
 			setSessionCookie(sessionId, formData.rememberMe ? 7 : 0);
-			await goto('/');
+			await goto(resolve('/', {}));
 		},
 		{
 			validator: (data) => ({

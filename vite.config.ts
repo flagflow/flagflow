@@ -29,12 +29,6 @@ export default defineConfig({
 				// 	if (id.includes('/src/components/')) return 'components';
 				// 	if (id.includes('/src/routes/')) return 'routes';
 				// }
-			},
-			onLog(level, log, handler) {
-				if (log.code !== 'CIRCULAR_DEPENDENCY') handler(level === 'warn' ? 'error' : level, log);
-			},
-			onwarn(warning, handler) {
-				if (warning.code !== 'CIRCULAR_DEPENDENCY') handler(`(!) ${warning.message}`);
 			}
 		}
 	},

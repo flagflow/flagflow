@@ -3,6 +3,7 @@
 	import { Badge, Button, ButtonGroup, Card, Input, InputAddon } from 'flowbite-svelte';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import DefaultUserWarning from '$components/DefaultUserWarning.svelte';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import Icon from '$components/Icon.svelte';
@@ -41,7 +42,7 @@
 
 	const handleSearchKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'Enter' && searchValue.trim()) {
-			goto(`/ui/flags?search=${encodeURIComponent(searchValue.trim())}`);
+			goto(resolve(`/ui/flags?search=${encodeURIComponent(searchValue.trim())}`, {}));
 		}
 	};
 </script>
@@ -136,7 +137,7 @@
 		<h2 class="mb-4 text-xl font-semibold text-gray-900">System Overview</h2>
 		<div class="grid gap-4 md:grid-cols-3">
 			<Card class="p-6" size="lg">
-				<a href="/ui/flags">
+				<a href={resolve('/ui/flags', {})}>
 					<div class="flex items-center gap-3">
 						<Icon id="flag" class="text-blue-600" size={32} />
 						<div>
@@ -156,7 +157,7 @@
 				</div>
 			</Card>
 			<Card class="p-6" size="lg">
-				<a href="/ui/flags/graph">
+				<a href={resolve('/ui/flags/graph', {})}>
 					<div class="flex items-center gap-3">
 						<Icon id="formatListExpanded" class="text-green-600" size={32} />
 						<div>

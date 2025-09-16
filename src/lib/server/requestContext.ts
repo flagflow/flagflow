@@ -3,6 +3,7 @@ import { parse as parseCookie } from 'cookie';
 
 import { JWT_COOKIE_NAMES, SESSION_COOKIE_NAME } from '$lib/cookies';
 import { generateTraceId } from '$lib/genId';
+import { safeUrl } from '$lib/urlEx';
 import type { Authentication } from '$types/Auth';
 import { UserPermission } from '$types/UserPermissions';
 
@@ -27,7 +28,21 @@ export const createRequestContext = async (
 	let refresh_token: string | undefined;
 	let id_token: string | undefined;
 	let sessionId: string | undefined;
-	if (request.headers.has('cookie'))
+
+	const url = safeUrl(request.url);
+	if (url?.pathname.startsWith('/api/')) {
+		access_token = undefined;
+		refresh_token = undefined;
+		id_token = undefined;
+		if (request.headers.has('Authorization'))
+			try {
+				const authHeader = request.headers.get('Authorization');
+				if (authHeader?.toLocaleLowerCase().startsWith('Bearer '.toLocaleLowerCase()))
+					sessionId = authHeader.split(' ')[1];
+			} catch {
+				sessionId = undefined;
+			}
+	} else if (request.headers.has('cookie'))
 		try {
 			const cookie = parseCookie(request.headers.get('cookie')!);
 			access_token = cookie[JWT_COOKIE_NAMES.accessToken];
@@ -87,7 +102,10 @@ export const createRequestContext = async (
 				success: session
 					? {
 							userName: session.userName,
-							permissions: session.permissions
+							permissions: session.permissions,
+							passwordExpired: !!(
+								session.passwordExpireAt && session.passwordExpireAt <= Date.now()
+							)
 						}
 					: undefined
 			};

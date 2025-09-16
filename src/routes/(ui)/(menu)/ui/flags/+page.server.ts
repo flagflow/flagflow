@@ -7,7 +7,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals: { rpcCaller } }) => {
 	const flags = await rpcCaller.flag.getList();
 	const flagsEx = flags
-		.sort((a, b) => a.key.localeCompare(b.key))
+		.toSorted((a, b) => a.key.localeCompare(b.key))
 		.map((flag) => ({
 			...flag,
 
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ locals: { rpcCaller } }) => {
 			},
 			{} as Record<string, typeof flagsEx>
 		)
-	).sort(([a], [b]) => a.localeCompare(b));
+	).toSorted(([a], [b]) => a.localeCompare(b));
 
 	return {
 		flagCount: flags.length,

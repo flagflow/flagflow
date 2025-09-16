@@ -9,5 +9,5 @@
 </script>
 
 <svelte:head>
-	<title>{title ? `${title} • ${APPNAME}` : APPNAME}</title>
+	<title>{title ? `${APPNAME} • ${title}` : APPNAME}</title>
 </svelte:head>

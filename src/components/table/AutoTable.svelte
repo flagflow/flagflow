@@ -21,6 +21,7 @@
 		black: 'text-gray-700'
 	};
 	export type IndicatorColors =
+		| 'none'
 		| 'primary'
 		| 'secondary'
 		| 'green'
@@ -241,6 +242,7 @@
 	import type { SvelteSet } from 'svelte/reactivity';
 	import { derived, get, type Writable } from 'svelte/store';
 
+	import { resolve } from '$app/paths';
 	import AsyncButton from '$components/AsyncButton.svelte';
 	import Icon from '$components/Icon.svelte';
 	import { type IconId } from '$components/Icon.svelte';
@@ -320,7 +322,7 @@
 			filtered = filtered.filter((index) => filter.filterFunction(index, get(filter.value)));
 
 		const sorted = filtered
-			.sort((a, b) => {
+			.toSorted((a, b) => {
 				const aValue = a[key as SortableTypeKeys<typeof a>];
 				const bValue = b[key as SortableTypeKeys<typeof b>];
 				if (aValue < bValue) return -direction;
@@ -505,7 +507,10 @@
 									: 'href' in descriptor && descriptor.href
 										? descriptor.href(row)
 										: undefined}
-							<a data-sveltekit-preload-data="tap" href={href ?? 'javascript:void(0);'}>
+							<a
+								data-sveltekit-preload-data="tap"
+								href={resolve(href ?? 'javascript:void(0);', {})}
+							>
 								{#if 'component' in column}
 									<column.component source={{ row, property: column.property }} />
 								{:else if 'commands' in column}
@@ -650,7 +655,7 @@
 													typeof column.indicatorColor === 'function'
 														? column.indicatorColor(row)
 														: column.indicatorColor}
-												{#if indicatorColor}
+												{#if indicatorColor && indicatorColor !== 'none'}
 													<Indicator class="ml-1 inline-flex" color={indicatorColor} size="xs" />
 												{/if}
 											{/if}

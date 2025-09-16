@@ -1,5 +1,6 @@
 import type { UserPermission } from '$types/UserPermissions';
 
 export type Meta = {
-	permission: UserPermission | undefined;
+	permission?: UserPermission;
+	allowPasswordExpired?: boolean;
 };

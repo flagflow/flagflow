@@ -1,6 +1,7 @@
 import { error as svelteKitError, type Handle, type HandleServerError } from '@sveltejs/kit';
 
 import { URI_RPC } from '$lib/rpc/client';
+import { safeUrl } from '$lib/urlEx';
 
 import { createLogger } from '../log';
 import { createCounter, METRICS_ENABLED, URI_METRICS } from './metrics';
@@ -13,15 +14,15 @@ const metricUrl = METRICS_ENABLED
 		})
 	: undefined;
 
-const isInternalUrl = (url: URL) =>
-	url.pathname.startsWith(URI_RPC) || url.pathname.startsWith('/health');
+const isInternalUrl = (url: URL | undefined) =>
+	url?.pathname.startsWith(URI_RPC) || url?.pathname.startsWith('/health');
 
 export const createUrlLogHandle: Handle = async ({ event, resolve }) => {
 	const logService = event.locals.container.resolve('logService');
 	const logHttp = logService('http');
-	const url = new URL(event.request.url);
+	const url = safeUrl(event.request.url);
 
-	const metaRequest = { method: event.request.method, path: url.pathname };
+	const metaRequest = { method: event.request.method, path: url?.pathname };
 
 	if (!isInternalUrl(url)) logHttp.debug(metaRequest, 'Request');
 
@@ -34,9 +35,9 @@ export const createUrlLogHandle: Handle = async ({ event, resolve }) => {
 	const metaResponse = { ...metaRequest, elapsed: elapsedMs };
 	if (response.ok) logHttp.debug(metaResponse, 'Response');
 
-	if (!url.pathname.startsWith(URI_METRICS))
+	if (!url?.pathname.startsWith(URI_METRICS))
 		metricUrl?.inc(
-			{ method: event.request.method, path: url.pathname, status: response.status },
+			{ method: event.request.method, path: url?.pathname, status: response.status },
 			1
 		);
 
@@ -51,8 +52,8 @@ export const createUrlErrorHandle: HandleServerError = async ({
 }) => {
 	const logService = event.locals.container?.resolve('logService')('http') || createLogger('http');
 
-	const url = new URL(event.request.url);
-	const meta = { method: event.request.method, path: url.pathname };
+	const url = safeUrl(event.request.url);
+	const meta = { method: event.request.method, path: url?.pathname };
 	logService?.error(
 		{
 			...meta,

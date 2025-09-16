@@ -14,15 +14,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Docker interactive**: `npm run docker:it` (interactive shell in container)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
 - **Docker**: `npm run docker:build` and `npm run docker:run`
+- **Docker Compose**: `npm run docker:compose:up` (start infrastructure) or `npm run docker:compose:down` (stop infrastructure)
 - **Full rebuild of npm packages**: `npm run npm:reinstall`
 
 ### Testing Commands
 
 - **Run tests**: `npm run test` (Vitest with @testing-library/svelte)
 - **Run specific tests**: `npm run test -- --run <test-file-pattern>` (e.g., `npm run test -- --run flagService`)
-- **Test environment**: Node.js with E2E test setup at `tests/e2e/setup.ts`
+- **Run test coverage**: `npm run test:coverage` (with coverage report)
+- **Test environment**: Node.js with E2E test setup at `tests/e2e/api.setup.ts` and `tests/e2e/setup.ts`
 - **Test exclusions**: Svelte files are excluded from testing by default
-- **E2E Testing**: Comprehensive RPC testing with in-memory mocks via `MockPersistentService`
+- **E2E Testing**: Comprehensive RPC and REST API testing with in-memory mocks via `MockPersistentService`
+- **API Testing**: REST API endpoints tested via `tests/e2e/api.*.test.ts` files
 
 ## Architecture Overview
 
@@ -74,6 +77,14 @@ The application follows a layered service architecture with Awilix dependency in
 - Enhanced Zod error formatting with detailed validation messages
 - Server-side RPC caller for internal service communication
 
+#### REST API Layer (`src/routes/api/`)
+
+- Complete RESTful API with OpenAPI 3.0 specification
+- Authentication via JWT Bearer tokens from login endpoint
+- Endpoints for users, sessions, flags, and migrations management
+- Consistent error handling and response formatting via `$lib/Response.ts`
+- Protected routes requiring specific permissions (users, flag-\*, migration)
+
 #### Feature Flag System
 
 - Real-time flag watching with etcd watchers
@@ -83,6 +94,7 @@ The application follows a layered service architecture with Awilix dependency in
 - Migration system for flag changes with export/import
 - Hash-based group validation for type safety
 - Kill switches: special boolean flags requiring confirmation to disable
+- REST API support for migrations via GET (export), PUT (execute from file), PATCH (execute from remote URL)
 
 #### Authentication Flow
 
@@ -105,6 +117,7 @@ The application follows a layered service architecture with Awilix dependency in
 - **File-based routing** with nested layouts and server load functions
 - **Route groups**: `(ui)/` for authenticated pages, `(menu)/` with navigation, `(plain)/` for simple pages
 - **API endpoints**: `/flag/{flagname}`, `/flags/{flaggroup}`, `/type/typescript`, `/migration/export`
+- **REST API**: Complete REST API at `/api/` with OpenAPI specification
 - **Authentication callbacks**: `/auth/` for Keycloak integration
 
 #### Component Architecture (`src/components/`)
@@ -132,6 +145,7 @@ Before development, start required services:
 - etcd: `./infra/etcd.sh` (port 2379, root password: `flagflow`)
 - Keycloak: `./infra/keycloak.sh` (port 8080, admin: `admin`/`admin`)
 - Alternative: `npm run docker:compose:up` for full infrastructure setup
+- To stop infrastructure: `npm run docker:compose:down`
 
 ### Flag Type Patterns
 
@@ -187,13 +201,15 @@ FlagFlow uses role-based permissions:
 
 ### E2E Test Engine
 
-The codebase includes a comprehensive E2E test engine for RPC testing:
+The codebase includes a comprehensive E2E test engine for both RPC and REST API testing:
 
 - **In-memory persistence**: `MockPersistentService` with `InMemoryPersistentEngine` replaces etcd/filesystem for testing
 - **Real-time watchers**: Full support for flag watching and events in test environment
 - **Authentication mocking**: User contexts with configurable permissions for testing authorization
 - **State isolation**: `resetFlagServiceState()` function ensures clean test isolation
 - **Module-level caching**: FlagService uses module-level state for performance with proper test reset
+- **REST API testing**: `createAPITestContext()` provides HTTP client for testing API endpoints directly
+- **Route mapping**: Test harness dynamically imports and executes SvelteKit route handlers
 
 ### Test Execution
 
@@ -205,8 +221,11 @@ npm run test
 npm run test -- --run <test-file-pattern>
 
 # Examples
-npm run test -- --run flagService     # Run FlagService tests
-npm run test -- --run rpc.test.ts     # Run specific E2E RPC tests
+npm run test -- --run flagService         # Run FlagService tests
+npm run test -- --run rpc.test.ts         # Run specific E2E RPC tests
+npm run test -- --run api.auth.test.ts    # Run REST API auth tests
+npm run test -- --run api.users.test.ts   # Run REST API users tests
+npm run test -- --run api.migrations.test.ts # Run REST API migration tests
 ```
 
 ## Docker Commands Context
@@ -216,20 +235,23 @@ Package.json Docker commands use `$npm_package_version` variable:
 - `npm run docker:build` builds with current package version tag
 - `npm run docker:run` runs the versioned container
 - `npm run docker:it` provides interactive shell access
-- `npm run docker:compose:up` starts full infrastructure stack
+- `npm run docker:compose:up` starts full infrastructure stack (etcd + Keycloak)
 - `npm run docker:compose:down` stops infrastructure stack
 
 ## Key File Locations
 
 - **Service definitions**: `src/lib/server/services/` (systemServices, coreServices, FlagService)
 - **RPC routes**: `src/lib/rpc/protected/` and `src/lib/rpc/public/`
+- **REST API routes**: `src/routes/api/` (RESTful endpoints with OpenAPI spec at `/api/openapi.json`)
 - **Persistent data types**: `src/types/persistent/` (all with Zod schemas)
 - **Infrastructure scripts**: `./infra/etcd.sh`, `./infra/keycloak.sh`, and Docker Compose files
 - **Route handlers**: `src/routes/` (SvelteKit file-based routing)
 - **Client integration**: `src/lib/rpc/client.ts` for tRPC client setup
 - **Persistent engines**: `src/lib/server/persistent/` (etcd and filesystem engines)
 - **Test mocks**: `tests/mocks/` (MockPersistentService, InMemoryPersistentEngine)
-- **E2E test setup**: `tests/e2e/setup.ts` (test context creation and utilities)
+- **E2E test setup**: `tests/e2e/setup.ts` (RPC test context) and `tests/e2e/api.setup.ts` (API test context)
+- **E2E test suites**: `tests/e2e/api.*.test.ts` (REST API endpoint tests)
+- **Utility functions**: `src/lib/Response.ts` (response helpers including migration filename generation)
 
 ## Important Development Instructions
 
@@ -253,10 +275,11 @@ FlagFlow uses a dual-engine persistence system:
 - **Framework**: Vitest with @testing-library/svelte integration
 - **Environment**: Node.js test environment with E2E setup
 - **Exclusions**: Svelte component files excluded by default
-- **E2E Setup**: `tests/e2e/setup.ts` provides `createE2ETestContext()` for RPC testing
+- **E2E Setup**: `tests/e2e/setup.ts` provides `createE2ETestContext()` for RPC testing, `tests/e2e/api.setup.ts` provides `createAPITestContext()` for REST API testing
 - **Path aliases**: Full support for `$lib`, `$components`, `$types`, `$rpc` in tests
 - **Mock system**: Complete in-memory persistence layer for isolated testing
 - **ESLint rules**: Configured to allow `toBeTruthy()` over `toBe(true)` in tests
+- **API test patterns**: Use `parseJSONResponse()`, `createTestUser()` helpers for consistent API testing
 
 ## Audit Logging System
 

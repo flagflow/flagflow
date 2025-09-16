@@ -1,4 +1,4 @@
-import type { ZodIssue } from 'zod';
+import type { z } from 'zod';
 
-export const zodFlattenError = (errors: ZodIssue[]): string =>
+export const zodFlattenError = (errors: z.core.$ZodIssue[]): string =>
 	errors.map(({ path, message }) => `Field ${path.join('.')} ${message.toLowerCase()}`).join(', ');

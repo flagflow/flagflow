@@ -1,11 +1,11 @@
 import { createJsonResponse } from '$lib/Response';
 import { verifyKeycloakCommunication } from '$lib/server/keycloak';
 
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event: RequestEvent) => {
-	const configService = event.locals.container.resolve('configService');
-	const persistentService = event.locals.container.resolve('persistentService');
+export const GET: RequestHandler = async ({ locals }) => {
+	const configService = locals.container.resolve('configService');
+	const persistentService = locals.container.resolve('persistentService');
 
 	let persistenceStatus: string | undefined;
 	try {

@@ -19,12 +19,11 @@
 	import Icon from '$components/Icon.svelte';
 	import { deleteTokensCookies, setTokensCookies } from '$lib/cookies';
 	import { dateAddSeconds } from '$lib/dateEx';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
-	import ModalPortal from '$lib/svelteModal/ModalPortal.svelte';
 	import type { UserPermission } from '$types/UserPermissions';
 
 	import type { LayoutProps as LayoutProperties } from './$types';
+	import { showModalPasswordChange } from './ModalPasswordChange.svelte';
 
 	const spanClass = 'flex-1 ms-3 whitespace-nowrap';
 	const spanClassDisabled = spanClass + ' ' + 'opacity-50 cursor-not-allowed';
@@ -104,6 +103,7 @@
 			{userName}
 			<Badge title={userPermissionsStringFull}>{userPermissionsString}</Badge>
 		</DropdownHeader>
+		<DropdownItem href="#" onclick={() => showModalPasswordChange()}>Change Password</DropdownItem>
 		<DropdownItem href="#" onclick={logout}>Logout</DropdownItem>
 	</Dropdown>
 </Navbar>
@@ -163,6 +163,11 @@
 					{/snippet}
 				</SidebarItem>
 			{/if}
+			<SidebarItem href="/ui/api-explorer" label="API explorer" {spanClass}>
+				{#snippet icon()}
+					<Icon id="api" />
+				{/snippet}
+			</SidebarItem>
 		</SidebarGroup>
 		<SidebarGroup border>
 			<SidebarItem href="#" label="Logout" onclick={logout} {spanClass}>
@@ -176,5 +181,3 @@
 		{@render children()}
 	</div>
 </div>
-
-<ModalPortal store={modalHandler} />

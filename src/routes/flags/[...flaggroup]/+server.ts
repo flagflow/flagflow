@@ -8,13 +8,14 @@ import {
 } from '$lib/Response';
 import { formatFlagApiResponseENV, formatFlagApiResponseJson } from '$lib/server/flagApiFormatter';
 import { createStringParser, parseUrlParameters } from '$lib/server/parseUrlParameters';
+import { safeUrl } from '$lib/urlEx';
 
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ request, params, locals }) => {
 	// Parameters
-	const url = new URL(event.request.url);
-	const urlParsed = parseUrlParameters(url.searchParams, {
+	const url = safeUrl(request.url);
+	const urlParsed = parseUrlParameters(url?.searchParams, {
 		format: createStringParser('json')
 	});
 	if (Object.keys(urlParsed.otherParams).length > 0)
@@ -23,10 +24,10 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 		return error(400, 'Invalid format parameter: ' + urlParsed.format);
 
 	// Service
-	const flagGroup = event.params.flaggroup;
-	const acceptFlagGroupHash = event.request.headers.get(HEADER_ACCEPT_FLAGGROUP_HASH);
+	const flagGroup = params.flaggroup;
+	const acceptFlagGroupHash = request.headers.get(HEADER_ACCEPT_FLAGGROUP_HASH);
 
-	const flagService = event.locals.container.resolve('flagService');
+	const flagService = locals.container.resolve('flagService');
 
 	const flagData = await flagService.getFlags(flagGroup);
 	if (Object.keys(flagData).length === 0)

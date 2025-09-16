@@ -37,7 +37,7 @@ export const generateHashInfo = (flags: Record<string, PersistentFlag>): Map<str
 	};
 
 	const result: Map<string, string> = new Map();
-	for (const groupName of [...groups.keys()].sort())
+	for (const groupName of [...groups.keys()].toSorted())
 		result.set(groupName, generateGroupHash(groupName));
 	return result;
 };

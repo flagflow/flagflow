@@ -6,7 +6,10 @@ const config = {
 	preprocess: vitePreprocess(),
 	compilerOptions: {
 		preserveComments: false,
-		preserveWhitespace: false
+		preserveWhitespace: false,
+		experimental: {
+			async: true
+		}
 	},
 	kit: {
 		adapter: adapter({

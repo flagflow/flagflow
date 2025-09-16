@@ -25,8 +25,8 @@
 
 	import Icon from '$components/Icon.svelte';
 	import { showModalError } from '$components/modal/ModalError.svelte';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 	import type { MigrationStep, MigrationStepMode, MigrationSummary } from '$types/Migration';
 
 	const dispatch = createEventDispatcher<{

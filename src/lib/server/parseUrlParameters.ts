@@ -16,7 +16,7 @@ const stringParameterParser = (value: string | null, defaultValue = ''): string 
 	value ?? defaultValue;
 
 export const parseUrlParameters = <T extends Record<string, unknown>>(
-	searchParameters: URLSearchParams | string,
+	searchParameters: URLSearchParams | string | undefined,
 	parsers: ParameterParser<T>
 ): ParsedParameters<T> => {
 	const parameters_ =
@@ -26,17 +26,19 @@ export const parseUrlParameters = <T extends Record<string, unknown>>(
 	const otherParameters: Record<string, string[]> = {};
 	const parsedKeys = new Set(Object.keys(parsers));
 
-	for (const key of Object.keys(parsers) as (keyof T)[]) {
-		const parser = parsers[key];
-		const value = parameters_.get(key as string);
-		result[key] = parser(value);
-	}
-
-	for (const [key, value] of parameters_.entries())
-		if (!parsedKeys.has(key)) {
-			if (!otherParameters[key]) otherParameters[key] = [];
-			otherParameters[key].push(value);
+	if (parameters_) {
+		for (const key of Object.keys(parsers) as (keyof T)[]) {
+			const parser = parsers[key];
+			const value = parameters_.get(key as string);
+			result[key] = parser(value);
 		}
+
+		for (const [key, value] of parameters_.entries())
+			if (!parsedKeys.has(key)) {
+				if (!otherParameters[key]) otherParameters[key] = [];
+				otherParameters[key].push(value);
+			}
+	}
 
 	return {
 		...result,

@@ -1,3 +1,5 @@
+import { formatDate } from 'date-fns';
+
 export const HEADERS_NO_CACHE = {
 	'Cache-Control': 'no-cache, no-store, must-revalidate',
 	Pragma: 'no-cache',
@@ -34,6 +36,11 @@ export const createTextResponse = (
 	body: string,
 	options: { headers?: Record<string, string>; status?: number } = {}
 ) => createResponse(body, { ...options, contentType: 'text/plain', status: options.status ?? 200 });
+
+export const createMigrationFilename = (environment: string): string =>
+	['flagflow', 'migration', environment, formatDate(new Date(), 'yyyyMMdd-HHmmss')]
+		.filter(Boolean)
+		.join('_') + '.json';
 
 export const createDownloadResponse = (
 	body: string | object,

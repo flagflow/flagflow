@@ -11,3 +11,11 @@ export const combineUrls = (base: string, ...paths: string[]): string => {
 
 	return combinedUrl;
 };
+
+export const safeUrl = (url: string) => {
+	try {
+		return new URL(url);
+	} catch {
+		return;
+	}
+};

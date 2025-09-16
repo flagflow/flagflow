@@ -4,13 +4,14 @@ import { createJsonResponse, createTextResponse } from '$lib/Response';
 import { formatFlagApiMapResponseENV } from '$lib/server/flagApiFormatter';
 import { parseUrlParameters } from '$lib/server/parseUrlParameters';
 import { createStringParser } from '$lib/server/parseUrlParameters';
+import { safeUrl } from '$lib/urlEx';
 
-import type { RequestEvent, RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ request, locals }) => {
 	// Parameters
-	const url = new URL(event.request.url);
-	const urlParsed = parseUrlParameters(url.searchParams, {
+	const url = safeUrl(request.url);
+	const urlParsed = parseUrlParameters(url?.searchParams, {
 		format: createStringParser('json')
 	});
 	if (Object.keys(urlParsed.otherParams).length > 0)
@@ -19,7 +20,7 @@ export const GET: RequestHandler = async (event: RequestEvent) => {
 		return error(400, 'Invalid format parameter: ' + urlParsed.format);
 
 	// Service
-	const flagService = event.locals.container.resolve('flagService');
+	const flagService = locals.container.resolve('flagService');
 
 	const groups = await flagService.getFlagGroups();
 	const hashes: Record<string, string> = {};

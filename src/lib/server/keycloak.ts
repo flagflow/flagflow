@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 
-import { combineUrls } from '$lib/urlEx';
+import { combineUrls, safeUrl } from '$lib/urlEx';
 import { JwtAccessToken, type KeycloakJwtString } from '$types/Jwt';
 import { KeycloakTokenResponse } from '$types/Keycloak';
 
@@ -18,7 +18,7 @@ const keycloakProtocolUrl = config.keycloak.host
 
 const generateKeycloakLoginUrl = (callbackHost: string) => {
 	const keycloakLoginUrl = config.keycloak.host
-		? new URL(combineUrls(keycloakProtocolUrl, 'auth'))
+		? safeUrl(combineUrls(keycloakProtocolUrl, 'auth'))
 		: undefined;
 
 	if (keycloakLoginUrl) {
@@ -34,7 +34,8 @@ const generateKeycloakLoginUrl = (callbackHost: string) => {
 };
 
 const generateKeycloakLogoutUrl = (callbackHost: string, id_token: string | undefined) => {
-	const keycloakLoginUrl = new URL(combineUrls(keycloakProtocolUrl, 'logout'));
+	const keycloakLoginUrl = safeUrl(combineUrls(keycloakProtocolUrl, 'logout'));
+	if (!keycloakLoginUrl) return;
 
 	keycloakLoginUrl.searchParams.append('client_id', config.keycloak.client);
 	if (id_token) keycloakLoginUrl.searchParams.append('id_token_hint', encodeURIComponent(id_token));

@@ -138,7 +138,7 @@ export const generateTSTypeFileContent = (
 
 	tsFileContent.push('', '', '// Client type descriptors');
 	tsFileContent.push('export type FlagFlow_DescriptorTypeMap = {');
-	for (const groupName of [...groupTypeHash.keys()].sort()) {
+	for (const groupName of [...groupTypeHash.keys()].toSorted()) {
 		const typeKey = (groupName || '#root').replaceAll('__', '/');
 		const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
 		tsFileContent.push(`\t'${typeKey}': ${typeName};`);
@@ -152,7 +152,7 @@ export const flagFlow_Descriptors: {
 		uri: string;
 	}
 } = {`);
-	for (const groupName of [...groupTypeHash.keys()].sort()) {
+	for (const groupName of [...groupTypeHash.keys()].toSorted()) {
 		const typeUri = groupName.replaceAll('__', '/');
 		const typeKey = (groupName || '#root').replaceAll('__', '/');
 		const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');

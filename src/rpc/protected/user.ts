@@ -1,3 +1,4 @@
+import type { WritableDeep } from 'type-fest';
 import { z } from 'zod';
 
 import { createRpcRouter, rpcProcedure } from '$lib/rpc/init';
@@ -31,7 +32,7 @@ export const userRpc = createRpcRouter({
 				name: user.name,
 				enabled: user.enabled,
 				permissions: user.permissions as UserPermission[],
-				mustChangePassword: !!user.passwordExpireAt && user.passwordExpireAt > Date.now()
+				passwordExpireAt: user.passwordExpireAt
 			};
 		}),
 	create: rpcProcedureUsersPermission
@@ -60,47 +61,26 @@ export const userRpc = createRpcRouter({
 		.input(
 			z.object({
 				key: PersistentUserKey.trim(),
-				name: z.string().trim(),
-				permissions: z.array(UserPermissionZodEnum)
+				name: z.string().trim().optional(),
+				password: ZNonEmptyString().optional(),
+				mustChangePassword: z.boolean().optional(),
+				permissions: z.array(UserPermissionZodEnum).optional(),
+				enabled: z.boolean().optional()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
 			const persistentService = ctx.container.resolve('persistentService');
-			await persistentService.overwrite('user', input.key, {
-				name: input.name,
-				permissions: input.permissions
-			});
+
+			const recentValue: Partial<WritableDeep<PersistentUser>> = {};
+			if (input.name !== undefined) recentValue.name = input.name;
+			if (input.enabled !== undefined) recentValue.enabled = input.enabled;
+			if (input.password !== undefined) recentValue.passwordHash = hashPassword(input.password);
+			if (input.permissions !== undefined) recentValue.permissions = input.permissions;
+			if (input.mustChangePassword !== undefined)
+				recentValue.passwordExpireAt = input.mustChangePassword ? Date.now() : undefined;
+
+			await persistentService.overwrite('user', input.key, recentValue);
 			ctx.logger('user').info(`User ${input.key} updated`);
-		}),
-	setPassword: rpcProcedureUsersPermission
-		.input(
-			z.object({
-				key: PersistentUserKey.trim(),
-				password: ZNonEmptyString(),
-				mustChangePassword: z.boolean()
-			})
-		)
-		.mutation(async ({ ctx, input }) => {
-			const persistentService = ctx.container.resolve('persistentService');
-			await persistentService.overwrite('user', input.key, {
-				passwordHash: hashPassword(input.password),
-				passwordExpireAt: input.mustChangePassword ? Date.now() : undefined
-			});
-			ctx.logger('user').info(`User ${input.key} password updated`);
-		}),
-	setEnabled: rpcProcedureUsersPermission
-		.input(
-			z.object({
-				key: PersistentUserKey.trim(),
-				enabled: z.boolean()
-			})
-		)
-		.mutation(async ({ ctx, input }) => {
-			const persistentService = ctx.container.resolve('persistentService');
-			await persistentService.overwrite('user', input.key, {
-				enabled: input.enabled
-			});
-			ctx.logger('user').info(`User ${input.key} enabled status updated`);
 		}),
 	delete: rpcProcedureUsersPermission
 		.input(

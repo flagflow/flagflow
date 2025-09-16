@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { combineUrls } from './urlEx';
+import { combineUrls, safeUrl } from './urlEx';
 
 describe('urlEx', () => {
 	describe('combineUrls', () => {
@@ -96,6 +96,94 @@ describe('urlEx', () => {
 		it('should handle relative base URLs', () => {
 			expect(combineUrls('../api', 'users')).toBe('../api/users');
 			expect(combineUrls('./base/', 'users')).toBe('./base/users');
+		});
+	});
+
+	describe('safeUrl', () => {
+		it('should return URL object for valid URLs', () => {
+			const url1 = safeUrl('https://api.example.com');
+			expect(url1).toBeInstanceOf(URL);
+			expect(url1?.href).toBe('https://api.example.com/');
+
+			const url2 = safeUrl('http://localhost:3000/api');
+			expect(url2).toBeInstanceOf(URL);
+			expect(url2?.href).toBe('http://localhost:3000/api');
+		});
+
+		it('should return URL object for valid URLs with paths and query parameters', () => {
+			const url = safeUrl('https://api.example.com/users?page=1&limit=10');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.pathname).toBe('/users');
+			expect(url?.search).toBe('?page=1&limit=10');
+		});
+
+		it('should return URL object for valid URLs with fragments', () => {
+			const url = safeUrl('https://example.com/docs#section1');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.hash).toBe('#section1');
+		});
+
+		it('should return undefined for invalid URLs', () => {
+			expect(safeUrl('not-a-url')).toBeUndefined();
+			expect(safeUrl('http://')).toBeUndefined();
+			expect(safeUrl('://missing-protocol')).toBeUndefined();
+			expect(safeUrl('')).toBeUndefined();
+		});
+
+		it('should return undefined for malformed URLs', () => {
+			expect(safeUrl('http://[invalid')).toBeUndefined();
+			expect(safeUrl('ftp://user@host:99999999999999999999')).toBeUndefined();
+			expect(safeUrl('http://192.168.1.256')).toBeUndefined();
+		});
+
+		it('should handle special characters in URLs', () => {
+			const url = safeUrl('https://example.com/path%20with%20spaces');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.pathname).toBe('/path%20with%20spaces');
+		});
+
+		it('should handle data URLs', () => {
+			const url = safeUrl('data:text/plain;base64,SGVsbG8gV29ybGQ=');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.protocol).toBe('data:');
+		});
+
+		it('should handle file URLs', () => {
+			const url = safeUrl('file:///path/to/file');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.protocol).toBe('file:');
+		});
+
+		it('should handle URLs with unusual but valid protocols', () => {
+			const url = safeUrl('ftp://ftp.example.com/file.txt');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.protocol).toBe('ftp:');
+		});
+
+		it('should handle localhost URLs', () => {
+			const url = safeUrl('http://localhost:8080');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.hostname).toBe('localhost');
+			expect(url?.port).toBe('8080');
+		});
+
+		it('should handle IPv4 addresses', () => {
+			const url = safeUrl('http://192.168.1.1:3000');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.hostname).toBe('192.168.1.1');
+			expect(url?.port).toBe('3000');
+		});
+
+		it('should handle IPv6 addresses', () => {
+			const url = safeUrl('http://[::1]:8080');
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.hostname).toBe('[::1]');
+			expect(url?.port).toBe('8080');
+		});
+
+		it('should return undefined for null and undefined inputs', () => {
+			expect(safeUrl(undefined as unknown as string)).toBeUndefined();
+			expect(safeUrl('' as string)).toBeUndefined();
 		});
 	});
 });

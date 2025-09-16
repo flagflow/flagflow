@@ -22,8 +22,8 @@
 		type Validator,
 		type ValidityItem
 	} from '$lib/form.svelte';
-	import { modalHandler } from '$lib/modals';
 	import { rpcClient } from '$lib/rpc/client';
+	import { modalHandler } from '$lib/svelteModal/modal';
 	import type { PersistentFlag, PersistentFlagType } from '$types/persistent';
 	import { PersistentFlagKey } from '$types/persistent';
 	import {

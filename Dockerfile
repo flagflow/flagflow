@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:24.6.0-alpine3.22
+ARG NODE_IMAGE=node:24.8.0-alpine3.22
 
 
 # Builder
@@ -48,8 +48,7 @@ RUN npm ci --omit=dev --frozen-lockfile && \
 COPY --from=builder /app/build ./build
 RUN find build -name "*.map" -delete
 
-ENV NODE_ENV=production \
-    NODE_OPTIONS="--enable-source-maps=false"
+ENV NODE_ENV=production
 EXPOSE 3000
 VOLUME ["/data"]
 

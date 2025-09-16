@@ -34,6 +34,6 @@ export const UserPermissionFromArray = (
 	}) as const;
 
 export const sortUserPermissions = (permissions: UserPermission[]): UserPermission[] =>
-	permissions.sort(
+	permissions.toSorted(
 		(a, b) => UserPermissionZodEnum.options.indexOf(a) - UserPermissionZodEnum.options.indexOf(b)
 	);

@@ -266,7 +266,7 @@ describe('GroupHashGenerator', () => {
 			};
 
 			const result = generateHashInfo(flags);
-			const groups = [...result.keys()].sort();
+			const groups = [...result.keys()].toSorted();
 
 			expect(groups).toEqual(['', 'a', 'm', 'z']);
 		});

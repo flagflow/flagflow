@@ -1,6 +1,4 @@
 <script lang="ts" module>
-	import mermaid from 'mermaid';
-
 	import ModalDisplayMermaid from './ModalDisplayMermaid.svelte';
 
 	export const showModalMermaid = async (
@@ -9,6 +7,8 @@
 	) => {
 		try {
 			const data = typeof mermaidData === 'function' ? await mermaidData() : mermaidData;
+
+			const { default: mermaid } = await import('mermaid');
 			const { svg } = await mermaid.render('_', data);
 			return modalHandler.show({
 				component: ModalDisplayMermaid,
@@ -29,7 +29,7 @@
 	import { Modal, Range } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	import { modalHandler } from '$lib/modals';
+	import { modalHandler } from '$lib/svelteModal/modal';
 
 	import { showModalError } from './ModalError.svelte';
 

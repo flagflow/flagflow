@@ -7,13 +7,14 @@
 		export: 'mdi:export',
 		user: 'mdi:user',
 		session: 'mdi:user-group',
+		api: 'mdi:api',
 
 		login: 'mdi:login',
 		logout: 'mdi:logout',
 		email: 'mdi:email',
 		keycloak: 'simple-icons:keycloak',
-		password: 'mdi:eye-off',
-		passwordVisible: 'mdi:eye',
+		invisible: 'mdi:eye-off',
+		visible: 'mdi:eye',
 
 		arrowLeft: 'mdi:chevron-left',
 		arrowRight: 'mdi:chevron-right',
@@ -57,6 +58,9 @@
 		restore: 'mdi:restore-clock',
 		migration: 'mdi:database-import',
 		online: 'mdi:server-network',
+		ban: 'mdi:ban',
+		enable: 'mdi:check',
+		password: 'mdi:password',
 
 		boolean: 'mdi:toggle-switch',
 		killswitch: 'mdi:shield-key',

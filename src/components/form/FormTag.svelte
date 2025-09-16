@@ -32,7 +32,10 @@
 	{#if allowSort}
 		<ButtonGroup class="w-full gap-2">
 			<Tags id={id || title} {unique} bind:value={tags} />
-			<InputAddon class="cursor-pointer" onclick={() => tags.sort((a, b) => a.localeCompare(b))}>
+			<InputAddon
+				class="cursor-pointer"
+				onclick={() => (tags = tags.toSorted((a, b) => a.localeCompare(b)))}
+			>
 				<Icon id="sortAlphabeticalAscending" color="gray" size={20} />
 			</InputAddon>
 			<Tooltip placement="bottom" type="light">Sort items alphabetically</Tooltip>

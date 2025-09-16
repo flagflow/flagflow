@@ -21,6 +21,7 @@ export type Authentication =
 				| {
 						userName: string;
 						permissions: UserPermission[];
+						passwordExpired?: boolean;
 				  }
 				| undefined;
 	  }

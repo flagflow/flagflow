@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import HtmlTitle from '$components/HtmlTitle.svelte';
 	import { setTokensCookies } from '$lib/cookies';
 
@@ -12,7 +13,7 @@
 
 	onMount(async () => {
 		setTokensCookies(data.tokens);
-		await goto('/');
+		await goto(resolve('/', {}));
 	});
 </script>
 

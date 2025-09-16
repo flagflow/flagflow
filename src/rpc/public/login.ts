@@ -17,15 +17,26 @@ export const loginRpc = createRpcRouter({
 			const user = await userService.authUser(username, password);
 
 			const sessionService = ctx.container.resolve('sessionService');
-			const sessionId = await sessionService.createSession({
+			const { sessionId, ttlSeconds, expiredAt } = await sessionService.createSession({
 				userKey: user?.username || username,
 				userName: user?.name || username,
 				createdAt: new Date(),
-				permissions: user?.permissions || []
+				permissions: user?.permissions || [],
+				passwordExpireAt: user?.passwordExpireAt
 			});
 
-			return { sessionId, userName: user.name };
+			return { sessionId, userName: user.name, ttlSeconds, expiredAt };
 		}),
+
+	logout: publicRpcProcedure.mutation(async ({ ctx }) => {
+		if (ctx.authentication.type !== 'SESSION' || !ctx.authentication.success)
+			throw new Error('Not authenticated with session');
+
+		const sessionService = ctx.container.resolve('sessionService');
+		await sessionService.deleteSession(ctx.authentication.sessionId);
+
+		return {};
+	}),
 
 	refreshKeycloakToken: publicRpcProcedure.mutation(async ({ ctx: { authentication } }) => {
 		if (authentication.type !== 'JWT') throw new Error('Not authenticated with JWT');
