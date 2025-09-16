@@ -2,13 +2,6 @@
 
 This document outlines planned enhancements and features for FlagFlow.
 
-## User Management Enhancements
-
-- **Password Policies**: Implement password expiration policies and forced password changes
-  - `passwordExpireAt` field for user accounts
-  - `mustChangePassword` flag for mandatory password updates
-  - Password strength requirements and history tracking
-
 ## Flag Type Enhancements
 
 - **Enhanced Object Flags**: Improved object flag type functionality

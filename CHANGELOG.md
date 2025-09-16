@@ -5,6 +5,32 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-09-16
+
+### Added
+
+- **REST API Enhancements**: Comprehensive REST API with OpenAPI 3.0 specification
+- Complete RESTful endpoints for users, sessions, flags, and migrations management
+- API authentication via JWT Bearer tokens with consistent error handling
+- OpenAPI documentation available at `/api/openapi.json` endpoint
+- REST API support for flag migrations via GET (export), PUT (execute from file), PATCH (execute from remote URL)
+
+### Enhanced
+
+- **User Management**: Enhanced user authentication and session management
+- Password-based authentication system with secure credential handling
+- Improved user session lifecycle with automatic cleanup and TTL management
+- Enhanced user permission validation and role-based access control
+- Strengthened authentication flow with JWT token validation and JWKS integration
+
+### Technical Improvements
+
+- REST API layer with consistent response formatting via `$lib/Response.ts`
+- Enhanced middleware chain with logging, authentication, and permission-based authorization
+- Improved error handling and validation with detailed Zod error formatting
+- Server-side RPC caller for internal service communication
+- Enhanced session service with debounced touching (5s intervals) and automatic maintenance
+
 ## [1.6.0] - 2025-08-28
 
 ### Added

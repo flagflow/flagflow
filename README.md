@@ -17,11 +17,13 @@ A modern feature flag management system built with SvelteKit 5, TypeScript, and 
 
 - **Real-time flag management** with etcd watchers
 - **Type-safe integration** with TypeScript/Zod code generation
-- **Role-based access control** with Keycloak authentication
+- **Role-based access control** with Keycloak authentication and JWT tokens
+- **Comprehensive REST API** with OpenAPI 3.0 specification and JWT Bearer authentication
+- **Enhanced user management** with password-based authentication and session lifecycle
 - **Multiple flag types**: Boolean (with killswitches), Integer, String, Object, Enum, Tag, AB-Test
-- **Migration system** for flag import/export between environments
+- **Migration system** for flag import/export between environments with REST API support
 - **Web administration interface** with responsive design
-- **API endpoints** for programmatic flag access
+- **Dual API support**: tRPC for type-safe client communication and REST API for external integrations
 
 ## Changelog
 
@@ -328,16 +330,31 @@ FlagFlow follows a layered service architecture with dependency injection:
 
 - **Frontend**: SvelteKit 5 with TypeScript
 - **Database**: etcd (distributed key-value store)
-- **Authentication**: Keycloak with JWT
-- **API**: tRPC for type-safe communication
+- **Authentication**: Keycloak with JWT and password-based authentication
+- **API**: Dual API support - tRPC for type-safe communication and REST API with OpenAPI 3.0
 - **Styling**: TailwindCSS with Flowbite components
-- **Logging**: Pino with structured logging
+- **Logging**: Pino with structured logging and trace ID correlation
 
 ### Service Layers
 
 1. **System Services**: Configuration, etcd client, HTTP client, logging
 2. **Core Services**: Session management, user operations, maintenance
 3. **Business Services**: Feature flag management with real-time watching
+
+### API Architecture
+
+FlagFlow provides two complementary API interfaces:
+
+1. **tRPC Layer**: Type-safe client-server communication with superjson transformer
+   - Middleware chain: logging → authentication → permission-based authorization
+   - Route organization: `public/` (login/auth) and `protected/` (flag/user/session/migration operations)
+   - Enhanced Zod error formatting with detailed validation messages
+
+2. **REST API Layer**: RESTful endpoints with OpenAPI 3.0 specification
+   - Complete CRUD operations for users, sessions, flags, and migrations
+   - JWT Bearer token authentication with consistent error handling
+   - Server-side RPC caller for internal service communication
+   - Response formatting via `$lib/Response.ts` for consistent API responses
 
 ## Flag Types
 
@@ -379,15 +396,144 @@ GET /migration/export
 GET /health
 ```
 
-## User Permissions
+### REST API Endpoints
 
-FlagFlow includes a role-based permission system:
+FlagFlow provides a comprehensive REST API with JWT Bearer authentication. All protected endpoints require an `Authorization: Bearer <token>` header.
+
+#### Authentication
+
+```bash
+# Login to get JWT token
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+
+# Response includes JWT token for subsequent requests
+```
+
+#### Users Management
+
+```bash
+# Get all users (requires 'users' permission)
+GET /api/users
+Authorization: Bearer <token>
+
+# Get specific user
+GET /api/users/{userId}
+Authorization: Bearer <token>
+
+# Create new user (requires 'users' permission)
+POST /api/users
+Authorization: Bearer <token>
+Content-Type: application/json
+
+# Update user (requires 'users' permission)
+PUT /api/users/{userId}
+Authorization: Bearer <token>
+
+# Delete user (requires 'users' permission)
+DELETE /api/users/{userId}
+Authorization: Bearer <token>
+```
+
+#### Sessions Management
+
+```bash
+# Get all sessions (requires 'users' permission)
+GET /api/sessions
+Authorization: Bearer <token>
+
+# Get specific session
+GET /api/sessions/{sessionId}
+Authorization: Bearer <token>
+
+# Delete session (requires 'users' permission)
+DELETE /api/sessions/{sessionId}
+Authorization: Bearer <token>
+```
+
+#### Flags Management
+
+```bash
+# Get all flags
+GET /api/flags
+Authorization: Bearer <token>
+
+# Get specific flag
+GET /api/flags/{flagId}
+Authorization: Bearer <token>
+
+# Create new flag (requires 'flag-create' permission)
+POST /api/flags
+Authorization: Bearer <token>
+
+# Update flag (requires appropriate flag permissions)
+PUT /api/flags/{flagId}
+Authorization: Bearer <token>
+
+# Delete flag (requires 'flag-create' permission)
+DELETE /api/flags/{flagId}
+Authorization: Bearer <token>
+```
+
+#### Migrations
+
+```bash
+# Export flags
+GET /api/migrations/export
+Authorization: Bearer <token>
+
+# Import from file (requires 'migration' permission)
+PUT /api/migrations/import
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+# Import from remote URL (requires 'migration' permission)
+PATCH /api/migrations/import
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "url": "https://remote-server/migration/export"
+}
+```
+
+#### OpenAPI Documentation
+
+```bash
+# Get OpenAPI 3.0 specification
+GET /api/openapi.json
+```
+
+## User Permissions & Authentication
+
+FlagFlow includes a comprehensive role-based permission system with enhanced authentication:
+
+### Authentication Methods
+
+- **Keycloak SSO**: Integration with Keycloak for enterprise authentication
+- **Password-based**: Built-in user authentication with secure credential handling
+- **JWT Tokens**: Bearer token authentication for API access
+- **Session Management**: Automatic session lifecycle with configurable TTL and cleanup
+
+### Permission Levels
 
 - **flag-create**: Can create, rename/move, and delete flags
-- **flag-schema**: Can manage flag schemas
-- **flag-value**: Can manage flag values
+- **flag-schema**: Can manage flag schemas and types
+- **flag-value**: Can manage flag values and configurations
 - **users**: Can add, modify, or remove users and manage sessions
 - **migration**: Can restore backups or execute migrations
+
+### Authentication Flow
+
+1. **Login**: Users authenticate via Keycloak SSO or password-based login
+2. **Token Generation**: JWT tokens issued for API access with appropriate permissions
+3. **Session Management**: User sessions tracked with automatic cleanup and debounced touching
+4. **Permission Validation**: Each operation validated against user's assigned permissions
 
 ## Development Notes
 

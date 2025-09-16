@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Formatting**: `npm run format:check` (check) or `npm run format:fix` (fix)
 - **Full pipeline**: `npm run all` (formats, lints, type-checks, and builds)
 - **Tests**: `npm run test` (runs vitest) or `npm run test:coverage` (with coverage report)
+- **Docker build clearing**: `npm run docker:build:clear` (clears Docker build cache)
 - **Docker interactive**: `npm run docker:it` (interactive shell in container)
 - **Preview**: `npm run preview` (with pretty logs) or `npm run preview-raw` (raw logs)
 - **Docker**: `npm run docker:build` and `npm run docker:run`
@@ -34,7 +35,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Framework**: SvelteKit 5 with TypeScript
 - **Database**: etcd (distributed key-value store)
 - **Authentication**: Keycloak integration with JWT
-- **API**: tRPC for type-safe client-server communication
+- **API**: tRPC for type-safe client-server communication + REST API with OpenAPI 3.0
 - **Dependency Injection**: Awilix container system
 - **Styling**: TailwindCSS 4 with Flowbite components
 - **Logging**: Pino with pretty formatting
@@ -79,11 +80,13 @@ The application follows a layered service architecture with Awilix dependency in
 
 #### REST API Layer (`src/routes/api/`)
 
-- Complete RESTful API with OpenAPI 3.0 specification
-- Authentication via JWT Bearer tokens from login endpoint
-- Endpoints for users, sessions, flags, and migrations management
+- Complete RESTful API with OpenAPI 3.0 specification at `/api/openapi.json`
+- Authentication via JWT Bearer tokens from `/api/login` endpoint
+- Protected routes under `/api/(protected)/` requiring JWT authentication
+- Endpoints: `/api/users`, `/api/sessions`, `/api/flags`, `/api/migrations`
+- CRUD operations for all major entities with proper HTTP methods
 - Consistent error handling and response formatting via `$lib/Response.ts`
-- Protected routes requiring specific permissions (users, flag-\*, migration)
+- Permission-based access control (users, flag-\*, migration permissions)
 
 #### Feature Flag System
 
@@ -116,7 +119,7 @@ The application follows a layered service architecture with Awilix dependency in
 
 - **File-based routing** with nested layouts and server load functions
 - **Route groups**: `(ui)/` for authenticated pages, `(menu)/` with navigation, `(plain)/` for simple pages
-- **API endpoints**: `/flag/{flagname}`, `/flags/{flaggroup}`, `/type/typescript`, `/migration/export`
+- **Public API endpoints**: `/flag/{flagname}`, `/flags/{flaggroup}`, `/type/typescript`, `/migration/export`
 - **REST API**: Complete REST API at `/api/` with OpenAPI specification
 - **Authentication callbacks**: `/auth/` for Keycloak integration
 
@@ -169,7 +172,8 @@ Before development, start required services:
 - Do not use brackets `{}` if not needed, especially for single-line command blocks
 - Do not use dynamic `import()` - use static imports for better type safety
 - Prefer TypeScript strict mode with comprehensive type annotations
-- Use path aliases (`$lib`, `$components`, etc.) for clean import statements
+- Use path aliases (`$lib`, `$components`, `$rpc`, `$types`) for clean import statements
+- Follow existing patterns in the codebase for consistency
 
 #### Security & Safety Rules
 
@@ -196,6 +200,36 @@ FlagFlow uses role-based permissions:
 - `flag-value`: Manage flag values and configurations
 - `users`: Add, modify, or remove users and manage sessions
 - `migration`: Restore backups or execute migrations
+
+### Common Code Patterns
+
+#### Service Registration
+
+```typescript
+// Register services in container with proper lifecycle
+container.register({
+	myService: asClass(MyService).singleton(),
+	scopedService: asClass(ScopedService).scoped()
+});
+```
+
+#### etcd Operations
+
+```typescript
+// Always use service layer, never direct etcd
+const result = await this.persistentService.get('/flags/my-flag');
+const validated = FlagSchema.parse(result);
+```
+
+#### Modal Usage
+
+```typescript
+// Use show functions for modals
+await showModalConfirmation({
+	title: 'Confirm Action',
+	message: 'Are you sure?'
+});
+```
 
 ## Testing Architecture
 
