@@ -11,7 +11,7 @@ export const HEADER_ACCEPT_FLAGGROUP_HASH = 'x-accept-flaggroup-hash';
 
 const createResponse = (
 	body: string,
-	options: { status: number; contentType: string; headers?: Record<string, string> | undefined }
+	options: { status: number; contentType: string; headers?: Record<string, string> }
 ) =>
 	new Response(body, {
 		status: options.status,
@@ -38,9 +38,7 @@ export const createTextResponse = (
 ) => createResponse(body, { ...options, contentType: 'text/plain', status: options.status ?? 200 });
 
 export const createMigrationFilename = (environment: string): string =>
-	['flagflow', 'migration', environment, formatDate(new Date(), 'yyyyMMdd-HHmmss')]
-		.filter(Boolean)
-		.join('_') + '.json';
+	`flagflow_migration_${environment}_${formatDate(new Date(), 'yyyyMMdd-HHmmss')}.json`;
 
 export const createDownloadResponse = (
 	body: string | object,

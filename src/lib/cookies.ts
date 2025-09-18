@@ -6,7 +6,8 @@ export const JWT_COOKIE_NAMES = {
 	accessToken: 'access_token',
 	refreshToken: 'refresh_token',
 	idToken: 'id_token'
-};
+} as const;
+
 export const SESSION_COOKIE_NAME = 'session';
 
 type TokenInput = {
@@ -40,9 +41,12 @@ export const setTokensCookies = (tokens: TokenInput) => {
 		});
 };
 
+const createExpiredCookie = (name: string) =>
+	serializeCookie(name, '', { expires: new Date(), path: '/' });
+
 export const deleteTokensCookies = () => {
 	for (const cookieName of Object.values(JWT_COOKIE_NAMES))
-		document.cookie = serializeCookie(cookieName, '', { expires: new Date(), path: '/' });
+		document.cookie = createExpiredCookie(cookieName);
 };
 
 export const setSessionCookie = (sessionId: string, addDays = 0) => {
@@ -61,5 +65,5 @@ export const setSessionCookie = (sessionId: string, addDays = 0) => {
 };
 
 export const deleteSessionCookie = () => {
-	document.cookie = serializeCookie(SESSION_COOKIE_NAME, '', { expires: new Date(), path: '/' });
+	document.cookie = createExpiredCookie(SESSION_COOKIE_NAME);
 };

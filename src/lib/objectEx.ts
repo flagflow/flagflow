@@ -34,14 +34,12 @@ export const trimObjectValues = <T extends Record<string, unknown>>(data: T): T 
 
 export const makeObjectHumanReadable = (
 	parameters: Record<string, string>
-): Record<string, string> => {
-	const result: Record<string, string> = {};
-	for (const key of Object.keys(parameters).toSorted((a, b) =>
-		camelCaseToHuman(a).localeCompare(camelCaseToHuman(b))
-	))
-		result[camelCaseToHuman(key)] = trim(JSON.stringify(parameters[key]), '"');
-	return result;
-};
+): Record<string, string> =>
+	Object.fromEntries(
+		Object.keys(parameters)
+			.toSorted((a, b) => camelCaseToHuman(a).localeCompare(camelCaseToHuman(b)))
+			.map((key) => [camelCaseToHuman(key), trim(JSON.stringify(parameters[key]), '"')])
+	);
 
 export const isStringArray = (value: unknown): value is string[] =>
 	Array.isArray(value) && value.every((item) => typeof item === 'string');
@@ -50,13 +48,13 @@ export const searchObjectStringField = <T extends object>(
 	item: T,
 	searchTerms: string | string[]
 ): boolean => {
-	if (!Array.isArray(searchTerms)) searchTerms = [searchTerms];
-	return searchTerms.every((st) => {
-		const searchTerm = st.toLowerCase();
+	const terms = Array.isArray(searchTerms) ? searchTerms : [searchTerms];
+	return terms.every((term) => {
+		const searchTerm = term.toLowerCase();
 		return Object.values(item).some(
 			(value) =>
 				(typeof value === 'string' && value.toLowerCase().includes(searchTerm)) ||
-				(isStringArray(value) && value.map((t) => t.toLowerCase()).includes(searchTerm))
+				(isStringArray(value) && value.some((t) => t.toLowerCase().includes(searchTerm)))
 		);
 	});
 };

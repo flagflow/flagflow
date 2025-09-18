@@ -1,15 +1,28 @@
 export const combineUrls = (base: string, ...paths: string[]): string => {
-	let combinedUrl = base;
+	if (paths.length === 0) return base;
 
-	for (const path of paths) {
-		if (!path) continue;
+	const validPaths = paths.filter(Boolean);
+	if (validPaths.length === 0) return base;
 
-		combinedUrl = combinedUrl.endsWith('/') ? combinedUrl.slice(0, -1) : combinedUrl;
-		const cleanedPath = path.startsWith('/') ? path.slice(1) : path;
-		combinedUrl = `${combinedUrl}/${cleanedPath}`;
-	}
+	// Check if the last path ends with a slash to preserve it
+	const lastPath = validPaths.at(-1);
+	const shouldHaveTrailingSlash = lastPath?.endsWith('/') ?? false;
 
-	return combinedUrl;
+	const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+	const normalizedPaths = validPaths
+		.map((path) => {
+			// Remove leading and trailing slashes from paths
+			let cleanPath = path;
+			if (cleanPath.startsWith('/')) cleanPath = cleanPath.slice(1);
+			if (cleanPath.endsWith('/')) cleanPath = cleanPath.slice(0, -1);
+			return cleanPath;
+		})
+		.filter(Boolean); // Remove empty strings after cleaning
+
+	if (normalizedPaths.length === 0) return base;
+
+	const result = [normalizedBase, ...normalizedPaths].join('/');
+	return shouldHaveTrailingSlash ? result + '/' : result;
 };
 
 export const safeUrl = (url: string) => {
