@@ -1,20 +1,21 @@
 export const trim = (s: string, chars: string) => trimStart(trimEnd(s, chars), chars);
 
 export const trimStart = (s: string, chars: string) => {
-	while (s.length > 0 && chars.includes(s.at(0)!)) s = s.slice(1);
-	return s;
+	let start = 0;
+	while (start < s.length && chars.includes(s[start])) start++;
+	return s.slice(start);
 };
 
 export const trimEnd = (s: string, chars: string) => {
-	while (s.length > 0 && chars.includes(s.at(-1)!)) s = s.slice(0, -1);
-	return s;
+	let end = s.length;
+	while (end > 0 && chars.includes(s[end - 1])) end--;
+	return s.slice(0, end);
 };
 
-export const camelCaseToHuman = (s: string) =>
-	s
-		.replaceAll(/([a-z])([A-Z])/g, '$1 $2')
-		.toLowerCase()
-		.replace(/^./, (s) => s.toUpperCase());
+export const camelCaseToHuman = (s: string) => {
+	const withSpaces = s.replaceAll(/([a-z])([A-Z])/g, '$1 $2');
+	return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).toLowerCase();
+};
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 

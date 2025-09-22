@@ -5,7 +5,7 @@ export const circularDependencyChecker = (
 	const recStack = new Set<string>();
 	const path: string[] = [];
 
-	function dfs(node: string): string[] | undefined {
+	const dfs = (node: string): string[] | undefined => {
 		if (recStack.has(node)) {
 			const cycleStartIndex = path.indexOf(node);
 			return [...path.slice(cycleStartIndex), node];
@@ -16,19 +16,22 @@ export const circularDependencyChecker = (
 		recStack.add(node);
 		path.push(node);
 
-		for (const neighbor of graph[node] || []) {
-			const cycle = dfs(neighbor);
-			if (cycle) return cycle;
+		const neighbors = graph[node];
+		if (neighbors) {
+			for (const neighbor of neighbors) {
+				const cycle = dfs(neighbor);
+				if (cycle) return cycle;
+			}
 		}
 
 		recStack.delete(node);
 		path.pop();
-		return;
-	}
+	};
 
-	for (const node in graph)
+	for (const node of Object.keys(graph)) {
 		if (!visited.has(node)) {
 			const cycle = dfs(node);
 			if (cycle) return cycle;
 		}
+	}
 };

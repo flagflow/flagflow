@@ -1,5 +1,3 @@
-/* eslint-disable prefer-const */
-/* eslint-disable svelte/prefer-const */
 import { derived, get, type Readable, type Writable, writable } from 'svelte/store';
 
 import { updateQueryParameters } from './windowEx';
@@ -20,11 +18,7 @@ export const debouncedStore = <T extends string | number | boolean>(
 			return;
 		}
 
-		let timeout;
-
-		clearTimeout(timeout);
-
-		timeout = setTimeout(() => {
+		const timeout = setTimeout(() => {
 			set($inputStore);
 		}, delayMs);
 
@@ -32,13 +26,15 @@ export const debouncedStore = <T extends string | number | boolean>(
 	}) as Readable<T>;
 };
 
+const getUrlParameters = () =>
+	typeof window === 'undefined' ? undefined : new URLSearchParams(window.location.search);
+
 export const queryParameterStringStore = (
 	key: string,
 	initValue?: string,
 	defaultValue?: string
 ) => {
-	const parameters =
-		typeof window === 'undefined' ? undefined : new URLSearchParams(window.location.search);
+	const parameters = getUrlParameters();
 	initValue ??= parameters?.get(key) ?? defaultValue ?? '';
 
 	const { subscribe, set, update } = writable<string>(initValue);
@@ -55,8 +51,7 @@ export const queryParameterNumberStore = (
 	initValue?: number,
 	defaultValue?: number
 ) => {
-	const parameters =
-		typeof window === 'undefined' ? undefined : new URLSearchParams(window.location.search);
+	const parameters = getUrlParameters();
 	initValue ??=
 		(parameters?.has(key) ? Number.parseFloat(parameters?.get(key) ?? '0') : undefined) ??
 		defaultValue ??
@@ -76,8 +71,7 @@ export const queryParameterBooleanStore = (
 	initValue?: boolean,
 	defaultValue?: boolean
 ) => {
-	const parameters =
-		typeof window === 'undefined' ? undefined : new URLSearchParams(window.location.search);
+	const parameters = getUrlParameters();
 	initValue ??=
 		(parameters?.has(key) ? parameters?.get(key) === 'true' : undefined) ?? defaultValue ?? false;
 
