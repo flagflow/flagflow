@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:24.8.0-alpine3.22
+ARG NODE_IMAGE=node:24.11.1-alpine3.22
 
 
 # Builder
@@ -6,7 +6,7 @@ FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
 
 COPY .npmrc package.json package-lock.json .
-RUN npm ci --frozen-lockfile
+RUN npm ci
 
 COPY . .
 RUN node --run sync && \
@@ -20,11 +20,11 @@ LABEL org.opencontainers.image.vendor="Flagflow"
 LABEL org.opencontainers.image.source="https://github.com/flagflow/flagflow/blob/main/Dockerfile"
 LABEL org.opencontainers.image.url="https://flagflow.net"
 
-RUN apk add --no-cache curl
+RUN apk upgrade -U && apk add curl
 WORKDIR /app
 
 COPY .npmrc package.json package-lock.json .
-RUN npm ci --omit=dev --frozen-lockfile && \
+RUN npm ci --omit=dev && \
     npm cache clean --force && \
     find node_modules \( \
         -type d -empty \
