@@ -80,7 +80,7 @@
 		<form onsubmit={formExecute}>
 			<Card class="w-80 p-6 sm:w-96">
 				<h1 class="text-center text-lg text-neutral-500">Login</h1>
-				<span class="text-md my-2 min-h-[24px] text-center font-semibold text-red-700"
+				<span class="text-md my-2 min-h-6 text-center font-semibold text-red-700"
 					>{$stateError ? $stateError.message : ''}</span
 				>
 				<div class="grid grid-cols-1 gap-4">

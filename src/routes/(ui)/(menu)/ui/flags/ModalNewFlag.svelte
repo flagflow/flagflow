@@ -266,7 +266,7 @@
 							flag={formSpecific.formData}
 							validity={$formStateIsvalid}
 						/>
-						<div class="border-l-1 border-dashed">
+						<div class="border-l border-dashed">
 							{#if allowValueSet}
 								<StepValue
 									name={formData.name}

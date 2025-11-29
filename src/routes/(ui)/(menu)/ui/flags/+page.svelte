@@ -299,7 +299,7 @@
 									class={clsx(
 										$listSettings['displayMode'] === 'grid'
 											? ''
-											: `!w-auto max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
+											: `w-auto! max-w-[calc(100%-${groupNameLevel(groupName) * GROUP_INDENT_PX}px)]`,
 										'bg-gray-50 p-4 py-2 hover:bg-gray-100'
 									)}
 								>

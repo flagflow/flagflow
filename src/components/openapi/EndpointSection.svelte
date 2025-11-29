@@ -120,11 +120,9 @@
 				statusText: fetchResponse.statusText,
 				headers: responseHeaders,
 				body: responseText,
-				json: responseJson
+				json: responseJson,
+				timing: endTime - startTime
 			};
-
-			// Add timing info
-			response.timing = endTime - startTime;
 		} catch (error) {
 			await showModalError(error);
 		}
@@ -140,16 +138,16 @@
 <Card class={`endpoint-section w-full ${aClass}`} size="xl">
 	<div class="flex items-center justify-between p-4">
 		<div class="flex min-w-0 flex-1 items-center gap-3">
-			<Badge class="method-badge flex-shrink-0 font-mono" color={getMethodColor(endpoint.method)}>
+			<Badge class="method-badge shrink-0 font-mono" color={getMethodColor(endpoint.method)}>
 				{endpoint.method}
 			</Badge>
 			<span class="truncate font-mono text-sm">{endpoint.path}</span>
 			{#if hasRequiredAuth}
-				<Icon id="password" class="flex-shrink-0 text-yellow-600" size={16} />
+				<Icon id="password" class="shrink-0 text-yellow-600" size={16} />
 			{/if}
 		</div>
 		<Button
-			class="flex-shrink-0"
+			class="shrink-0"
 			color="alternative"
 			onclick={() => {
 				expanded = !expanded;
