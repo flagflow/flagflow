@@ -5,6 +5,28 @@ All notable changes to FlagFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2025-11-29
+
+### Fixed
+
+- **Test Suite**: Fixed Date mocking in vitest tests after vitest v4.0.14 update
+  - Replaced manual `Date` constructor mocking with `vi.setSystemTime()` API
+  - Updated test isolation patterns with proper `vi.useRealTimers()` cleanup
+  - Fixed TypeScript export and migration backup snapshot tests
+
+### Changed
+
+- **Dependencies**: Updated development dependencies to latest versions
+  - Vitest remains at ^4.0.14 with improved test patterns
+  - Updated multiple TypeScript, ESLint, and tooling dependencies
+  - Optimized package-lock.json structure
+
+### Technical Improvements
+
+- Enhanced test reliability with official vitest timer mocking APIs
+- Improved test cleanup patterns in E2E test suite
+- Dockerfile optimization for better container builds
+
 ## [1.7.0] - 2025-09-16
 
 ### Added

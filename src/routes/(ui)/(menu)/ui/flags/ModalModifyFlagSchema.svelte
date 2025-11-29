@@ -105,7 +105,7 @@
 				<hr class="my-4" />
 				<div class="grid min-h-80 grid-cols-2 gap-4">
 					<StepSchema name={flag.key} flag={formData.flag} validity={$stateIsValid} />
-					<div class="border-l-1 border-dashed">
+					<div class="border-l border-dashed">
 						<StepValue name={flag.key} flag={formData.flag} validity={$stateIsValid} />
 					</div>
 				</div>

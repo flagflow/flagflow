@@ -23,7 +23,7 @@ LABEL org.opencontainers.image.url="https://flagflow.net"
 RUN apk upgrade -U && apk add curl
 WORKDIR /app
 
-COPY .npmrc package.json package-lock.json .
+COPY --chown=node:node .npmrc package.json package-lock.json .
 RUN npm ci --omit=dev && \
     npm cache clean --force && \
     find node_modules \( \
@@ -43,11 +43,14 @@ RUN npm ci --omit=dev && \
         -o -name "coverage" -type d \
         -o -name ".nyc_output" -type d \
     \) -delete && \
-    rm -rf /tmp/* /var/cache/apk/* /root/.npm
+    rm -rf /tmp/* /var/cache/apk/* /root/.npm && \
+    npm r -g npm
 
-COPY --from=builder /app/build ./build
+COPY --from=builder --chown=node:node /app/build ./build
 RUN find build -name "*.map" -delete
 
+RUN mkdir -p /data && chown -R node:node /data
+USER node
 ENV NODE_ENV=production
 EXPOSE 3000
 VOLUME ["/data"]

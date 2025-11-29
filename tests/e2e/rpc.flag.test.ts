@@ -261,61 +261,53 @@ describe('rpc E2E Tests', () => {
 	describe('export Validations', () => {
 		it('should generate TypeScript exports', async () => {
 			// Mock Date to ensure consistent snapshots
-			const mockDate = new Date('2024-01-01T00:00:00.000Z');
-			const originalDate = global.Date;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const MockDate = vi.fn<[], Date>(() => mockDate) as any;
-			// eslint-disable-next-line vitest/prefer-spy-on
-			MockDate.now = vi.fn<[], number>(() => mockDate.getTime());
-			global.Date = MockDate;
+			vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'));
 
-			try {
-				// Create test flags for export
-				await context.rpcCaller.flag.create({
-					key: 'export/boolean_flag',
-					flag: createTestFlag({
-						type: 'BOOLEAN',
-						defaultValue: false,
-						value: true,
-						valueExists: true
-					})
-				});
+			// Create test flags for export
+			await context.rpcCaller.flag.create({
+				key: 'export/boolean_flag',
+				flag: createTestFlag({
+					type: 'BOOLEAN',
+					defaultValue: false,
+					value: true,
+					valueExists: true
+				})
+			});
 
-				await context.rpcCaller.flag.create({
-					key: 'export/integer_flag',
-					flag: createTestFlag({
-						type: 'INTEGER',
-						defaultValue: 10,
-						minValue: 0,
-						maxValue: 100,
-						value: 25,
-						valueExists: true
-					})
-				});
+			await context.rpcCaller.flag.create({
+				key: 'export/integer_flag',
+				flag: createTestFlag({
+					type: 'INTEGER',
+					defaultValue: 10,
+					minValue: 0,
+					maxValue: 100,
+					value: 25,
+					valueExists: true
+				})
+			});
 
-				// Get TypeScript content
-				const flagService = context.container.resolve('flagService');
-				const tsContent = await flagService.getTSFileContent();
+			// Get TypeScript content
+			const flagService = context.container.resolve('flagService');
+			const tsContent = await flagService.getTSFileContent();
 
-				expect(tsContent).toBeTruthy();
+			expect(tsContent).toBeTruthy();
 
-				expectTypeOf(tsContent).toBeString();
+			expectTypeOf(tsContent).toBeString();
 
-				// Verify TypeScript content contains our flags
-				expect(tsContent).toContain('boolean_flag');
-				expect(tsContent).toContain('integer_flag');
+			// Verify TypeScript content contains our flags
+			expect(tsContent).toContain('boolean_flag');
+			expect(tsContent).toContain('integer_flag');
 
-				// Basic TypeScript syntax checks
-				expect(tsContent).toContain('export type');
-				expect(tsContent).toContain('boolean');
-				expect(tsContent).toContain('number');
+			// Basic TypeScript syntax checks
+			expect(tsContent).toContain('export type');
+			expect(tsContent).toContain('boolean');
+			expect(tsContent).toContain('number');
 
-				// Snapshot test for comprehensive structure verification
-				expect(tsContent).toMatchSnapshot();
-			} finally {
-				// Restore original Date
-				global.Date = originalDate;
-			}
+			// Snapshot test for comprehensive structure verification
+			expect(tsContent).toMatchSnapshot();
+
+			// Restore real timers
+			vi.useRealTimers();
 		});
 
 		it('should generate hash exports for groups', async () => {
@@ -370,66 +362,58 @@ describe('rpc E2E Tests', () => {
 
 		it('should generate migration backup with snapshots', async () => {
 			// Mock Date to ensure consistent snapshots
-			const mockDate = new Date('2024-01-01T00:00:00.000Z');
-			const originalDate = global.Date;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const MockDate = vi.fn<[], Date>(() => mockDate) as any;
-			// eslint-disable-next-line vitest/prefer-spy-on
-			MockDate.now = vi.fn<[], number>(() => mockDate.getTime());
-			global.Date = MockDate;
+			vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'));
 
-			try {
-				// Create test data for migration
-				await context.rpcCaller.flag.create({
-					key: 'migration/test_flag_1',
-					flag: createTestFlag({
-						type: 'BOOLEAN',
-						description: 'First test flag',
-						defaultValue: false,
-						value: true,
-						valueExists: true
-					})
-				});
+			// Create test data for migration
+			await context.rpcCaller.flag.create({
+				key: 'migration/test_flag_1',
+				flag: createTestFlag({
+					type: 'BOOLEAN',
+					description: 'First test flag',
+					defaultValue: false,
+					value: true,
+					valueExists: true
+				})
+			});
 
-				await context.rpcCaller.flag.create({
-					key: 'migration/test_flag_2',
-					flag: createTestFlag({
-						type: 'INTEGER',
-						description: 'Second test flag',
-						defaultValue: 0,
-						minValue: 0,
-						maxValue: 100,
-						value: 42,
-						valueExists: true
-					})
-				});
+			await context.rpcCaller.flag.create({
+				key: 'migration/test_flag_2',
+				flag: createTestFlag({
+					type: 'INTEGER',
+					description: 'Second test flag',
+					defaultValue: 0,
+					minValue: 0,
+					maxValue: 100,
+					value: 42,
+					valueExists: true
+				})
+			});
 
-				// Generate migration export
-				const flagService = context.container.resolve('flagService');
-				const migrationData = await flagService.getMigrationFileContent();
+			// Generate migration export
+			const flagService = context.container.resolve('flagService');
+			const migrationData = await flagService.getMigrationFileContent();
 
-				expect(migrationData).toBeTruthy();
-				expect(migrationData.createdAt).toBeTruthy();
-				expect(migrationData.flags).toBeTruthy();
+			expect(migrationData).toBeTruthy();
+			expect(migrationData.createdAt).toBeTruthy();
+			expect(migrationData.flags).toBeTruthy();
 
-				// Verify our test flags are included (with flag/ prefix as they are stored internally)
-				expect(migrationData.flags).toHaveProperty('flag/migration/test_flag_1');
-				expect(migrationData.flags).toHaveProperty('flag/migration/test_flag_2');
+			// Verify our test flags are included (with flag/ prefix as they are stored internally)
+			expect(migrationData.flags).toHaveProperty('flag/migration/test_flag_1');
+			expect(migrationData.flags).toHaveProperty('flag/migration/test_flag_2');
 
-				const flag1 = migrationData.flags['flag/migration/test_flag_1'];
-				const flag2 = migrationData.flags['flag/migration/test_flag_2'];
+			const flag1 = migrationData.flags['flag/migration/test_flag_1'];
+			const flag2 = migrationData.flags['flag/migration/test_flag_2'];
 
-				expect(flag1.type).toBe('BOOLEAN');
-				expect(flag1.description).toBe('First test flag');
-				expect(flag2.type).toBe('INTEGER');
-				expect(flag2.description).toBe('Second test flag');
+			expect(flag1.type).toBe('BOOLEAN');
+			expect(flag1.description).toBe('First test flag');
+			expect(flag2.type).toBe('INTEGER');
+			expect(flag2.description).toBe('Second test flag');
 
-				// Snapshot test for comprehensive migration structure verification
-				expect(migrationData).toMatchSnapshot();
-			} finally {
-				// Restore original Date
-				global.Date = originalDate;
-			}
+			// Snapshot test for comprehensive migration structure verification
+			expect(migrationData).toMatchSnapshot();
+
+			// Restore real timers
+			vi.useRealTimers();
 		});
 	});
 
