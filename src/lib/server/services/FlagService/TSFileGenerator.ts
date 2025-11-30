@@ -17,7 +17,7 @@ const generateGroupTypeCode = (
 
 	const typeName = ROOT_TYPE_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
 	tsFileLines.push(`export type ${typeName} = {`);
-	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags))) {
+	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags)))
 		if (typeof flag === 'string') {
 			const subTypeName = ROOT_TYPE_NAME + (flag ? `__${capitalizeWords(flag, '__')}` : '');
 			tsFileLines.push(`\treadonly ${flagName}: ${subTypeName};`);
@@ -28,7 +28,7 @@ const generateGroupTypeCode = (
 			tsFileLines.push(`\t*/`);
 			tsFileLines.push(`\treadonly ${flagName}: ${flagTypescriptType(flag)};`);
 		}
-	}
+
 	tsFileLines.push(`};`, '');
 
 	return tsFileLines;
@@ -45,15 +45,13 @@ const generateGroupDefaultObjectCode = (
 	const constName =
 		ROOT_DEFAULTOBJECT_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
 	tsFileLines.push(`export const ${constName}: ${typeName} = {`);
-	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags))) {
+	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags)))
 		if (typeof flag === 'string') {
 			const subConstTypeName =
 				ROOT_DEFAULTOBJECT_NAME + (flag ? `__${capitalizeWords(flag, '__')}` : '');
 			tsFileLines.push(`\t${flagName}: ${subConstTypeName},`);
-		} else {
-			tsFileLines.push(`\t${flagName}: ${flagTypescriptDefaultValue(flag)},`);
-		}
-	}
+		} else tsFileLines.push(`\t${flagName}: ${flagTypescriptDefaultValue(flag)},`);
+
 	tsFileLines.push(`};`, '');
 
 	return tsFileLines;
@@ -68,16 +66,15 @@ const generateGroupZodCode = (
 
 	const constName = ROOT_ZOD_NAME + (groupName ? `__${capitalizeWords(groupName, '__')}` : '');
 	tsFileLines.push(`export const ${constName} = z.object({`);
-	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags))) {
+	for (const [flagName, flag] of Object.entries(sortObjectByKey(groupFlags)))
 		if (typeof flag === 'string') {
 			const subConstTypeName = ROOT_ZOD_NAME + (flag ? `__${capitalizeWords(flag, '__')}` : '');
 			tsFileLines.push(`\t${flagName}: ${subConstTypeName},`);
-		} else {
+		} else
 			tsFileLines.push(
 				`\t${flagName}: ${flagTypescriptZodMethod(flag)}.default(${flagTypescriptDefaultValue(flag)}),`
 			);
-		}
-	}
+
 	tsFileLines.push(`});`);
 	tsFileLines.push(`export type ${constName} = z.infer<typeof ${constName}>;`);
 	tsFileLines.push('');

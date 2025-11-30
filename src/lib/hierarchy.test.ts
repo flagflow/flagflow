@@ -110,13 +110,12 @@ describe('hierarchy', () => {
 
 		it('should handle large hierarchies efficiently', () => {
 			const items = [];
-			for (let index = 1; index <= 1000; index++) {
+			for (let index = 1; index <= 1000; index++)
 				items.push({
 					id: index,
 					parentId: index === 1 ? null : Math.floor(index / 2),
 					name: `Node ${index}`
 				});
-			}
 
 			const result = buildHierarchy(items);
 

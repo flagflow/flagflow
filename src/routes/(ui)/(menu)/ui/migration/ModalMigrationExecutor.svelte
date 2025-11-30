@@ -58,9 +58,8 @@
 	const addId = (id: number) => {
 		if (selectedIds.has(id)) return;
 		selectedIds.add(id);
-		for (const step of summary.steps.filter((step) => step.id === id)) {
+		for (const step of summary.steps.filter((step) => step.id === id))
 			if (step.dependentId) addId(step.dependentId);
-		}
 	};
 	const removeId = (id: number) => {
 		if (!selectedIds.has(id)) return;

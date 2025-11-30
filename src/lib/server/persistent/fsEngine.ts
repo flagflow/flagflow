@@ -15,30 +15,28 @@ const removeWatcher = (watcher: FSWatcher) => {
 	watchers.delete(watcher);
 };
 const cleanWatchers = async () => {
-	for (const watcher of watchers) {
+	for (const watcher of watchers)
 		try {
 			watcher.close();
 		} catch {
 			/**/
 		}
-	}
+
 	watchers.clear();
 };
 const emitWatchers = (event: 'change' | 'unlink', key: string) => {
-	for (const watcher of watchers) {
+	for (const watcher of watchers)
 		try {
 			const fullPath = path.resolve(key);
 			const folder = path.dirname(fullPath);
 			const filename = path.basename(fullPath);
 
 			const watcheds = watcher.getWatched();
-			if (watcheds[folder] && (event === 'change' || watcheds[folder].includes(filename))) {
+			if (watcheds[folder] && (event === 'change' || watcheds[folder].includes(filename)))
 				watcher.emit(event, path.normalize(key));
-			}
 		} catch {
 			/**/
 		}
-	}
 };
 
 export const getFsEngine = (config: ConfigService, logger: ChildLogger): PersistentEngine => {

@@ -17,21 +17,19 @@ export const circularDependencyChecker = (
 		path.push(node);
 
 		const neighbors = graph[node];
-		if (neighbors) {
+		if (neighbors)
 			for (const neighbor of neighbors) {
 				const cycle = dfs(neighbor);
 				if (cycle) return cycle;
 			}
-		}
 
 		recStack.delete(node);
 		path.pop();
 	};
 
-	for (const node of Object.keys(graph)) {
+	for (const node of Object.keys(graph))
 		if (!visited.has(node)) {
 			const cycle = dfs(node);
 			if (cycle) return cycle;
 		}
-	}
 };

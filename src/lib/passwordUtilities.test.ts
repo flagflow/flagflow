@@ -187,11 +187,8 @@ describe('passwordUtilities', () => {
 
 			const start = performance.now();
 
-			for (let index = 0; index < 1000; index++) {
-				for (const password of testPasswords) {
-					validatePasswordStrength(password);
-				}
-			}
+			for (let index = 0; index < 1000; index++)
+				for (const password of testPasswords) validatePasswordStrength(password);
 
 			const end = performance.now();
 			const duration = end - start;
@@ -223,9 +220,8 @@ describe('passwordUtilities', () => {
 		it('should handle unicode characters gracefully', () => {
 			const unicodePasswords = ['Påssword123!', '密码Password123', 'Mot🔒de🔑passe123'];
 
-			for (const password of unicodePasswords) {
+			for (const password of unicodePasswords)
 				expect(() => validatePasswordStrength(password)).not.toThrow();
-			}
 		});
 	});
 });

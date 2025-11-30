@@ -18,12 +18,11 @@ export const authMiddleware: MiddlewareFunction<Context, Meta, void, void, any> 
 		ctx.authentication.type === 'SESSION' &&
 		ctx.authentication.success.passwordExpired &&
 		!meta?.allowPasswordExpired
-	) {
+	)
 		throw new TRPCError({
 			code: 'UNAUTHORIZED',
 			message: 'Password expired - please change your password'
 		});
-	}
 
 	if (meta?.permission !== undefined)
 		switch (ctx.authentication.type) {

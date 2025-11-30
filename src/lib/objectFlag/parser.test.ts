@@ -18,15 +18,13 @@ describe('parseObjectSchemaString', () => {
 			expect(nameProperty.isOptional).toBe(false);
 			expect(nameProperty.isArray).toBe(false);
 			expect(nameProperty.propertyType.type).toBe('PROPERTY_TYPE_PRIMITIVE');
-			if (nameProperty.propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+			if (nameProperty.propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(nameProperty.propertyType.primitiveType.primitiveType).toBe('string');
-			}
 
 			const ageProperty = schema.types[0].typeDescriptor.properties[1];
 			expect(ageProperty.propertyName).toBe('age');
-			if (ageProperty.propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+			if (ageProperty.propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(ageProperty.propertyType.primitiveType.primitiveType).toBe('integer');
-			}
 		});
 
 		it('should parse object with optional properties', () => {
@@ -42,13 +40,12 @@ describe('parseObjectSchemaString', () => {
 
 			const properties = schema.types[0].typeDescriptor.properties;
 			expect(properties[0].isArray).toBe(true);
-			if (properties[0].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+			if (properties[0].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[0].propertyType.primitiveType.primitiveType).toBe('string');
-			}
+
 			expect(properties[1].isArray).toBe(true);
-			if (properties[1].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+			if (properties[1].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[1].propertyType.primitiveType.primitiveType).toBe('number');
-			}
 		});
 
 		it('should parse array of objects', () => {
@@ -70,21 +67,20 @@ describe('parseObjectSchemaString', () => {
 			}`);
 
 			const properties = schema.types[0].typeDescriptor.properties;
-			if (properties[0].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+			if (properties[0].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[0].propertyType.primitiveType.primitiveType).toBe('boolean');
-			}
-			if (properties[1].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+
+			if (properties[1].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[1].propertyType.primitiveType.primitiveType).toBe('integer');
-			}
-			if (properties[2].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+
+			if (properties[2].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[2].propertyType.primitiveType.primitiveType).toBe('float');
-			}
-			if (properties[3].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+
+			if (properties[3].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[3].propertyType.primitiveType.primitiveType).toBe('number');
-			}
-			if (properties[4].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE') {
+
+			if (properties[4].propertyType.type === 'PROPERTY_TYPE_PRIMITIVE')
 				expect(properties[4].propertyType.primitiveType.primitiveType).toBe('string');
-			}
 		});
 	});
 
@@ -177,9 +173,8 @@ describe('parseObjectSchemaString', () => {
 			const userAddressProperty = userType!.typeDescriptor.properties[1];
 			expect(userAddressProperty.propertyName).toBe('address');
 			expect(userAddressProperty.propertyType.type).toBe('PROPERTY_TYPE_IDENTIFIER');
-			if (userAddressProperty.propertyType.type === 'PROPERTY_TYPE_IDENTIFIER') {
+			if (userAddressProperty.propertyType.type === 'PROPERTY_TYPE_IDENTIFIER')
 				expect(userAddressProperty.propertyType.identifier).toBe('Address');
-			}
 		});
 	});
 
@@ -281,23 +276,20 @@ describe('parseObjectSchemaString', () => {
 			expect(userType!.typeDescriptor.properties[3].propertyType.type).toBe(
 				'PROPERTY_TYPE_IDENTIFIER'
 			);
-			if (userType!.typeDescriptor.properties[3].propertyType.type === 'PROPERTY_TYPE_IDENTIFIER') {
+			if (userType!.typeDescriptor.properties[3].propertyType.type === 'PROPERTY_TYPE_IDENTIFIER')
 				expect(userType!.typeDescriptor.properties[3].propertyType.identifier).toBe('Address');
-			}
 
 			// Verify nested object in User
 			const metadataProperty = userType!.typeDescriptor.properties[4];
 			expect(metadataProperty.propertyType.type).toBe('PROPERTY_TYPE_OBJECT');
-			if (metadataProperty.propertyType.type === 'PROPERTY_TYPE_OBJECT') {
+			if (metadataProperty.propertyType.type === 'PROPERTY_TYPE_OBJECT')
 				expect(metadataProperty.propertyType.object.properties).toHaveLength(3);
-			}
 
 			// Verify main type
 			expect(mainType!.typeDescriptor.properties).toHaveLength(3);
 			expect(mainType!.typeDescriptor.properties[0].isArray).toBe(true); // users
-			if (mainType!.typeDescriptor.properties[0].propertyType.type === 'PROPERTY_TYPE_IDENTIFIER') {
+			if (mainType!.typeDescriptor.properties[0].propertyType.type === 'PROPERTY_TYPE_IDENTIFIER')
 				expect(mainType!.typeDescriptor.properties[0].propertyType.identifier).toBe('User');
-			}
 		});
 	});
 

@@ -60,6 +60,7 @@ export default [
 		},
 
 		rules: {
+			curly: ['error', 'multi'],
 			'@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
 			'simple-import-sort/imports': 'error',
 			'simple-import-sort/exports': 'error',

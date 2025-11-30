@@ -886,9 +886,7 @@ describe('validateObjectSchema', () => {
 
 			// Create matching object
 			const testObject: Record<string, string> = {};
-			for (let index = 0; index < 100; index++) {
-				testObject[`prop${index}`] = `value${index}`;
-			}
+			for (let index = 0; index < 100; index++) testObject[`prop${index}`] = `value${index}`;
 
 			expect(() => validateObjectSchema(schema, testObject)).not.toThrow();
 		});

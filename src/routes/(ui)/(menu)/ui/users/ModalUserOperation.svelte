@@ -64,7 +64,7 @@
 	}>();
 
 	const getInitialFormData = (): any => {
-		if (operation === 'create') {
+		if (operation === 'create')
 			return {
 				userName: 'user@company.com',
 				name: 'John Doe',
@@ -73,13 +73,13 @@
 				permissions: ['flag-value'] as UserPermission[],
 				mustChangePassword: true
 			};
-		} else if (operation === 'modify') {
+		else if (operation === 'modify')
 			return {
 				userName: user!.userName,
 				name: user!.name,
 				permissions: user!.permissions
 			};
-		} else {
+		else
 			// setPassword
 			return {
 				userName: user!.userName,
@@ -87,11 +87,10 @@
 				password2: '',
 				mustChangePassword: true
 			};
-		}
 	};
 
 	const getSubmitAction = () => {
-		if (operation === 'create') {
+		if (operation === 'create')
 			return async () => {
 				await rpcClient.user.create.mutate({
 					key: formData.userName as string,
@@ -102,7 +101,7 @@
 				});
 				dispatch('resolve', { isOk: true });
 			};
-		} else if (operation === 'modify') {
+		else if (operation === 'modify')
 			return async () => {
 				await rpcClient.user.update.mutate({
 					key: formData.userName as string,
@@ -111,7 +110,7 @@
 				});
 				dispatch('resolve', { isOk: true });
 			};
-		} else {
+		else
 			// setPassword
 			return async () => {
 				await rpcClient.user.update.mutate({
@@ -121,11 +120,10 @@
 				});
 				dispatch('resolve', { isOk: true });
 			};
-		}
 	};
 
 	const getValidator = () => {
-		if (operation === 'create') {
+		if (operation === 'create')
 			return (source: any) => {
 				return {
 					user: {
@@ -143,7 +141,7 @@
 					}
 				};
 			};
-		} else if (operation === 'modify') {
+		else if (operation === 'modify')
 			return (source: any) => {
 				return {
 					user: {
@@ -152,7 +150,7 @@
 					}
 				};
 			};
-		} else {
+		else
 			// setPassword
 			return (source: any) => {
 				return {
@@ -165,7 +163,6 @@
 					}
 				};
 			};
-		}
 	};
 
 	const initialFormData = getInitialFormData();

@@ -129,11 +129,10 @@ const trap = function <T extends TTarget>(this: TTrapContext, ...parameters: [T,
 
 	if (result === PROXY) return PROXY(value);
 
-	if (result === DEFAULT) {
+	if (result === DEFAULT)
 		// eslint-disable-next-line
 		// @ts-ignore
 		return Reflect[trapName](...parameters);
-	}
 
 	return result;
 };
@@ -151,9 +150,8 @@ const createTraps = (handler: TProxyHandler, root: TTarget, path: string[]) =>
 	}, {});
 
 const checkTarget = (target: any): void => {
-	if (target === null || (typeof target !== 'object' && typeof target !== 'function')) {
+	if (target === null || (typeof target !== 'object' && typeof target !== 'function'))
 		throw new TypeError('Deep proxy could be applied to objects and functions only');
-	}
 };
 
 export const defaultProxyHandler: TProxyHandler = ({ DEFAULT }) => DEFAULT;

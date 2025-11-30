@@ -93,7 +93,7 @@ export const flagRpc = createRpcRouter({
 			const schemaError = flagSchemaValidator(recentFlag);
 			if (schemaError) throw new Error(`Invalid flag schema: ${schemaError}`);
 
-			if ('valueExists' in recentFlag && 'valueExists' in input.flag) {
+			if ('valueExists' in recentFlag && 'valueExists' in input.flag)
 				if (input.resetValue) {
 					recentFlag.valueExists = false;
 					recentFlag.value = recentFlag.defaultValue;
@@ -108,7 +108,7 @@ export const flagRpc = createRpcRouter({
 					recentFlag.valueExists = input.flag.valueExists;
 					recentFlag.value = input.flag.value;
 				}
-			}
+
 			const valueError = flagValueValidator(recentFlag);
 			if (valueError) throw new Error(`Invalid flag value: ${valueError}`);
 

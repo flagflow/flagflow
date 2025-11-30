@@ -102,9 +102,7 @@
 			const endTime = Date.now();
 
 			const responseHeaders: Record<string, string> = {};
-			for (const [key, value] of fetchResponse.headers.entries()) {
-				responseHeaders[key] = value;
-			}
+			for (const [key, value] of fetchResponse.headers.entries()) responseHeaders[key] = value;
 
 			const responseText = await fetchResponse.text();
 			let responseJson: unknown;

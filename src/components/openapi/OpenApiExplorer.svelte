@@ -30,9 +30,7 @@
 	let groupedEndpoints: Record<string, EndpointInfo[]> = $state({});
 
 	const copySessionIdToInput = () => {
-		if (sessionId) {
-			authToken = sessionId;
-		}
+		if (sessionId) authToken = sessionId;
 	};
 
 	const loadSpec = async () => {
@@ -55,8 +53,8 @@
 
 		const endpoints: EndpointInfo[] = [];
 
-		for (const [path, pathItem] of Object.entries(spec.paths)) {
-			for (const [method, operation] of Object.entries(pathItem as OpenApiPathItem)) {
+		for (const [path, pathItem] of Object.entries(spec.paths))
+			for (const [method, operation] of Object.entries(pathItem as OpenApiPathItem))
 				if (operation && typeof operation === 'object') {
 					const httpMethod = method.toUpperCase() as HttpMethod;
 					const parameters = operation.parameters || [];
@@ -71,8 +69,6 @@
 						requestBody: operation.requestBody
 					});
 				}
-			}
-		}
 
 		// Group endpoints by tags
 		const grouped: Record<string, EndpointInfo[]> = {};

@@ -41,13 +41,13 @@ const removeWatcher = (watcher: Watcher) => {
 	watchers.delete(watcher);
 };
 const cleanWatchers = async () => {
-	for (const watcher of watchers) {
+	for (const watcher of watchers)
 		try {
 			await watcher.cancel();
 		} catch {
 			/**/
 		}
-	}
+
 	watchers.clear();
 };
 

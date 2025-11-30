@@ -90,7 +90,7 @@ export const createRequestContext = async (
 			};
 			scope.register({ userName: asValue(undefined) });
 		}
-	else if (sessionId) {
+	else if (sessionId)
 		try {
 			const scopeAuth = scope.createScope();
 			scopeAuth.register({ userName: asValue(undefined) });
@@ -117,7 +117,7 @@ export const createRequestContext = async (
 			};
 			scope.register({ userName: asValue(undefined) });
 		}
-	} else scope.register({ userName: asValue(undefined) });
+	else scope.register({ userName: asValue(undefined) });
 
 	return {
 		container: scope,

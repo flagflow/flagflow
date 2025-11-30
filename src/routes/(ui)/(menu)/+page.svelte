@@ -41,9 +41,8 @@
 	};
 
 	const handleSearchKeydown = (event: KeyboardEvent) => {
-		if (event.key === 'Enter' && searchValue.trim()) {
+		if (event.key === 'Enter' && searchValue.trim())
 			goto(resolve(`/ui/flags?search=${encodeURIComponent(searchValue.trim())}`, {}));
-		}
 	};
 </script>
 

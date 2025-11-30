@@ -30,14 +30,13 @@
 	const contents = Object.values(restProperties).filter((v) => typeof v === 'function');
 
 	const previous = () => {
-		if (currentStepIndex > 0 && (canBackward[currentStepIndex] ?? true)) {
-			currentStepIndex--;
-		} else onclose?.();
+		if (currentStepIndex > 0 && (canBackward[currentStepIndex] ?? true)) currentStepIndex--;
+		else onclose?.();
 	};
 	const next = () => {
-		if (currentStepIndex < steps.length - 1 && (canForward[currentStepIndex] ?? true)) {
+		if (currentStepIndex < steps.length - 1 && (canForward[currentStepIndex] ?? true))
 			currentStepIndex++;
-		} else onfinish?.();
+		else onfinish?.();
 	};
 </script>
 

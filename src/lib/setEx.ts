@@ -20,10 +20,10 @@ export const objectSymmetricDiff = <K extends string | number, T>(
 	const update: Record<K, T> = {} as Record<K, T>;
 	const drop: Record<K, T> = {} as Record<K, T>;
 
-	for (const key of Object.keys(current)) {
+	for (const key of Object.keys(current))
 		if (Object.keys(requirement).includes(key)) update[key as K] = requirement[key as K];
 		else drop[key as K] = current[key as K];
-	}
+
 	for (const key of Object.keys(requirement))
 		if (!Object.keys(current).includes(key)) insert[key as K] = requirement[key as K];
 
